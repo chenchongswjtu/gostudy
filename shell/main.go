@@ -11,7 +11,7 @@ func main() {
 		fmt.Println(string(out))
 	}
 
-	if out, err := sh.Command("ls").Command("grep", "ccenv").Output(); err == nil {
+	if out, err := sh.Command("docker", "images").Command("grep", "ccenv").Output(); err == nil {
 		fmt.Println(string(out))
 	}
 }
