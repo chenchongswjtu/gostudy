@@ -38,14 +38,16 @@ func main() {
 	fmt.Println(strconv.FormatFloat(123.66, 'f', -1, 32))
 
 	// string to float32
-	f32, err := strconv.ParseFloat("44.3", 32)
+	f32, err := strconv.ParseFloat("+44.3", 32)
 	if err != nil {
 		fmt.Println("string to float32 err:", err)
 	}
 	fmt.Println(f32)
+	// 保留两位小数，并且会四舍五入
+	fmt.Printf("%.2f \n", f32)
 
 	// string to float64
-	f64, err := strconv.ParseFloat("44.3", 64)
+	f64, err := strconv.ParseFloat("-44.3", 64)
 	if err != nil {
 		fmt.Println("string to float32 err:", err)
 	}
