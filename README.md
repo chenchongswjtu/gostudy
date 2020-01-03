@@ -9,3 +9,7 @@
 ```
 "github.com/codeskyblue/go-sh"
 ```
+
+## golang书籍
+1. 深入理解Go
+`https://books.studygolang.com/go-internals/`
