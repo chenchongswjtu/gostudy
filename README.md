@@ -3,6 +3,8 @@
 ## ./convert
 1. string 转为 number(int, float)
 2. number(int, float) 转为 string
+## ./time
+时间相关操作
 
 ## golang好用的第三方包
 1. golang执行shell命令的第三方包，不会在长时间执行之后，出现cmd.start() panic的错误
