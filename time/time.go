@@ -91,4 +91,49 @@ func main() {
 	strToUnix()
 	getDayStartUnix()
 	sleep()
+
+	//在windows系统上，没有安装go语言环境的情况下，time.LoadLocation会加载失败。
+	var sh, _ = time.LoadLocation("Asia/Shanghai")
+	log.Println(time.Now().In(sh).Format("2006-01-02 15:04:05"))
+
+	//time.FixedZone各个系统都能很好的设置时区
+	log.Println(time.Now().In(time.FixedZone("CST", 8*3600)).Format("2006-01-02 15:04:05"))
+
+	//h -- > 时
+	//m -- > 分
+	//s -- > 秒
+	//ms -- > 毫秒
+	//us -- > 纳秒
+	//µs -- > 纳秒
+	//ns -- > 微秒
+
+	//10分钟前的时间
+	m, _ := time.ParseDuration("-10m")
+	_ = time.Now().Add(m)
+
+	//10分钟后的时间
+	m, _ = time.ParseDuration("10m")
+	_ = time.Now().Add(m)
+
+	time.Now().Add(time.Second)
+	t1 := time.Now()
+	t2 := time.Now()
+	t2.Sub(t1)
+
+	t := time.Now()
+	time.Since(t) // 与 time.Now().Sub(t) 相同
+
+	time1 := "2019-05-20 18:30:50"
+	time2 := "2019-05-20 17:30:50"
+	t1, _ = time.Parse("2006-01-02 15:04:05", time1)
+	t2, _ = time.Parse("2006-01-02 15:04:05", time2)
+
+	//t1的时间是否早于t2
+	t1.Before(t2)
+
+	//t1的时间是否晚于t2
+	t1.After(t2)
+
+	//t1的时间是否与t2相等
+	t1.Equal(t2)
 }
