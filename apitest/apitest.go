@@ -43,6 +43,10 @@ func main() {
 	}
 }
 
+func errJson(err string) string {
+	return fmt.Sprintf(`{"error":"%s"}`, err)
+}
+
 // Init 初始化链码
 func (m *marble) Init(stub shim.ChaincodeStubInterface) pb.Response {
 	return shim.Success(nil)
@@ -77,8 +81,10 @@ func (m *marble) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 		return m.setEvent(stub, args)
 	} else if function == "info" {
 		return m.getInfo(stub, args)
-	} else if function == strings.ToLower("keyLevel") { // key级别的背书策略
+	} else if function == strings.ToLower("setKeyLevel") { // key级别的背书策略
 		return m.setKeyLevel(stub, args)
+	} else if function == strings.ToLower("getKeyLevel") { // key级别的背书策略
+		return m.getKeyLevel(stub, args)
 	} else if function == strings.ToLower("initPrivate") {
 		return m.initPrivate(stub, args)
 	} else if function == strings.ToLower("queryPrivate") {
@@ -89,8 +95,10 @@ func (m *marble) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 		return m.getPrivateByRange(stub, args)
 	} else if function == strings.ToLower("getPrivateDataByPartialCompositeKey") {
 		return m.getPrivateDataByPartialCompositeKey(stub, args)
-	} else if function == strings.ToLower("privateKeyLevel") {
+	} else if function == strings.ToLower("setPrivateKeyLevel") {
 		return m.setPrivateKeyLevel(stub, args)
+	} else if function == strings.ToLower("getPrivateKeyLevel") {
+		return m.getPrivateKeyLevel(stub, args)
 	}
 
 	return shim.Success(nil)
@@ -102,7 +110,7 @@ func (m *marble) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 // CreateCompositeKey(objectType string, attributes []string) (string, error)
 func (m *marble) init(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	if len(args) != 4 {
-		return shim.Error("incorrect number of arguments. excepting 4")
+		return shim.Error(errJson("incorrect number of arguments. excepting 4"))
 	}
 
 	name := args[0]
@@ -110,13 +118,13 @@ func (m *marble) init(stub shim.ChaincodeStubInterface, args []string) pb.Respon
 	owner := strings.ToLower(args[3])
 	size, err := strconv.Atoi(args[2])
 	if err != nil {
-		return shim.Error("3rd argument must be a numeric string")
+		return shim.Error(errJson("3rd argument must be a numeric string"))
 	}
 
 	// 检查该name是否存在
 	marbleAsBytes, err := stub.GetState(name)
 	if err != nil {
-		return shim.Error("failed to get marble: " + err.Error())
+		return shim.Error(errJson("failed to get marble: " + err.Error()))
 	} else if len(marbleAsBytes) > 0 {
 		log.Printf("this marble already exists: %s, update it \n", name)
 	}
@@ -131,12 +139,12 @@ func (m *marble) init(stub shim.ChaincodeStubInterface, args []string) pb.Respon
 	}
 	marbleJSONasBytes, err := json.Marshal(marble)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 
 	err = stub.PutState(name, marbleJSONasBytes)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 
 	//  ==== Index the marble to enable color-based range queries, e.g. return all blue marbles ====
@@ -146,32 +154,30 @@ func (m *marble) init(stub shim.ChaincodeStubInterface, args []string) pb.Respon
 	//  This will enable very efficient state range queries based on composite keys matching indexName~color~*
 	colorNameIndexKey, err := stub.CreateCompositeKey(colorName, []string{marble.Color, marble.Name})
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 	//  Save index entry to state. Only the key name is needed, no need to store a duplicate copy of the marble.
 	//  Note - passing a 'nil' value will effectively delete the key from state, therefore we pass null character as value
 	value := []byte{null}
 	if err = stub.PutState(colorNameIndexKey, value); err != nil {
-		return shim.Error(fmt.Sprintf("save %s PutState err: %s", colorNameIndexKey, err.Error()))
+		return shim.Error(errJson(fmt.Sprintf("save %s PutState err: %s", colorNameIndexKey, err.Error())))
 	}
+
+	log.Println("init marble success,", marble)
 	return shim.Success(nil)
 }
 
 func (m *marble) query(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	var jsonResp string
-
 	if len(args) != 1 {
-		return shim.Error("incorrect number of arguments. expecting 1")
+		return shim.Error(errJson("incorrect number of arguments. expecting 1"))
 	}
 	name := args[0]
 
 	valAsBytes, err := stub.GetState(name)
 	if err != nil {
-		jsonResp = fmt.Sprintf(`{"error":"failed to get marble [%s]"}`, name)
-		return shim.Error(jsonResp)
+		return shim.Error(errJson(fmt.Sprintf("failed to get marble [%s]", name)))
 	} else if len(valAsBytes) == 0 {
-		jsonResp = fmt.Sprintf(`{"error":"marble [%s] does not exist"}`, name)
-		return shim.Error(jsonResp)
+		return shim.Error(errJson(fmt.Sprintf("marble [%s] does not exist", name)))
 	}
 
 	log.Printf("key: %s, value: %s \n", name, string(valAsBytes))
@@ -181,55 +187,53 @@ func (m *marble) query(stub shim.ChaincodeStubInterface, args []string) pb.Respo
 // 根据name删除数据
 // DelState(key string) error
 func (m *marble) delete(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	var jsonResp string
+	if len(args) != 1 {
+		return shim.Error(errJson("incorrect number of arguments. expecting 1"))
+	}
 	var marble marble
 
-	if len(args) != 1 {
-		return shim.Error("incorrect number of arguments. expecting 1")
-	}
 	name := args[0]
 
 	// 为了维持color~name索引，需要先获得颜色
 	valAsBytes, err := stub.GetState(name)
 	if err != nil {
-		jsonResp = fmt.Sprintf(`{"error":"failed to get marble [%s]"}`, name)
-		return shim.Error(jsonResp)
+		return shim.Error(errJson(fmt.Sprintf("failed to get marble [%s]", name)))
 	} else if len(valAsBytes) == 0 {
-		jsonResp = fmt.Sprintf(`{"error":"marble [%s] does not exist"}`, name)
-		return shim.Error(jsonResp)
+		return shim.Error(errJson(fmt.Sprintf("marble [%s] does not exist", name)))
 	}
 
 	err = json.Unmarshal(valAsBytes, &marble)
 	if err != nil {
-		jsonResp = "{\"error\":\"failed to decode JSON of: " + name + "\"}"
-		return shim.Error(jsonResp)
+		return shim.Error(errJson("failed to decode JSON of: " + name))
 	}
 
 	// 根据name删除数据
 	err = stub.DelState(name)
 	if err != nil {
-		return shim.Error("failed to delete state:" + err.Error())
+		return shim.Error(errJson("failed to delete state:" + err.Error()))
 	}
 
 	// 创建color~name复合键
 	colorNameIndexKey, err := stub.CreateCompositeKey(colorName, []string{marble.Color, marble.Name})
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 
 	// 删除复合键
 	err = stub.DelState(colorNameIndexKey)
 	if err != nil {
-		return shim.Error("failed to delete state:" + err.Error())
+		return shim.Error(errJson("failed to delete state:" + err.Error()))
 	}
+
+	log.Println("delete key:", name)
 	return shim.Success(nil)
 }
 
 // 根据查询范围获得结果
 // GetStateByRange(startKey, endKey string) (StateQueryIteratorInterface, error)
 func (m *marble) getByRange(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) < 2 {
-		return shim.Error("incorrect number of arguments. expecting 2")
+	if len(args) != 2 {
+		return shim.Error(errJson("incorrect number of arguments. expecting 2"))
 	}
 
 	startKey := args[0]
@@ -237,13 +241,13 @@ func (m *marble) getByRange(stub shim.ChaincodeStubInterface, args []string) pb.
 
 	iterator, err := stub.GetStateByRange(startKey, endKey)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 	defer iterator.Close()
 
 	buffer, err := constructQueryResponseFromIterator(iterator)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 
 	log.Printf("GetStateByRange queryResult:\n%s\n", buffer.String())
@@ -253,14 +257,14 @@ func (m *marble) getByRange(stub shim.ChaincodeStubInterface, args []string) pb.
 // 获得name的历史交易记录
 // GetHistoryForKey(key string) (HistoryQueryIteratorInterface, error)
 func (m *marble) getHistory(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) < 1 {
-		return shim.Error("incorrect number of arguments. expecting 1")
+	if len(args) != 1 {
+		return shim.Error(errJson("incorrect number of arguments. expecting 1"))
 	}
 
 	name := args[0]
 	iterator, err := stub.GetHistoryForKey(name)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 	defer iterator.Close()
 
@@ -271,7 +275,7 @@ func (m *marble) getHistory(stub shim.ChaincodeStubInterface, args []string) pb.
 	for iterator.HasNext() {
 		response, err := iterator.Next()
 		if err != nil {
-			return shim.Error(err.Error())
+			return shim.Error(errJson(err.Error()))
 		}
 
 		if bArrayMemberAlreadyWritten == true {
@@ -312,8 +316,8 @@ func (m *marble) getHistory(stub shim.ChaincodeStubInterface, args []string) pb.
 // GetStateByPartialCompositeKey(objectType string, keys []string) (StateQueryIteratorInterface, error)
 // SplitCompositeKey(compositeKey string) (string, []string, error)
 func (m *marble) transferBasedOnColor(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) < 2 {
-		return shim.Error("incorrect number of arguments. expecting 2")
+	if len(args) != 2 {
+		return shim.Error(errJson("incorrect number of arguments. expecting 2"))
 	}
 
 	color := args[0]
@@ -323,7 +327,7 @@ func (m *marble) transferBasedOnColor(stub shim.ChaincodeStubInterface, args []s
 	// This will execute a key range query on all keys starting with 'color'
 	iterator, err := stub.GetStateByPartialCompositeKey(colorName, []string{color})
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 	defer iterator.Close()
 
@@ -333,13 +337,13 @@ func (m *marble) transferBasedOnColor(stub shim.ChaincodeStubInterface, args []s
 		// Note that we don't get the value (2nd return variable), we'll just get the marble name from the composite key
 		responseRange, err := iterator.Next()
 		if err != nil {
-			return shim.Error(err.Error())
+			return shim.Error(errJson(err.Error()))
 		}
 
 		// get the color and name from color~name composite key
 		objectType, compositeKeyParts, err := stub.SplitCompositeKey(responseRange.Key)
 		if err != nil {
-			return shim.Error(err.Error())
+			return shim.Error(errJson(err.Error()))
 		}
 		returnedColor := compositeKeyParts[0]
 		returnedMarbleName := compositeKeyParts[1]
@@ -348,7 +352,7 @@ func (m *marble) transferBasedOnColor(stub shim.ChaincodeStubInterface, args []s
 		response := m.transfer(stub, []string{returnedMarbleName, newOwner})
 
 		if response.Status != shim.OK {
-			return shim.Error("Transfer failed: " + response.Message)
+			return shim.Error(errJson("Transfer failed: " + response.Message))
 		}
 	}
 
@@ -358,8 +362,8 @@ func (m *marble) transferBasedOnColor(stub shim.ChaincodeStubInterface, args []s
 
 // 转移弹珠到新的owner
 func (m *marble) transfer(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) < 2 {
-		return shim.Error("Incorrect number of arguments. expecting 2")
+	if len(args) != 2 {
+		return shim.Error(errJson("Incorrect number of arguments. expecting 2"))
 	}
 
 	name := args[0]
@@ -367,26 +371,26 @@ func (m *marble) transfer(stub shim.ChaincodeStubInterface, args []string) pb.Re
 
 	marbleAsBytes, err := stub.GetState(name)
 	if err != nil {
-		return shim.Error(fmt.Sprintf("failed to get marble [%s], err: %s", name, err.Error()))
+		return shim.Error(errJson(fmt.Sprintf("failed to get marble [%s], err: %s", name, err.Error())))
 	} else if len(marbleAsBytes) == 0 {
-		return shim.Error(fmt.Sprintf("marble [%s] does not exist", name))
+		return shim.Error(errJson(fmt.Sprintf("marble [%s] does not exist", name)))
 	}
 
 	marbleToTransfer := marble{}
 	err = json.Unmarshal(marbleAsBytes, &marbleToTransfer)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 	marbleToTransfer.Owner = newOwner
 
 	marbleJSONasBytes, err := json.Marshal(marbleToTransfer)
 	if err != nil {
-		return shim.Error("json marshal err: " + err.Error())
+		return shim.Error(errJson("json marshal err: " + err.Error()))
 	}
 
 	err = stub.PutState(name, marbleJSONasBytes)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 
 	return shim.Success(nil)
@@ -397,13 +401,13 @@ func (m *marble) transfer(stub shim.ChaincodeStubInterface, args []string) pb.Re
 //		pageSize int32, bookmark string) (StateQueryIteratorInterface, *pb.QueryResponseMetadata, error)
 func (m *marble) getStateByPartialCompositeKeyWithPagination(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	if len(args) < 2 {
-		return shim.Error("incorrect number of arguments. expecting at least 2")
+		return shim.Error(errJson("incorrect number of arguments. expecting at least 2"))
 	}
 
 	color := args[0]
 	pageSize, err := strconv.Atoi(args[1])
 	if err != nil {
-		return shim.Error("2nd argument must be a numeric string")
+		return shim.Error(errJson("2nd argument must be a numeric string"))
 	}
 	bookmark := ""
 	if len(args) > 2 {
@@ -412,13 +416,13 @@ func (m *marble) getStateByPartialCompositeKeyWithPagination(stub shim.Chaincode
 
 	iterator, metadata, err := stub.GetStateByPartialCompositeKeyWithPagination(colorName, []string{color}, int32(pageSize), bookmark)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 	defer iterator.Close()
 
-	buffer, err := constructQueryResponseFromIteratorAndMetadata(iterator, metadata)
+	buffer, err := constructQueryResponseFromIteratorAndMetadata(stub, iterator, metadata)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 
 	log.Printf("GetStateByPartialCompositeKeyWithPagination queryResult:\n%s\n", buffer.String())
@@ -430,14 +434,14 @@ func (m *marble) getStateByPartialCompositeKeyWithPagination(stub shim.Chaincode
 //		bookmark string) (StateQueryIteratorInterface, *pb.QueryResponseMetadata, error)
 func (m *marble) getByRangeWithPagination(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	if len(args) < 3 {
-		return shim.Error("incorrect number of arguments. expecting at least 3")
+		return shim.Error(errJson("incorrect number of arguments. expecting at least 3"))
 	}
 
 	startKey := args[0]
 	endKey := args[1]
 	pageSize, err := strconv.Atoi(args[2])
 	if err != nil {
-		return shim.Error("3rd argument must be a numeric string")
+		return shim.Error(errJson("3rd argument must be a numeric string"))
 	}
 
 	bookmark := ""
@@ -447,13 +451,13 @@ func (m *marble) getByRangeWithPagination(stub shim.ChaincodeStubInterface, args
 
 	iterator, metadata, err := stub.GetStateByRangeWithPagination(startKey, endKey, int32(pageSize), bookmark)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 	defer iterator.Close()
 
-	buffer, err := constructQueryResponseFromIteratorAndMetadata(iterator, metadata)
+	buffer, err := constructFromIteratorAndMetadata1(iterator, metadata)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 
 	log.Printf("GetStateByRangeWithPagination queryResult:\n%s\n", buffer.String())
@@ -465,7 +469,7 @@ func (m *marble) getByRangeWithPagination(stub shim.ChaincodeStubInterface, args
 // InvokeChaincode(chaincodeName string, args [][]byte, channel string) pb.Response
 func (m *marble) invokeChainCode(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	if len(args) < 2 {
-		return shim.Error("incorrect number of arguments. expecting at least 2")
+		return shim.Error(errJson("incorrect number of arguments. expecting at least 2"))
 	}
 
 	chaincodeName := args[0]
@@ -481,22 +485,24 @@ func (m *marble) invokeChainCode(stub shim.ChaincodeStubInterface, args []string
 	if response.Status != shim.OK {
 		errStr := fmt.Sprintf("failed to %s chaincode %s in %s. Got error: %s", f, chaincodeName, channelName, string(response.Payload))
 		log.Printf(errStr)
-		return shim.Error(errStr)
+		return shim.Error(errJson(errStr))
 	}
 	return shim.Success(response.Payload)
 }
 
 // SetEvent(name string, payload []byte) error
 func (m *marble) setEvent(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	toSend := "event "
+	toSend := "event"
 	for _, s := range args {
-		toSend = toSend + "," + s
+		toSend = toSend + " " + s
 	}
 
 	err := stub.SetEvent("event", []byte(toSend))
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
+
+	log.Println("setEvent content:", toSend)
 	return shim.Success(nil)
 }
 
@@ -513,30 +519,30 @@ func (m *marble) getInfo(stub shim.ChaincodeStubInterface, args []string) pb.Res
 	decorations := stub.GetDecorations()
 	decorationsJson, err := json.Marshal(decorations)
 	if err != nil {
-		return shim.Error("json.Marshal failed err: " + err.Error())
+		return shim.Error(errJson("json.Marshal failed err: " + err.Error()))
 	}
 	decorationsStr := string(decorationsJson)
 
 	creator, err := stub.GetCreator()
 	if err != nil {
-		return shim.Error("GetCreator err: " + err.Error())
+		return shim.Error(errJson("GetCreator err: " + err.Error()))
 	}
 	creatorStr := string(creator)
 
 	bind, err := stub.GetBinding()
 	if err != nil {
-		return shim.Error("GetBinding err: " + err.Error())
+		return shim.Error(errJson("GetBinding err: " + err.Error()))
 	}
 	bindStr := string(bind)
 
 	signedProposal, err := stub.GetSignedProposal()
 	if err != nil {
-		return shim.Error("GetSignedProposal err: " + err.Error())
+		return shim.Error(errJson("GetSignedProposal err: " + err.Error()))
 	}
 
 	timeStamp, err := stub.GetTxTimestamp()
 	if err != nil {
-		return shim.Error("GetTxTimestamp err: " + err.Error())
+		return shim.Error(errJson("GetTxTimestamp err: " + err.Error()))
 	}
 	timeStr := time.Unix(timeStamp.Seconds, int64(timeStamp.Nanos)).String()
 
@@ -565,33 +571,33 @@ func (m *marble) initPrivate(stub shim.ChaincodeStubInterface, args []string) pb
 	log.Println("start init private marble")
 
 	if len(args) != 0 {
-		return shim.Error("incorrect number of arguments. private marble data must be passed in transient map.")
+		return shim.Error(errJson("incorrect number of arguments. private marble data must be passed in transient map."))
 	}
 
 	transMap, err := stub.GetTransient()
 	if err != nil {
-		return shim.Error("error getting transient: " + err.Error())
+		return shim.Error(errJson("error getting transient: " + err.Error()))
 	}
 
 	if _, ok := transMap["marble"]; !ok {
-		return shim.Error("marble must be a key in the transient map")
+		return shim.Error(errJson("marble must be a key in the transient map"))
 	}
 
 	if len(transMap["marble"]) == 0 {
-		return shim.Error("marble value in the transient map must be a non-empty JSON string")
+		return shim.Error(errJson("marble value in the transient map must be a non-empty JSON string"))
 	}
 
 	var marbleInput marbleTransientInput
 	err = json.Unmarshal(transMap["marble"], &marbleInput)
 	if err != nil {
-		return shim.Error("failed to decode JSON of: " + string(transMap["marble"]))
+		return shim.Error(errJson("failed to decode JSON of: " + string(transMap["marble"])))
 	}
 
 	if len(marbleInput.Name) == 0 {
-		return shim.Error("name field must be a non-empty string")
+		return shim.Error(errJson("name field must be a non-empty string"))
 	}
 	if marbleInput.Price <= 0 {
-		return shim.Error("price field must be a positive integer")
+		return shim.Error(errJson("price field must be a positive integer"))
 	}
 
 	// ==== Create marble private details object with price, marshal to JSON, and save to state ====
@@ -603,21 +609,21 @@ func (m *marble) initPrivate(stub shim.ChaincodeStubInterface, args []string) pb
 	}
 	marblePrivateDetailsBytes, err := json.Marshal(marblePrivateDetails)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 	err = stub.PutPrivateData(collectionMarbles, marbleInput.Name, marblePrivateDetailsBytes)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 
 	colorNameIndexKey, err := stub.CreateCompositeKey(colorName, []string{marblePrivateDetails.Color, marblePrivateDetails.Name})
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 
 	value := []byte{null}
 	if err = stub.PutPrivateData(collectionMarbles, colorNameIndexKey, value); err != nil {
-		return shim.Error(fmt.Sprintf("save %s PutPrivateData err: %s", colorNameIndexKey, err.Error()))
+		return shim.Error(errJson(fmt.Sprintf("save %s PutPrivateData err: %s", colorNameIndexKey, err.Error())))
 	}
 
 	return shim.Success(nil)
@@ -625,18 +631,18 @@ func (m *marble) initPrivate(stub shim.ChaincodeStubInterface, args []string) pb
 
 // GetPrivateData(collection, key string) ([]byte, error)
 func (m *marble) queryPrivate(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) < 1 {
-		return shim.Error("incorrect number of arguments. excepting 1.")
+	if len(args) != 1 {
+		return shim.Error(errJson("incorrect number of arguments. excepting 1."))
 	}
 
 	name := args[0]
 
 	marbleAsBytes, err := stub.GetPrivateData(collectionMarbles, name)
 	if err != nil {
-		return shim.Error(fmt.Sprintf("failed to get marble [%s] err: %s", name, err.Error()))
+		return shim.Error(errJson(fmt.Sprintf("failed to get marble [%s] err: %s", name, err.Error())))
 	} else if len(marbleAsBytes) == 0 {
 		log.Println(fmt.Sprintf("this marble [%s] not exists", name))
-		return shim.Error(fmt.Sprintf("this marble [%s] not exists", name))
+		return shim.Error(errJson(fmt.Sprintf("this marble [%s] not exists", name)))
 	}
 
 	log.Printf("private %s data %s \n", name, string(marbleAsBytes))
@@ -645,8 +651,8 @@ func (m *marble) queryPrivate(stub shim.ChaincodeStubInterface, args []string) p
 
 // DelPrivateData(collection, key string) error
 func (m *marble) delPrivate(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) < 1 {
-		return shim.Error("incorrect number of arguments. excepting 1.")
+	if len(args) != 1 {
+		return shim.Error(errJson("incorrect number of arguments. excepting 1."))
 	}
 
 	name := args[0]
@@ -654,14 +660,14 @@ func (m *marble) delPrivate(stub shim.ChaincodeStubInterface, args []string) pb.
 	// ==== Check if marble already exists ====
 	marbleAsBytes, err := stub.GetPrivateData(collectionMarbles, name)
 	if err != nil {
-		return shim.Error(fmt.Sprintf("failed to get marble [%s], err: %s", name, err.Error()))
+		return shim.Error(errJson(fmt.Sprintf("failed to get marble [%s], err: %s", name, err.Error())))
 	} else if marbleAsBytes == nil {
 		log.Println(fmt.Sprintf("this marble [%s] not exists", name))
-		return shim.Error(fmt.Sprintf("this marble [%s] not exists", name))
+		return shim.Error(errJson(fmt.Sprintf("this marble [%s] not exists", name)))
 	}
 
 	if err := stub.DelPrivateData(collectionMarbles, name); err != nil {
-		return shim.Error("DelPrivateData err: " + err.Error())
+		return shim.Error(errJson("DelPrivateData err: " + err.Error()))
 	}
 
 	return shim.Success([]byte(fmt.Sprintf("DelPrivateData success [%s]", name)))
@@ -669,22 +675,22 @@ func (m *marble) delPrivate(stub shim.ChaincodeStubInterface, args []string) pb.
 
 // GetPrivateDataByRange(collection, startKey, endKey string) (StateQueryIteratorInterface, error)
 func (m *marble) getPrivateByRange(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) < 2 {
-		return shim.Error("incorrect number of arguments. expecting 2")
+	if len(args) != 2 {
+		return shim.Error(errJson("incorrect number of arguments. expecting 2"))
 	}
 
 	startKey := args[0]
 	endKey := args[1]
 
-	resultsIterator, err := stub.GetPrivateDataByRange(collectionMarbles, startKey, endKey)
+	iterator, err := stub.GetPrivateDataByRange(collectionMarbles, startKey, endKey)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
-	defer resultsIterator.Close()
+	defer iterator.Close()
 
-	buffer, err := constructQueryResponseFromIterator(resultsIterator)
+	buffer, err := constructQueryResponseFromIterator(iterator)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 
 	log.Printf("getPrivateByRange queryResult:\n%s\n", buffer.String())
@@ -693,112 +699,133 @@ func (m *marble) getPrivateByRange(stub shim.ChaincodeStubInterface, args []stri
 
 // GetPrivateDataByPartialCompositeKey(collection, objectType string, keys []string) (StateQueryIteratorInterface, error)
 func (m *marble) getPrivateDataByPartialCompositeKey(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) < 1 {
-		return shim.Error("incorrect number of arguments. expecting 2")
+	if len(args) != 1 {
+		return shim.Error(errJson("incorrect number of arguments. expecting 1"))
 	}
 
 	color := args[0]
 	iterator, err := stub.GetPrivateDataByPartialCompositeKey(collectionMarbles, colorName, []string{color})
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 	defer iterator.Close()
 
 	buffer, err := constructQueryResponseFromIterator(iterator)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 
 	log.Printf("getPrivateDataByPartialCompositeKey queryResult:\n%s\n", buffer.String())
 	return shim.Success(buffer.Bytes())
 }
 
-// GetStateValidationParameter(key string) ([]byte, error)
 // SetStateValidationParameter(key string, ep []byte) error
 func (m *marble) setKeyLevel(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) != 2 {
+	if len(args) < 2 {
 		log.Println(1)
-		return shim.Error("Incorrect number of arguments. Expecting the key and EP to be set.")
+		return shim.Error(errJson("Incorrect number of arguments. Expecting the key and EP to be set."))
 	}
 	key := args[0]
-	EP := args[1]
+	ep := args[1:]
 	newEP, err := statebased.NewStateEP(nil)
 	if err != nil {
 		log.Println(2)
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
-	err = newEP.AddOrgs(statebased.RoleTypeMember, EP)
+
+	err = newEP.AddOrgs(statebased.RoleTypeMember, ep...)
 	if err != nil {
 		log.Println(3)
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 
 	policyByte, err := newEP.Policy()
 	if err != nil {
 		log.Println(4)
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 	err = stub.SetStateValidationParameter(key, policyByte)
 	if err != nil {
 		log.Println(5)
-		return shim.Error(err.Error())
-	}
-
-	ep, err := stub.GetStateValidationParameter(key)
-	if err != nil {
-		log.Println(6)
-		return shim.Error("GetStateValidationParameter err:" + err.Error())
-	}
-
-	if len(ep) == 0 {
-		log.Printf("%s key level endorsement policy not exist \n", key)
-	} else {
-		log.Printf("%s key level endorsement policy already exist, is %s \n", key, string(ep))
+		return shim.Error(errJson(err.Error()))
 	}
 
 	log.Println(7)
-	return shim.Success(nil)
+	return shim.Success(policyByte)
+}
+
+// GetStateValidationParameter(key string) ([]byte, error)
+func (m *marble) getKeyLevel(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	if len(args) != 1 {
+		log.Println(1)
+		return shim.Error(errJson("Incorrect number of arguments. Expecting the key to be set."))
+	}
+	key := args[0]
+	ep, err := stub.GetStateValidationParameter(key)
+	if err != nil {
+		log.Println(2)
+		return shim.Error(errJson("GetStateValidationParameter err:" + err.Error()))
+	}
+
+	if len(ep) == 0 {
+		log.Printf("[%s] key level endorsement policy not exist \n", key)
+	} else {
+		log.Printf("[%s] key level endorsement policy already exist, is %s \n", key, string(ep))
+	}
+
+	log.Println(3)
+	return shim.Success(ep)
 }
 
 // 设置私有数据key级背书策略
-// GetPrivateDataValidationParameter(collection, key string) ([]byte, error)
 // SetPrivateDataValidationParameter(collection, key string, ep []byte) error
 func (m *marble) setPrivateKeyLevel(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	if len(args) != 2 {
-		return shim.Error("Incorrect number of arguments. Expecting the key and EP to be set.")
+	if len(args) < 2 {
+		return shim.Error(errJson("Incorrect number of arguments. Expecting the key and EP to be set."))
 	}
 	key := args[0]
-	EP := args[1]
+	EP := args[1:]
 	newEP, err := statebased.NewStateEP(nil)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
-	err = newEP.AddOrgs(statebased.RoleTypeMember, EP)
+	err = newEP.AddOrgs(statebased.RoleTypeMember, EP...)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 
 	policyByte, err := newEP.Policy()
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
 	err = stub.SetPrivateDataValidationParameter(collectionMarbles, key, policyByte)
 	if err != nil {
-		return shim.Error(err.Error())
+		return shim.Error(errJson(err.Error()))
 	}
+
+	return shim.Success(policyByte)
+}
+
+// 设置私有数据key级背书策略
+// GetPrivateDataValidationParameter(collection, key string) ([]byte, error)
+func (m *marble) getPrivateKeyLevel(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	if len(args) != 1 {
+		return shim.Error(errJson("Incorrect number of arguments. Expecting the key."))
+	}
+	key := args[0]
 
 	ep, err := stub.GetPrivateDataValidationParameter(collectionMarbles, key)
 	if err != nil {
-		return shim.Error("GetPrivateDataValidationParameter err:" + err.Error())
+		return shim.Error(errJson("GetPrivateDataValidationParameter err:" + err.Error()))
 	}
 
 	if len(ep) == 0 {
-		fmt.Printf("%s %s private key level endorsement policy not exist \n", collectionMarbles, key)
+		log.Printf("[%s] [%s] private key level endorsement policy not exist \n", collectionMarbles, key)
 	} else {
-		fmt.Printf("%s %s private key level endorsement policy already exist, is %s \n", collectionMarbles, key, string(ep))
+		log.Printf("[%s] [%s] private key level endorsement policy already exist, is [%s] \n", collectionMarbles, key, string(ep))
 	}
 
-	return shim.Success(nil)
+	return shim.Success(ep)
 }
 
 func toChaincodeArgs(args ...string) [][]byte {
@@ -842,7 +869,8 @@ func constructQueryResponseFromIterator(resultsIterator shim.StateQueryIteratorI
 	return &buffer, nil
 }
 
-func constructQueryResponseFromIteratorAndMetadata(iterator shim.StateQueryIteratorInterface, metadata *pb.QueryResponseMetadata) (*bytes.Buffer, error) {
+func constructQueryResponseFromIteratorAndMetadata(stub shim.ChaincodeStubInterface,
+	iterator shim.StateQueryIteratorInterface, metadata *pb.QueryResponseMetadata) (*bytes.Buffer, error) {
 	var buffer bytes.Buffer
 	buffer.WriteString(`{"count":"`)
 	buffer.WriteString(strconv.Itoa(int(metadata.FetchedRecordsCount)))
@@ -868,6 +896,60 @@ func constructQueryResponseFromIteratorAndMetadata(iterator shim.StateQueryItera
 		buffer.WriteString("\"")
 
 		buffer.WriteString(", \"Record\":")
+
+		// get the color and name from color~name composite key
+		objectType, compositeKeyParts, err := stub.SplitCompositeKey(queryResponse.Key)
+		if err != nil {
+			return nil, err
+		}
+		returnedColor := compositeKeyParts[0]
+		returnedMarbleName := compositeKeyParts[1]
+		log.Printf("found a marble from index:%s color:%s name:%s\n", objectType, returnedColor, returnedMarbleName)
+		marbleAsBytes, err := stub.GetState(returnedMarbleName)
+		if err != nil {
+			return nil, err
+		} else if len(marbleAsBytes) == 0 {
+			buffer.WriteString("null")
+		} else {
+			buffer.WriteString(string(marbleAsBytes))
+		}
+
+		buffer.WriteString("}")
+		bArrayMemberAlreadyWritten = true
+	}
+	buffer.WriteString("]")
+
+	buffer.WriteString("}")
+	return &buffer, nil
+}
+
+func constructFromIteratorAndMetadata1(iterator shim.StateQueryIteratorInterface, metadata *pb.QueryResponseMetadata) (*bytes.Buffer, error) {
+	var buffer bytes.Buffer
+	buffer.WriteString(`{"count":"`)
+	buffer.WriteString(strconv.Itoa(int(metadata.FetchedRecordsCount)))
+
+	buffer.WriteString(`","bookmark":"`)
+	buffer.WriteString(metadata.Bookmark)
+	buffer.WriteString(`","value":`)
+
+	buffer.WriteString("[")
+
+	bArrayMemberAlreadyWritten := false
+	for iterator.HasNext() {
+		queryResponse, err := iterator.Next()
+		if err != nil {
+			return nil, err
+		}
+		if bArrayMemberAlreadyWritten == true {
+			buffer.WriteString(",")
+		}
+		buffer.WriteString("{\"Key\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(queryResponse.Key)
+		buffer.WriteString("\"")
+
+		buffer.WriteString(", \"Record\":")
+
 		if bytes.Equal(queryResponse.Value, []byte{null}) {
 			buffer.WriteString("null")
 		} else {
