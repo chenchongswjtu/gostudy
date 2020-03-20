@@ -1,5 +1,5 @@
 // /opt/gopath/src/github.com/cetc/xledger/orderer/consensus/rbft/rbft_test.go
-package rbft
+package main
 
 import (
 	"github.com/cetc/xledger/common/channelconfig"
