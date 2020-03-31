@@ -1,29 +1,27 @@
 // /opt/gopath/src/github.com/cetc/xledger/orderer/consensus/rbft/rbft_test.go
-package rbft
+package main
 
 import (
-	"github.com/cetc/xledger/common/channelconfig"
-	"github.com/cetc/xledger/common/localmsp"
-	"github.com/cetc/xledger/msp"
-	"github.com/cetc/xledger/msp/mgmt"
-	"github.com/cetc/xledger/orderer/common/blockcutter"
-	"github.com/cetc/xledger/orderer/common/msgprocessor"
-	"github.com/cetc/xledger/orderer/common/multichannel"
-	"github.com/cetc/xledger/orderer/consensus"
 	"log"
 	"testing"
 	"time"
 
 	"github.com/cetc/xledger/bccsp/factory"
+	"github.com/cetc/xledger/common/channelconfig"
+	"github.com/cetc/xledger/common/crypto"
+	"github.com/cetc/xledger/common/localmsp"
+	"github.com/cetc/xledger/msp"
+	"github.com/cetc/xledger/msp/mgmt"
+	"github.com/cetc/xledger/orderer/common/blockcutter"
 	"github.com/cetc/xledger/orderer/common/localconfig"
+	"github.com/cetc/xledger/orderer/common/msgprocessor"
+	"github.com/cetc/xledger/orderer/common/multichannel"
+	"github.com/cetc/xledger/orderer/consensus"
+	cb "github.com/cetc/xledger/protos/common"
 	m "github.com/cetc/xledger/protos/msp"
+	mspo "github.com/cetc/xledger/protos/msp"
 	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/cetc/xledger/common/crypto"
-	cb "github.com/cetc/xledger/protos/common"
-
-	mspo "github.com/cetc/xledger/protos/msp"
 )
 
 var r = &rbft{
