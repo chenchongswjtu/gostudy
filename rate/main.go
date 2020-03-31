@@ -13,7 +13,7 @@ func main() {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.Lmicroseconds)
 
-	// 1秒間に実行する回数
+	// 1秒之内执行的次数
 	ntimes := 5
 
 	n := rate.Every(time.Second / time.Duration(ntimes))
