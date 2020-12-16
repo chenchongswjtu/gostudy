@@ -1,0 +1,11 @@
+{
+  "consenters": null,
+  "options": {
+    "election_tick": 60,
+    "heartbeat_tick": 20,
+    "max_inflight_msgs": 256,
+    "max_size_per_msg": "1048576",
+    "snapshot_interval": "0",
+    "tick_interval": "200"
+  }
+}
