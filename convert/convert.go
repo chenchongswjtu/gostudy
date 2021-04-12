@@ -28,7 +28,7 @@ func main() {
 	s = strconv.FormatInt(int64(67), 10)
 	fmt.Println(s)
 
-	// uin664 to string
+	// uint64 to string
 	fmt.Println(strconv.FormatUint(34, 10))
 
 	// float64 to string
@@ -38,7 +38,7 @@ func main() {
 	fmt.Println(strconv.FormatFloat(123.66, 'f', -1, 32))
 
 	// string to float32
-	f32, err := strconv.ParseFloat("+44.3", 32)
+	f32, err := strconv.ParseFloat("+44.325", 32)
 	if err != nil {
 		fmt.Println("string to float32 err:", err)
 	}
