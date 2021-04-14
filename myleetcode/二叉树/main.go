@@ -339,3 +339,90 @@ func buildTreeHelper1(inorder []int, inStart int, inEnd int, postorder []int, po
 
 	return root
 }
+
+//type levelNode struct {
+//	node  *TreeNode
+//	level int
+//}
+
+// 107.二叉树的层序(从下到上)
+func levelOrderBottom(root *TreeNode) [][]int {
+	res := make([][]int, 0)
+	if root == nil {
+		return res
+	}
+
+	var queue []*levelNode
+	var index int
+	queue = append(queue, &levelNode{
+		node:  root,
+		level: 0,
+	})
+	for index < len(queue) {
+		temp := queue[index]
+		index++
+		if temp.node.Left != nil {
+			queue = append(queue, &levelNode{
+				node:  temp.node.Left,
+				level: temp.level + 1,
+			})
+		}
+		if temp.node.Right != nil {
+			queue = append(queue, &levelNode{
+				node:  temp.node.Right,
+				level: temp.level + 1,
+			})
+		}
+	}
+
+	res = append(res, []int{queue[0].node.Val})
+	preLevel := 0
+	for i := 1; i < len(queue); i++ {
+		if queue[i].level != preLevel {
+			res = append(res, []int{queue[i].node.Val})
+		} else {
+			res[queue[i].level] = append(res[queue[i].level], queue[i].node.Val)
+		}
+		preLevel = queue[i].level
+	}
+
+	for i, j := 0, len(res)-1; i < j; {
+		res[i], res[j] = res[j], res[i]
+		i++
+		j--
+	}
+
+	return res
+}
+
+// 108. 将有序数组转化为二叉搜索树
+func sortedArrayToBST(nums []int) *TreeNode {
+	return sortedArrayToBSTHelper(nums, 0, len(nums)-1)
+}
+
+func sortedArrayToBSTHelper(nums []int, start, end int) *TreeNode {
+	if start > end {
+		return nil
+	}
+
+	mid := (end-start)/2 + start
+	root := &TreeNode{Val: nums[mid], Left: nil, Right: nil}
+
+	root.Left = sortedArrayToBSTHelper(nums, start, mid-1)
+	root.Right = sortedArrayToBSTHelper(nums, mid+1, end)
+
+	return root
+}
+
+// 110.判断是不是平衡二叉树
+func isBalanced(root *TreeNode) bool {
+	if root == nil {
+		return true
+	}
+
+	if math.Abs(float64(maxDepth(root.Left)-maxDepth(root.Right))) > 1 {
+		return false
+	}
+
+	return isBalanced(root.Left) && isBalanced(root.Right)
+}
