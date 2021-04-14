@@ -6,8 +6,7 @@ import (
 )
 
 func main() {
-	//fmt.Println(isValidBST1(Ints2TreeNode([]int{1, 1})))
-	fmt.Println(levelOrder(Ints2TreeNode([]int{3, 9, 20, NULL, NULL, 15, 7})))
+	fmt.Println(pathSum(Ints2TreeNode([]int{-6, NULL, -3, -6, 0, -6, -5, 4, NULL, NULL, NULL, 1, 7}), -21))
 }
 
 // 验证二叉搜索树(递归)
@@ -470,4 +469,81 @@ func min(a, b int) int {
 		return a
 	}
 	return b
+}
+
+// 112. 路径总和
+func hasPathSum(root *TreeNode, targetSum int) bool {
+	if root == nil {
+		return false
+	}
+
+	if root.Left == nil && root.Right == nil {
+		if targetSum == root.Val {
+			return true
+		}
+
+		return false
+	}
+
+	return hasPathSum(root.Left, targetSum-root.Val) || hasPathSum(root.Right, targetSum-root.Val)
+}
+
+// 112. 路径总和2,返回路径
+func pathSum(root *TreeNode, targetSum int) [][]int {
+	var allPath [][]int
+	var path []int
+	pathSumHelper(root, targetSum, path, &allPath)
+	return allPath
+}
+
+func pathSumHelper(root *TreeNode, targetSum int, path []int, allPath *[][]int) {
+	if root == nil {
+		return
+	}
+
+	if root.Left == nil && root.Right == nil {
+		if targetSum == root.Val {
+			path = append(path, root.Val)
+			// 这里将path拷贝到新的[]int,防止之后的将path覆盖
+			var path1 = make([]int, len(path))
+			copy(path1, path)
+			*allPath = append(*allPath, path1)
+			return
+		}
+		return
+	}
+
+	path = append(path, root.Val)
+	pathSumHelper(root.Left, targetSum-root.Val, path, allPath)
+	pathSumHelper(root.Right, targetSum-root.Val, path, allPath)
+}
+
+// 114.二叉树展开为链表
+func flatten(root *TreeNode) {
+	pre := make([]*TreeNode, 0)
+	pre = preOrder(root)
+	if len(pre) > 0 {
+		root = pre[0]
+		cur := root
+
+		for i := 1; i < len(pre); i++ {
+			cur.Left = nil
+			cur.Right = pre[i]
+			cur = cur.Right
+		}
+	}
+
+}
+
+func preOrder(root *TreeNode) []*TreeNode {
+	if root == nil {
+		return nil
+	}
+
+	pre := make([]*TreeNode, 0)
+	pre = append(pre, root)
+	pre = append(pre, preOrder(root.Left)...)
+	pre = append(pre, preOrder(root.Right)...)
+
+	return pre
 }
