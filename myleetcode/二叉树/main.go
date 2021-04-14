@@ -280,11 +280,7 @@ func buildTree(preorder []int, inorder []int) *TreeNode {
 }
 
 func buildTreeHelper(preorder []int, preStart, preEnd int, inorder []int, inStart, inEnd int) *TreeNode {
-	if preStart > preEnd {
-		return nil
-	}
-
-	if inStart > inEnd {
+	if preStart > preEnd || inStart > inEnd {
 		return nil
 	}
 
@@ -316,21 +312,21 @@ func buildTree1(inorder []int, postorder []int) *TreeNode {
 	return buildTreeHelper1(inorder, 0, len(inorder)-1, postorder, 0, len(postorder)-1)
 }
 
-func buildTreeHelper1(inorder []int, s1 int, e1 int, postorder []int, s2 int, e2 int) *TreeNode {
-	if s1 > e1 || s2 > e2 {
+func buildTreeHelper1(inorder []int, inStart int, inEnd int, postorder []int, postStart int, postEnd int) *TreeNode {
+	if inStart > inEnd || postStart > postEnd {
 		return nil
 	}
 
-	rootVal := postorder[e2]
+	rootVal := postorder[postEnd]
 	var pos int
 
-	for i := s1; i <= e1; i++ {
+	for i := inStart; i <= inEnd; i++ {
 		if inorder[i] == rootVal {
 			pos = i
 		}
 	}
 
-	l := pos - s1
+	l := pos - inStart
 
 	root := &TreeNode{
 		Val:   rootVal,
@@ -338,8 +334,8 @@ func buildTreeHelper1(inorder []int, s1 int, e1 int, postorder []int, s2 int, e2
 		Right: nil,
 	}
 
-	root.Left = buildTreeHelper1(inorder, s1, pos-1, postorder, s2, s2+l-1)
-	root.Right = buildTreeHelper1(inorder, pos+1, e1, postorder, s2+l, e2-1)
+	root.Left = buildTreeHelper1(inorder, inStart, pos-1, postorder, postStart, postStart+l-1)
+	root.Right = buildTreeHelper1(inorder, pos+1, inEnd, postorder, postStart+l, postEnd-1)
 
 	return root
 }
