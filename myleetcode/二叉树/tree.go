@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"math"
 )
 
 func main() {
-	fmt.Println(pathSum(Ints2TreeNode([]int{-6, NULL, -3, -6, 0, -6, -5, 4, NULL, NULL, NULL, 1, 7}), -21))
+	recoverTree(Ints2TreeNode([]int{3, 1, 4, NULL, NULL, 2}))
 }
 
 // 验证二叉搜索树(递归)
@@ -546,4 +545,120 @@ func preOrder(root *TreeNode) []*TreeNode {
 	pre = append(pre, preOrder(root.Right)...)
 
 	return pre
+}
+
+// 99. 恢复二叉搜索树 先中序遍历，找到可能乱序的节点，再交互
+func recoverTree(root *TreeNode) {
+	res := inOrder(root)
+	if len(res) <= 1 {
+		return
+	}
+	var x, y *TreeNode
+	for i := 1; i < len(res); i++ {
+		if res[i].Val < res[i-1].Val {
+			y = res[i]
+			if x == nil {
+				x = res[i-1]
+			}
+		}
+
+	}
+
+	if x != nil && y != nil {
+		x.Val, y.Val = y.Val, x.Val
+	}
+}
+
+func inOrder(root *TreeNode) []*TreeNode {
+	if root == nil {
+		return nil
+	}
+
+	res := make([]*TreeNode, 0)
+	res = append(res, inOrder(root.Left)...)
+	res = append(res, root)
+	res = append(res, inOrder(root.Right)...)
+
+	return res
+}
+
+type Node struct {
+	Val   int
+	Left  *Node
+	Right *Node
+	Next  *Node
+}
+
+// 116. 填充每个节点的下一个右侧节点指针
+func connect(root *Node) *Node {
+	if root == nil {
+		return root
+	}
+
+	queue := []*Node{root}
+	index := 0
+	for index < len(queue) {
+		temp := queue[index]
+		index++
+		if temp.Left != nil {
+			queue = append(queue, temp.Left)
+		}
+		if temp.Right != nil {
+			queue = append(queue, temp.Right)
+		}
+	}
+
+	for i := 0; i < len(queue); i++ {
+		if is2pow(i + 2) {
+			queue[i].Next = nil
+		} else {
+			if i+1 < len(queue) {
+				queue[i].Next = queue[i+1]
+			}
+		}
+	}
+
+	return root
+}
+
+func is2pow(n int) bool {
+	base := 2
+	for {
+		if base == n {
+			return true
+		} else if base > n {
+			return false
+		}
+		base = base * 2
+	}
+}
+
+// 117. 填充每个节点的下一个右侧节点指针 II(同样适用于106)
+func connect2(root *Node) *Node {
+	if root == nil {
+		return root
+	}
+
+	queue := []*Node{root}
+
+	for len(queue) > 0 {
+		oneLayer := queue
+		queue = nil
+
+		for i, node := range oneLayer {
+			if i < len(oneLayer)-1 {
+				node.Next = oneLayer[i+1]
+			}
+
+			if node.Left != nil {
+				queue = append(queue, node.Left)
+			}
+
+			if node.Right != nil {
+				queue = append(queue, node.Right)
+			}
+		}
+	}
+
+	return root
 }
