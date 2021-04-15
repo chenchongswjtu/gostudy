@@ -4,15 +4,15 @@ import (
 	"fmt"
 )
 
-// listNode 是链接节点
+// ListNode 是链接节点
 // 这个不能复制到*_test.go文件中。会导致Travis失败
-type listNode struct {
+type ListNode struct {
 	Val  int
-	Next *listNode
+	Next *ListNode
 }
 
 // List2Ints convert List to []int
-func List2Ints(head *listNode) []int {
+func List2Ints(head *ListNode) []int {
 	// 链条深度限制，链条深度超出此限制，会 panic
 	limit := 100
 
@@ -34,22 +34,22 @@ func List2Ints(head *listNode) []int {
 }
 
 // Ints2List convert []int to List
-func Ints2List(nums []int) *listNode {
+func Ints2List(nums []int) *ListNode {
 	if len(nums) == 0 {
 		return nil
 	}
 
-	l := &listNode{}
+	l := &ListNode{}
 	t := l
 	for _, v := range nums {
-		t.Next = &listNode{Val: v}
+		t.Next = &ListNode{Val: v}
 		t = t.Next
 	}
 	return l.Next
 }
 
 // GetNodeWith returns the first node with val
-func (l *listNode) GetNodeWith(val int) *listNode {
+func (l *ListNode) GetNodeWith(val int) *ListNode {
 	res := l
 	for res != nil {
 		if res.Val == val {
@@ -63,7 +63,7 @@ func (l *listNode) GetNodeWith(val int) *listNode {
 // Ints2ListWithCycle returns a list whose tail point to pos-indexed node
 // head's index is 0
 // if pos = -1, no cycle
-func Ints2ListWithCycle(nums []int, pos int) *listNode {
+func Ints2ListWithCycle(nums []int, pos int) *ListNode {
 	head := Ints2List(nums)
 	if pos == -1 {
 		return head
