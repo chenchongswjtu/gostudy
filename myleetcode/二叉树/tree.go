@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"math"
 )
 
 func main() {
-	recoverTree(Ints2TreeNode([]int{3, 1, 4, NULL, NULL, 2}))
+	fmt.Println(postorderTraversal(Ints2TreeNode([]int{1, NULL, 2, 3})))
 }
 
 // 验证二叉搜索树(递归)
@@ -661,4 +662,121 @@ func connect2(root *Node) *Node {
 	}
 
 	return root
+}
+
+//////////////////////////////////////////////////////////////////////////
+// 129. 求根节点到叶节点数字之和
+func sumNumbers(root *TreeNode) int {
+	allPaths := make([][]int, 0)
+	path := make([]int, 0)
+	findAllPaths(root, path, &allPaths)
+	fmt.Println(allPaths)
+	sum := 0
+	for _, p := range allPaths {
+		sum += pathSum1(p)
+	}
+	return sum
+}
+
+func findAllPaths(root *TreeNode, path []int, allPaths *[][]int) {
+	if root == nil {
+		return
+	}
+
+	if root.Left == nil && root.Right == nil {
+		path = append(path, root.Val)
+		*allPaths = append(*allPaths, path)
+		return
+	}
+
+	path = append(path, root.Val)
+	if root.Left != nil {
+		//path1 := make([]int, len(path))
+		//copy(path1, path)
+		findAllPaths(root.Left, path, allPaths)
+	}
+
+	if root.Right != nil {
+		//path1 := make([]int, len(path))
+		//copy(path1, path)
+		findAllPaths(root.Right, path, allPaths)
+	}
+}
+
+func pathSum1(path []int) int {
+	sum := 0
+	for _, v := range path {
+		sum = sum*10 + v
+	}
+
+	return sum
+}
+
+////////////////////////////////////////////////////////////////////
+//144. 二叉树的前序遍历(非递归)
+func preorderTraversal(root *TreeNode) []int {
+	pre := make([]int, 0)
+	var stack []*TreeNode
+	node := root
+	for node != nil || len(stack) > 0 {
+		for node != nil {
+			pre = append(pre, node.Val)
+			stack = append(stack, node)
+			node = node.Left
+		}
+
+		node = stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+
+		node = node.Right
+	}
+
+	return pre
+}
+
+// 二叉树的中序遍历(非递归)
+func inorderTraversal2(root *TreeNode) []int {
+	var in []int
+	var stack []*TreeNode
+	node := root
+	for node != nil || len(stack) > 0 {
+		for node != nil {
+			stack = append(stack, node)
+			node = node.Left
+		}
+
+		node = stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+
+		in = append(in, node.Val)
+
+		node = node.Right
+	}
+
+	return in
+}
+
+// 二叉树的后序遍历(非递归)（较难）
+func postorderTraversal(root *TreeNode) (res []int) {
+	var stack []*TreeNode
+	var prev *TreeNode
+	for root != nil || len(stack) > 0 {
+		for root != nil {
+			stack = append(stack, root)
+			root = root.Left
+		}
+
+		root = stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+
+		if root.Right == nil || root.Right == prev {
+			res = append(res, root.Val)
+			prev = root
+			root = nil
+		} else {
+			stack = append(stack, root)
+			root = root.Right
+		}
+	}
+	return
 }
