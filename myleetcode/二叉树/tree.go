@@ -3,10 +3,11 @@ package main
 import (
 	"fmt"
 	"math"
+	"strconv"
 )
 
 func main() {
-	fmt.Println(postorderTraversal(Ints2TreeNode([]int{1, NULL, 2, 3})))
+	fmt.Println(binaryTreePaths(Ints2TreeNode([]int{1, 2, 3})))
 }
 
 // 验证二叉搜索树(递归)
@@ -807,4 +808,119 @@ func rightSideView(root *TreeNode) []int {
 	}
 
 	return res
+}
+
+// 222. 完全二叉树的节点个数
+func countNodes(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+
+	return countNodes(root.Left) + countNodes(root.Right) + 1
+
+}
+
+// 226. 翻转二叉树
+func invertTree(root *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+
+	left := root.Left
+	right := root.Right
+
+	root.Left = invertTree(right)
+	root.Right = invertTree(left)
+
+	return root
+}
+
+func kthSmallest(root *TreeNode, k int) int {
+	var res []int
+	kthSmallestHelper(root, &res)
+	if k <= len(res) {
+		return res[k-1]
+	}
+	return -1
+}
+
+func kthSmallestHelper(root *TreeNode, res *[]int) {
+	if root == nil {
+		return
+	}
+
+	kthSmallestHelper(root.Left, res)
+	*res = append(*res, root.Val)
+	kthSmallestHelper(root.Right, res)
+}
+
+// 235. 二叉搜索树的最近公共祖先
+func lowestCommonAncestor(root, p, q *TreeNode) (ancestor *TreeNode) {
+	ancestor = root
+	for {
+		if p.Val < ancestor.Val && q.Val < ancestor.Val {
+			ancestor = ancestor.Left
+		} else if p.Val > ancestor.Val && q.Val > ancestor.Val {
+			ancestor = ancestor.Right
+		} else {
+			return
+		}
+	}
+}
+
+/////////////////////////////////////////////////////////////////
+// 236. 二叉树的最近公共祖先
+func lowestCommonAncestor1(root, p, q *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+
+	if root.Val == p.Val || root.Val == q.Val {
+		return root
+	}
+
+	left := lowestCommonAncestor1(root.Left, p, q)
+	right := lowestCommonAncestor1(root.Right, p, q)
+
+	if left != nil && right != nil {
+		return root
+	}
+
+	if left == nil {
+		return right
+	}
+
+	return left
+}
+
+/////////////////////////////////////////////////////
+// 257. 二叉树的所有路径
+func binaryTreePaths(root *TreeNode) []string {
+	if root == nil {
+		return []string{}
+	}
+	var paths []string
+	binaryTreePathsHelper(root, "", &paths)
+	return paths
+}
+
+func binaryTreePathsHelper(root *TreeNode, path string, paths *[]string) {
+	if len(path) == 0 {
+		path = path + strconv.Itoa(root.Val)
+	} else {
+		path = path + "->" + strconv.Itoa(root.Val)
+	}
+
+	if root.Left == nil && root.Right == nil {
+		*paths = append(*paths, path)
+		return
+	}
+
+	if root.Left != nil {
+		binaryTreePathsHelper(root.Left, path, paths)
+	}
+
+	if root.Right != nil {
+		binaryTreePathsHelper(root.Right, path, paths)
+	}
 }
