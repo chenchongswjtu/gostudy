@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(sumOfLeftLeaves(Ints2TreeNode([]int{1})))
+	fmt.Println(pathSum3(Ints2TreeNode([]int{10, 5, -3, 3, 2, NULL, 11, 3, -2, NULL, 1}), 8))
 }
 
 // 验证二叉搜索树(递归)
@@ -983,4 +983,37 @@ func sumOfLeftLeavesHelper(root *TreeNode, isLeft bool) int {
 	}
 
 	return sumOfLeftLeavesHelper(root.Left, true) + sumOfLeftLeavesHelper(root.Right, false)
+}
+
+/////////////////////////////////////////////
+// 437. 路径总和 III
+func pathSum3(root *TreeNode, targetSum int) int {
+	if root == nil {
+		return 0
+	}
+
+	sum := 0
+	pathSum3Helper(root, []int{targetSum, targetSum - root.Val}, &sum)
+
+	return sum
+}
+
+func pathSum3Helper(root *TreeNode, target []int, sum *int) {
+	for _, v := range target {
+		if root.Val == v {
+			*sum = *sum + 1
+		}
+	}
+
+	if root.Left != nil {
+		for _, v := range target {
+			pathSum3Helper(root.Left, []int{v, v - root.Val}, sum)
+		}
+	}
+
+	if root.Right != nil {
+		for _, v := range target {
+			pathSum3Helper(root.Right, []int{v, v - root.Val}, sum)
+		}
+	}
 }
