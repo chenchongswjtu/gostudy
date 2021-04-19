@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(binaryTreePaths(Ints2TreeNode([]int{1, 2, 3})))
+	fmt.Println(rob(Ints2TreeNode([]int{1, 2, 3})))
 }
 
 // 验证二叉搜索树(递归)
@@ -923,4 +923,40 @@ func binaryTreePathsHelper(root *TreeNode, path string, paths *[]string) {
 	if root.Right != nil {
 		binaryTreePathsHelper(root.Right, path, paths)
 	}
+}
+
+///////////////////////////////////////////////
+// 337. 打家劫舍 III
+var memo = make(map[*TreeNode]int)
+
+func rob(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+
+	if v, ok := memo[root]; ok {
+		return v
+	}
+
+	left := 0
+	right := 0
+	if root.Left != nil {
+		left = rob(root.Left.Left) + rob(root.Left.Right)
+	} else {
+		left = 0
+	}
+
+	if root.Right != nil {
+		right = rob(root.Right.Left) + rob(root.Right.Right)
+	} else {
+		right = 0
+	}
+
+	do := root.Val + left + right
+	notDo := rob(root.Left) + rob(root.Right)
+	res := max(do, notDo)
+
+	memo[root] = res
+
+	return res
 }
