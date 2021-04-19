@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(rob(Ints2TreeNode([]int{1, 2, 3})))
+	fmt.Println(sumOfLeftLeaves(Ints2TreeNode([]int{1})))
 }
 
 // 验证二叉搜索树(递归)
@@ -959,4 +959,28 @@ func rob(root *TreeNode) int {
 	memo[root] = res
 
 	return res
+}
+
+func sumOfLeftLeaves(root *TreeNode) int {
+	return sumOfLeftLeavesHelper(root, false)
+}
+
+func sumOfLeftLeavesHelper(root *TreeNode, isLeft bool) int {
+	if root == nil {
+		return 0
+	}
+
+	if root.Left == nil && root.Right == nil && isLeft {
+		return root.Val
+	}
+
+	if root.Left != nil && root.Right == nil {
+		return sumOfLeftLeavesHelper(root.Left, true)
+	}
+
+	if root.Left == nil && root.Right != nil {
+		return sumOfLeftLeavesHelper(root.Right, false)
+	}
+
+	return sumOfLeftLeavesHelper(root.Left, true) + sumOfLeftLeavesHelper(root.Right, false)
 }
