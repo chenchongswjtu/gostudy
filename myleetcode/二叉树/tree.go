@@ -769,7 +769,7 @@ func postorderTraversal(root *TreeNode) (res []int) {
 		root = stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
 
-		if root.Right == nil || root.Right == prev {
+		if root.Right == nil || root.Right == prev { // 判断操作
 			res = append(res, root.Val)
 			prev = root
 			root = nil
@@ -779,4 +779,32 @@ func postorderTraversal(root *TreeNode) (res []int) {
 		}
 	}
 	return
+}
+
+// 199. 二叉树的右视图
+func rightSideView(root *TreeNode) []int {
+	if root == nil {
+		return nil
+	}
+
+	var queue = []*TreeNode{root}
+	var res []int
+
+	for len(queue) > 0 {
+		one := queue
+		queue = nil
+		res = append(res, one[len(one)-1].Val)
+
+		for _, v := range one {
+			if v.Left != nil {
+				queue = append(queue, v.Left)
+			}
+
+			if v.Right != nil {
+				queue = append(queue, v.Right)
+			}
+		}
+	}
+
+	return res
 }
