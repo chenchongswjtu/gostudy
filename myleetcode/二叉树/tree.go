@@ -993,27 +993,24 @@ func pathSum3(root *TreeNode, targetSum int) int {
 	}
 
 	sum := 0
-	pathSum3Helper(root, []int{targetSum, targetSum - root.Val}, &sum)
+	sum += pathSumStartWithRoot(root, targetSum) + pathSum3(root.Left, targetSum) + pathSum3(root.Right, targetSum)
 
 	return sum
 }
 
-func pathSum3Helper(root *TreeNode, target []int, sum *int) {
-	for _, v := range target {
-		if root.Val == v {
-			*sum = *sum + 1
-		}
+func pathSumStartWithRoot(root *TreeNode, sum int) int {
+	if root == nil {
+		return 0
 	}
 
-	if root.Left != nil {
-		for _, v := range target {
-			pathSum3Helper(root.Left, []int{v, v - root.Val}, sum)
-		}
+	var count int
+
+	if root.Val == sum {
+		count++
 	}
 
-	if root.Right != nil {
-		for _, v := range target {
-			pathSum3Helper(root.Right, []int{v, v - root.Val}, sum)
-		}
-	}
+	leftCount := pathSumStartWithRoot(root.Left, sum-root.Val)
+	rightCount := pathSumStartWithRoot(root.Right, sum-root.Val)
+	count += leftCount + rightCount
+	return count
 }
