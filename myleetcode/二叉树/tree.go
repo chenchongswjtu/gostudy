@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(pathSum3(Ints2TreeNode([]int{10, 5, -3, 3, 2, NULL, 11, 3, -2, NULL, 1}), 8))
+	fmt.Println(Tree2ints(deleteNode(Ints2TreeNode([]int{5, 3, 6, 2, 4, NULL, 7}), 3)))
 }
 
 // 验证二叉搜索树(递归)
@@ -961,6 +961,7 @@ func rob(root *TreeNode) int {
 	return res
 }
 
+// 左叶子和
 func sumOfLeftLeaves(root *TreeNode) int {
 	return sumOfLeftLeavesHelper(root, false)
 }
@@ -1013,4 +1014,49 @@ func pathSumStartWithRoot(root *TreeNode, sum int) int {
 	rightCount := pathSumStartWithRoot(root.Right, sum-root.Val)
 	count += leftCount + rightCount
 	return count
+}
+
+////////////////////////////////////////
+// 450. 删除二叉搜索树中的节点
+func deleteNode(root *TreeNode, key int) *TreeNode {
+	if root == nil {
+		return nil
+	}
+
+	if key > root.Val {
+		root.Right = deleteNode(root.Right, key)
+	} else if key < root.Val {
+		root.Left = deleteNode(root.Left, key)
+	} else {
+		if root.Left == nil && root.Right == nil {
+			root = nil
+		} else if root.Right != nil {
+			root.Val = successor(root)
+			root.Right = deleteNode(root.Right, root.Val)
+		} else {
+			root.Val = predecessor(root)
+			root.Left = deleteNode(root.Left, root.Val)
+		}
+	}
+	return root
+}
+
+// root的后驱
+func successor(root *TreeNode) int {
+	root = root.Right
+	for root.Left != nil {
+		root = root.Left
+	}
+
+	return root.Val
+}
+
+// root的前驱
+func predecessor(root *TreeNode) int {
+	root = root.Left
+	for root.Right != nil {
+		root = root.Right
+	}
+
+	return root.Val
 }
