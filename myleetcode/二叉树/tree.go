@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(Tree2ints(deleteNode(Ints2TreeNode([]int{5, 3, 6, 2, 4, NULL, 7}), 3)))
+	fmt.Println(getMinimumDifference(Ints2TreeNode([]int{1, NULL, 2})))
 }
 
 // 验证二叉搜索树(递归)
@@ -1059,4 +1059,88 @@ func predecessor(root *TreeNode) int {
 	}
 
 	return root.Val
+}
+
+func findBottomLeftValue(root *TreeNode) int {
+	queue := []*TreeNode{root}
+	res := 0
+	for len(queue) > 0 {
+		oneLayer := queue
+		queue = nil
+		res = oneLayer[0].Val
+		for _, node := range oneLayer {
+			if node.Left != nil {
+				queue = append(queue, node.Left)
+			}
+
+			if node.Right != nil {
+				queue = append(queue, node.Right)
+			}
+		}
+	}
+
+	return res
+}
+
+// 515. 在每个树行中找最大值
+func largestValues(root *TreeNode) []int {
+	if root == nil {
+		return nil
+	}
+	queue := []*TreeNode{root}
+	var res []int
+	for len(queue) > 0 {
+		oneLayer := queue
+		queue = nil
+		max := oneLayer[0].Val
+		for _, node := range oneLayer {
+			if node.Val > max {
+				max = node.Val
+			}
+
+			if node.Left != nil {
+				queue = append(queue, node.Left)
+			}
+
+			if node.Right != nil {
+				queue = append(queue, node.Right)
+			}
+		}
+
+		res = append(res, max)
+	}
+
+	return res
+}
+
+// 530. 二叉搜索树的最小绝对差
+func getMinimumDifference(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+
+	var res []int
+	dfs(root, &res)
+	if len(res) < 2 {
+		return 0
+	}
+
+	min := math.MaxInt64
+	for i := 1; i < len(res); i++ {
+		if res[i]-res[i-1] < min {
+			min = res[i] - res[i-1]
+		}
+	}
+
+	return min
+}
+
+func dfs(root *TreeNode, res *[]int) {
+	if root == nil {
+		return
+	}
+
+	dfs(root.Left, res)
+	*res = append(*res, root.Val)
+	dfs(root.Right, res)
 }
