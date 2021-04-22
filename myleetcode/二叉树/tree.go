@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(tree2str(Ints2TreeNode([]int{1, 2, 3, NULL, 4})))
+	fmt.Println(findDuplicateSubtrees(Ints2TreeNode([]int{1, 2, 3, 4, NULL, 2, 4, NULL, NULL, 4})))
 }
 
 // 验证二叉搜索树(递归)
@@ -1322,4 +1322,47 @@ func averageOfLevels(root *TreeNode) []float64 {
 	}
 
 	return res
+}
+
+func findTarget(root *TreeNode, k int) bool {
+	set := make(map[int]struct{})
+	return findTargetHelper(root, k, set)
+}
+
+func findTargetHelper(root *TreeNode, k int, set map[int]struct{}) bool {
+	if root == nil {
+		return false
+	}
+
+	if _, ok := set[k-root.Val]; ok {
+		return true
+	}
+
+	set[root.Val] = struct{}{}
+
+	return findTargetHelper(root.Left, k, set) || findTargetHelper(root.Right, k, set)
+}
+
+func findDuplicateSubtrees(root *TreeNode) []*TreeNode {
+	var res []*TreeNode
+	var count = make(map[string]int)
+	findDuplicateSubtreesHelper(root, count, &res)
+	return res
+}
+
+func findDuplicateSubtreesHelper(node *TreeNode, count map[string]int, res *[]*TreeNode) string {
+	if node == nil {
+		return "#"
+	}
+
+	s := strconv.Itoa(node.Val) + "," + findDuplicateSubtreesHelper(node.Left, count, res) + "," + findDuplicateSubtreesHelper(node.Right, count, res)
+
+	count[s]++
+
+	if count[s] == 2 {
+		*res = append(*res, node)
+	}
+
+	return s
+
 }
