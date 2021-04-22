@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(getMinimumDifference(Ints2TreeNode([]int{1, NULL, 2})))
+	fmt.Println(isSubtree(Ints2TreeNode([]int{3, 4, 5, 1, 2}), Ints2TreeNode([]int{4, 1, 2})))
 }
 
 // 验证二叉搜索树(递归)
@@ -1143,4 +1143,83 @@ func dfs(root *TreeNode, res *[]int) {
 	dfs(root.Left, res)
 	*res = append(*res, root.Val)
 	dfs(root.Right, res)
+}
+
+func convertBST(root *TreeNode) *TreeNode {
+	sum := 0
+	var dfs func(*TreeNode)
+	dfs = func(node *TreeNode) {
+		if node != nil {
+			dfs(node.Right)
+			sum += node.Val
+			node.Val = sum
+			dfs(node.Left)
+		}
+	}
+	dfs(root)
+	return root
+}
+
+// 543. 二叉树的直径
+func diameterOfBinaryTree(root *TreeNode) int {
+	w := 0
+	var dfs func(root *TreeNode) int
+	dfs = func(root *TreeNode) int {
+		if root == nil {
+			return 0
+		}
+
+		l := dfs(root.Left)
+		r := dfs(root.Right)
+
+		w = max(w, l+r)
+		return 1 + max(l, r)
+	}
+
+	dfs(root)
+
+	return w
+}
+
+func findTilt(root *TreeNode) int {
+	tilt := 0
+	var dfs func(root *TreeNode) int
+	dfs = func(root *TreeNode) int {
+		if root == nil {
+			return 0
+		}
+
+		l := dfs(root.Left)
+		r := dfs(root.Right)
+
+		tilt += int(math.Abs(float64(l - r)))
+		return l + r + root.Val
+	}
+
+	dfs(root)
+
+	return tilt
+}
+
+func isSubtree(s *TreeNode, t *TreeNode) bool {
+	if s == nil {
+		return false
+	}
+	return isSame(s, t) || isSubtree(s.Left, t) || isSubtree(s.Right, t)
+}
+
+func isSame(a, b *TreeNode) bool {
+	if a == nil && b == nil {
+		return true
+	}
+
+	if a == nil || b == nil {
+		return false
+	}
+
+	if a.Val != b.Val {
+		return false
+	}
+
+	return isSame(a.Left, b.Left) && isSame(a.Right, b.Right)
 }
