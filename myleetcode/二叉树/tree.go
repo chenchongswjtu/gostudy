@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(isSubtree(Ints2TreeNode([]int{3, 4, 5, 1, 2}), Ints2TreeNode([]int{4, 1, 2})))
+	fmt.Println(tree2str(Ints2TreeNode([]int{1, 2, 3, NULL, 4})))
 }
 
 // 验证二叉搜索树(递归)
@@ -1222,4 +1222,20 @@ func isSame(a, b *TreeNode) bool {
 	}
 
 	return isSame(a.Left, b.Left) && isSame(a.Right, b.Right)
+}
+
+func tree2str(t *TreeNode) string {
+	if t == nil {
+		return ""
+	}
+
+	if t.Left == nil && t.Right == nil {
+		return strconv.Itoa(t.Val)
+	}
+
+	if t.Right == nil {
+		return strconv.Itoa(t.Val) + "(" + tree2str(t.Left) + ")"
+	}
+
+	return strconv.Itoa(t.Val) + "(" + tree2str(t.Left) + ")(" + tree2str(t.Right) + ")"
 }
