@@ -1264,3 +1264,62 @@ func mergeTrees(root1 *TreeNode, root2 *TreeNode) *TreeNode {
 
 	return root
 }
+
+// 623. 在二叉树中增加一行
+func addOneRow(root *TreeNode, val int, depth int) *TreeNode {
+	if depth == 1 {
+		n := &TreeNode{Val: val}
+		n.Left = root
+		return n
+	}
+
+	insert(root, val, 1, depth)
+	return root
+}
+
+func insert(node *TreeNode, val int, n int, depth int) {
+	if node == nil {
+		return
+	}
+
+	if n == depth-1 {
+		l := node.Left
+		node.Left = &TreeNode{Val: val}
+		node.Left.Left = l
+
+		r := node.Right
+		node.Right = &TreeNode{Val: val}
+		node.Right.Right = r
+	} else {
+		insert(node.Left, val, n+1, depth)
+		insert(node.Right, val, n+1, depth)
+	}
+}
+
+func averageOfLevels(root *TreeNode) []float64 {
+	if root == nil {
+		return nil
+	}
+
+	res := make([]float64, 0)
+	q := []*TreeNode{root}
+	for len(q) > 0 {
+		o := q
+		q = nil
+		var sum float64
+		for _, t := range o {
+			if t.Left != nil {
+				q = append(q, t.Left)
+			}
+
+			if t.Right != nil {
+				q = append(q, t.Right)
+			}
+			sum += float64(t.Val)
+		}
+
+		res = append(res, sum/float64(len(o)))
+	}
+
+	return res
+}
