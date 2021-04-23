@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(printTree(Ints2TreeNode([]int{1, 2})))
+	fmt.Println(widthOfBinaryTree(Ints2TreeNode([]int{1, 3, 2, 5, 3, NULL, 9})))
 }
 
 // 验证二叉搜索树(递归)
@@ -1424,4 +1424,43 @@ func getHeight(root *TreeNode) int {
 	}
 
 	return 1 + max(getHeight(root.Left), getHeight(root.Right))
+}
+
+// 662. 二叉树最大宽度
+func widthOfBinaryTree(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+
+	type node struct {
+		n *TreeNode
+		i int
+	}
+
+	res := make([][]*node, 0)
+	q := []*node{{root, 0}}
+	for len(q) > 0 {
+		o := q
+		res = append(res, o)
+		q = nil
+		for _, t := range o {
+			if t.n.Left != nil {
+				q = append(q, &node{t.n.Left, 2 * t.i})
+			}
+
+			if t.n.Right != nil {
+				q = append(q, &node{t.n.Right, 2*t.i + 1})
+			}
+		}
+	}
+
+	max := 0
+	for i := 0; i < len(res); i++ {
+		n := len(res[i])
+		if max < (res[i][n-1].i - res[i][0].i) {
+			max = res[i][n-1].i - res[i][0].i
+		}
+	}
+
+	return max + 1
 }
