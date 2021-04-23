@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(findDuplicateSubtrees(Ints2TreeNode([]int{1, 2, 3, 4, NULL, 2, 4, NULL, NULL, 4})))
+	fmt.Println(printTree(Ints2TreeNode([]int{1, 2})))
 }
 
 // 验证二叉搜索树(递归)
@@ -1324,6 +1324,7 @@ func averageOfLevels(root *TreeNode) []float64 {
 	return res
 }
 
+// 两数之和
 func findTarget(root *TreeNode, k int) bool {
 	set := make(map[int]struct{})
 	return findTargetHelper(root, k, set)
@@ -1343,6 +1344,7 @@ func findTargetHelper(root *TreeNode, k int, set map[int]struct{}) bool {
 	return findTargetHelper(root.Left, k, set) || findTargetHelper(root.Right, k, set)
 }
 
+// 查找重复的子树
 func findDuplicateSubtrees(root *TreeNode) []*TreeNode {
 	var res []*TreeNode
 	var count = make(map[string]int)
@@ -1364,5 +1366,62 @@ func findDuplicateSubtreesHelper(node *TreeNode, count map[string]int, res *[]*T
 	}
 
 	return s
+}
 
+// 654.最大二叉树
+func constructMaximumBinaryTree(nums []int) *TreeNode {
+	if len(nums) == 0 {
+		return nil
+	}
+	return constructMaximumBinaryTreeHelper(nums, 0, len(nums)-1)
+}
+
+func constructMaximumBinaryTreeHelper(nums []int, start, end int) *TreeNode {
+	if start > end {
+		return nil
+	}
+
+	max := nums[start]
+	maxIndex := start
+	for i := start; i <= end; i++ {
+		if nums[i] > max {
+			max = nums[i]
+			maxIndex = i
+		}
+	}
+
+	root := &TreeNode{Val: max}
+	root.Left = constructMaximumBinaryTreeHelper(nums, start, maxIndex-1)
+	root.Right = constructMaximumBinaryTreeHelper(nums, maxIndex+1, end)
+	return root
+}
+
+// 655. 输出二叉树
+func printTree(root *TreeNode) [][]string {
+	h := getHeight(root)
+	res := make([][]string, h)
+
+	for i := 0; i < h; i++ {
+		res[i] = make([]string, (1<<h)-1)
+	}
+	fill(res, root, 0, 0, len(res[0]))
+
+	return res
+}
+
+func fill(res [][]string, root *TreeNode, i int, l int, r int) {
+	if root == nil {
+		return
+	}
+	res[i][(l+r)/2] = strconv.Itoa(root.Val)
+	fill(res, root.Left, i+1, l, (l+r)/2)
+	fill(res, root.Right, i+1, (l+r+1)/2, r)
+}
+
+func getHeight(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+
+	return 1 + max(getHeight(root.Left), getHeight(root.Right))
 }
