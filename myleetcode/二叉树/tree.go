@@ -1464,3 +1464,40 @@ func widthOfBinaryTree(root *TreeNode) int {
 
 	return max + 1
 }
+
+// 669. 修剪二叉搜索树
+func trimBST(root *TreeNode, low int, high int) *TreeNode {
+	if root == nil {
+		return nil
+	}
+
+	if root.Val < low {
+		return trimBST(root.Right, low, high)
+	}
+
+	if root.Val == low {
+		root.Left = nil
+		root.Right = trimBST(root.Right, low, high)
+		return root
+	}
+
+	if root.Val > high {
+		return trimBST(root.Left, low, high)
+	}
+
+	if root.Val == high {
+		root.Right = nil
+		root.Left = trimBST(root.Left, low, high)
+		return root
+	}
+
+	if root.Left != nil {
+		root.Left = trimBST(root.Left, low, root.Val-1)
+	}
+
+	if root.Right != nil {
+		root.Right = trimBST(root.Right, root.Val+1, high)
+	}
+
+	return root
+}
