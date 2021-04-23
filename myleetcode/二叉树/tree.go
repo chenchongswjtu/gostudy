@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(widthOfBinaryTree(Ints2TreeNode([]int{1, 3, 2, 5, 3, NULL, 9})))
+	fmt.Println(findSecondMinimumValue(Ints2TreeNode([]int{2, 2, 2})))
 }
 
 // 验证二叉搜索树(递归)
@@ -1500,4 +1500,40 @@ func trimBST(root *TreeNode, low int, high int) *TreeNode {
 	}
 
 	return root
+}
+
+// 671. 二叉树中第二小的节点
+func findSecondMinimumValue(root *TreeNode) int {
+	if root == nil {
+		return -1
+	}
+
+	return findSecondMinimumValueHelp(root, root.Val)
+}
+
+func findSecondMinimumValueHelp(root *TreeNode, v int) int {
+	if root == nil {
+		return -1
+	}
+
+	if root.Val > v {
+		return root.Val
+	}
+
+	left := findSecondMinimumValueHelp(root.Left, v)
+	right := findSecondMinimumValueHelp(root.Right, v)
+
+	if left == -1 && right == -1 {
+		return -1
+	}
+
+	if left == -1 {
+		return right
+	}
+
+	if right == -1 {
+		return left
+	}
+
+	return min(left, right)
 }
