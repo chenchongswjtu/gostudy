@@ -1537,3 +1537,39 @@ func findSecondMinimumValueHelp(root *TreeNode, v int) int {
 
 	return min(left, right)
 }
+
+// 684. 冗余连接(并查集)
+func findRedundantConnection(edges [][]int) []int {
+	parent := make([]int, len(edges)+1)
+	// 默认为自己连通自己
+	for i := range parent {
+		parent[i] = i
+	}
+
+	var find func(int) int
+	find = func(x int) int {
+		if parent[x] != x {
+			parent[x] = find(parent[x])
+		}
+		return parent[x]
+	}
+
+	union := func(from, to int) bool {
+		x, y := find(from), find(to)
+		// 已经连通，返回false
+		if x == y {
+			return false
+		}
+		// 将x,y连通
+		parent[x] = y
+		return true
+	}
+
+	for _, e := range edges {
+		if !union(e[0], e[1]) {
+			return e
+		}
+	}
+
+	return nil
+}
