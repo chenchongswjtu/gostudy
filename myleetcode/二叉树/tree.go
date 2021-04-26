@@ -1573,3 +1573,32 @@ func findRedundantConnection(edges [][]int) []int {
 
 	return nil
 }
+
+// 687. 最长同值路径
+func longestUnivaluePath(root *TreeNode) int {
+	var ans int
+	longestUnivaluePathHelper(root, &ans)
+	return ans
+}
+
+func longestUnivaluePathHelper(node *TreeNode, ans *int) int {
+	if node == nil {
+		return 0
+	}
+
+	l := longestUnivaluePathHelper(node.Left, ans)
+	r := longestUnivaluePathHelper(node.Right, ans)
+
+	l1, r1 := 0, 0
+	if node.Left != nil && node.Left.Val == node.Val {
+		l1 += l + 1
+	}
+
+	if node.Right != nil && node.Right.Val == node.Val {
+		r1 += r + 1
+	}
+
+	*ans = max(*ans, l1+r1)
+
+	return max(l1, r1)
+}
