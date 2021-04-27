@@ -9,6 +9,20 @@ type Node struct {
 	Children []*Node
 }
 
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
 // 429.多叉树的层序遍历
 func levelOrder(root *Node) [][]int {
 	res := make([][]int, 0)
@@ -32,4 +46,18 @@ func levelOrder(root *Node) [][]int {
 		res = append(res, v)
 	}
 	return res
+}
+
+// 559. N 叉树的最大深度
+func maxDepth(root *Node) int {
+	if root == nil {
+		return 0
+	}
+
+	maxD := 0
+	for _, c := range root.Children {
+		maxD = max(maxD, maxDepth(c))
+	}
+
+	return maxD + 1
 }
