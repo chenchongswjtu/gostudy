@@ -1638,3 +1638,31 @@ func insertIntoBST(root *TreeNode, val int) *TreeNode {
 
 	return root
 }
+
+// 783. 二叉搜索树节点最小距离
+func minDiffInBST(root *TreeNode) int {
+	var res []int
+	var inOrder func(root *TreeNode)
+	inOrder = func(root *TreeNode) {
+		if root == nil {
+			return
+		}
+
+		inOrder(root.Left)
+		res = append(res, root.Val)
+		inOrder(root.Right)
+	}
+
+	inOrder(root)
+
+	if len(res) < 2 {
+		return 0
+	}
+
+	ans := res[1] - res[0]
+	for i := 2; i < len(res); i++ {
+		ans = min(ans, res[i]-res[i-1])
+	}
+
+	return ans
+}
