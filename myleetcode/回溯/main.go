@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	fmt.Println(generateParenthesis1(3))
+	fmt.Println(combinationSum([]int{2, 3, 5}, 8))
 }
 
 // 17. 电话号码的字母组合
@@ -109,5 +109,36 @@ func backtrack(cur string, l int, r int, n int, ans *[]string) {
 		cur += ")"
 		backtrack(cur, l, r+1, n, ans)
 		cur = t
+	}
+}
+
+// 39. 组合总和
+func combinationSum(candidates []int, target int) [][]int {
+	var ans [][]int
+	var res []int
+	combinationSumHelper(candidates, target, res, 0, -1, &ans)
+	return ans
+}
+
+func combinationSumHelper(candidates []int, target int, res []int, sum int, last int, ans *[][]int) {
+	if sum == target {
+		t := make([]int, len(res))
+		copy(t, res)
+		*ans = append(*ans, t)
+		return
+	}
+
+	if sum > target {
+		return
+	}
+
+	for i, v := range candidates {
+		if i >= last { // 去重
+			t := make([]int, len(res))
+			copy(t, res)
+			res = append(res, v)
+			combinationSumHelper(candidates, target, res, sum+v, i, ans)
+			res = t
+		}
 	}
 }
