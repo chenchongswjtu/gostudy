@@ -79,3 +79,21 @@ func preorderHelper(root *Node, ans *[]int) {
 		preorderHelper(c, ans)
 	}
 }
+
+// 590. N 叉树的后序遍历
+func postorder(root *Node) []int {
+	var ans []int
+	postorderHelper(root, &ans)
+	return ans
+}
+
+func postorderHelper(root *Node, ans *[]int) {
+	if root == nil {
+		return
+	}
+
+	for _, c := range root.Children {
+		postorderHelper(c, ans)
+	}
+	*ans = append(*ans, root.Val)
+}
