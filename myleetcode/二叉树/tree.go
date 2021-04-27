@@ -1666,3 +1666,35 @@ func minDiffInBST(root *TreeNode) int {
 
 	return ans
 }
+
+// 814. 二叉树剪枝
+func pruneTree(root *TreeNode) *TreeNode {
+	if !hasOne(root) {
+		return nil
+	}
+
+	if !hasOne(root.Left) {
+		root.Left = nil
+	} else {
+		root.Left = pruneTree(root.Left)
+	}
+
+	if !hasOne(root.Right) {
+		root.Right = nil
+	} else {
+		root.Right = pruneTree(root.Right)
+	}
+	return root
+}
+
+func hasOne(root *TreeNode) bool {
+	if root == nil {
+		return false
+	}
+
+	if root.Val == 1 {
+		return true
+	}
+
+	return hasOne(root.Left) || hasOne(root.Right)
+}
