@@ -1698,3 +1698,36 @@ func hasOne(root *TreeNode) bool {
 
 	return hasOne(root.Left) || hasOne(root.Right)
 }
+
+// 889. 根据前序和后序遍历构造二叉树
+//输入：pre = [1,2,4,5,3,6,7], post = [4,5,2,6,7,3,1]
+//输出：[1,2,3,4,5,6,7]
+func constructFromPrePost(pre []int, post []int) *TreeNode {
+	n := len(pre)
+	if n == 0 {
+		return nil
+	}
+
+	root := &TreeNode{
+		Val:   pre[0],
+		Left:  nil,
+		Right: nil,
+	}
+
+	if n == 1 {
+		return root
+	}
+
+	length := 0
+	for i := 0; i < n; i++ {
+		if post[i] == pre[1] {
+			length = i
+			break
+		}
+	}
+
+	root.Left = constructFromPrePost(pre[1:1+length+1], post[:length+1])
+	root.Right = constructFromPrePost(pre[1+length+1:n], post[length+1:n-1])
+
+	return root
+}
