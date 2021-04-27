@@ -61,3 +61,21 @@ func maxDepth(root *Node) int {
 
 	return maxD + 1
 }
+
+// 589. N 叉树的前序遍历
+func preorder(root *Node) []int {
+	var ans []int
+	preorderHelper(root, &ans)
+	return ans
+}
+
+func preorderHelper(root *Node, ans *[]int) {
+	if root == nil {
+		return
+	}
+
+	*ans = append(*ans, root.Val)
+	for _, c := range root.Children {
+		preorderHelper(c, ans)
+	}
+}
