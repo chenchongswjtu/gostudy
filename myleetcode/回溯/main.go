@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	fmt.Println(permuteUnique2([]int{1, 1, 2}))
+	fmt.Println(combine(4, 2))
 }
 
 // 17. 电话号码的字母组合
@@ -263,4 +263,37 @@ func permuteUnique2(nums []int) (ans [][]int) {
 	}
 	backtrack(0)
 	return
+}
+
+// 77. 组合
+// 给定两个整数 n 和 k，返回 1 ... n 中所有可能的 k 个数的组合。
+func combine(n int, k int) [][]int {
+	var all [][]int
+	var one []int
+	combineHelper(n, k, one, &all)
+	return all
+}
+
+func combineHelper(n int, k int, one []int, all *[][]int) {
+	if len(one) == k {
+		t := make([]int, len(one))
+		copy(t, one)
+		*all = append(*all, one)
+		return
+	}
+
+	start := 0
+	if len(one) == 0 {
+		start = 1
+	} else {
+		start = one[len(one)-1] + 1
+	}
+
+	for i := start; i <= n; i++ {
+		t := make([]int, len(one))
+		copy(t, one)
+		one = append(one, i)
+		combineHelper(n, k, one, all)
+		one = t
+	}
 }
