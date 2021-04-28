@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	fmt.Println(combinationSum2([]int{10, 1, 2, 7, 6, 1, 5}, 8))
+	fmt.Println(permute([]int{1, 2, 3}))
 }
 
 // 17. 电话号码的字母组合
@@ -195,4 +195,35 @@ func toInt(nums []int) int {
 		sum = sum*10 + n
 	}
 	return sum
+}
+
+// 46. 全排列
+func permute(nums []int) [][]int {
+	all := make([][]int, 0)
+	one := make([]int, 0)
+	visited := make([]bool, len(nums))
+	permuteHelper(nums, visited, one, &all)
+	return all
+}
+
+func permuteHelper(nums []int, visited []bool, one []int, all *[][]int) {
+	if len(one) == len(nums) {
+		t := make([]int, len(one))
+		copy(t, one)
+		*all = append(*all, one)
+		return
+	}
+
+	for i := 0; i < len(nums); i++ {
+		if visited[i] {
+			continue
+		}
+		t := make([]int, len(one))
+		copy(t, one)
+		one = append(one, nums[i])
+		visited[i] = true
+		permuteHelper(nums, visited, one, all)
+		one = t
+		visited[i] = false
+	}
 }
