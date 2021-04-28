@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	fmt.Println(combine(4, 2))
+	fmt.Println(subsets([]int{9, 0, 3, 5, 7}))
 }
 
 // 17. 电话号码的字母组合
@@ -296,4 +296,24 @@ func combineHelper(n int, k int, one []int, all *[][]int) {
 		combineHelper(n, k, one, all)
 		one = t
 	}
+}
+
+// 78. 子集
+func subsets(nums []int) [][]int {
+	var all [][]int
+	var one []int
+	subsetsHelper(nums, one, &all, 0)
+	return all
+}
+
+func subsetsHelper(nums []int, one []int, all *[][]int, start int) {
+	if start == len(nums) {
+		t := make([]int, len(one))
+		copy(t, one)
+		*all = append(*all, one)
+		return
+	}
+
+	subsetsHelper(nums, one, all, start+1)
+	subsetsHelper(nums, append(one, nums[start]), all, start+1)
 }
