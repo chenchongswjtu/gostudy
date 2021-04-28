@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
 func main() {
-	fmt.Println(combinationSum([]int{2, 3, 5}, 8))
+	fmt.Println(combinationSum2([]int{10, 1, 2, 7, 6, 1, 5}, 8))
 }
 
 // 17. 电话号码的字母组合
@@ -114,13 +115,14 @@ func backtrack(cur string, l int, r int, n int, ans *[]string) {
 
 // 39. 组合总和
 func combinationSum(candidates []int, target int) [][]int {
+	// candidates 中没有重复的数，不用排序和去重
 	var ans [][]int
 	var res []int
-	combinationSumHelper(candidates, target, res, 0, -1, &ans)
+	combinationSumHelper(candidates, target, res, 0, 0, &ans)
 	return ans
 }
 
-func combinationSumHelper(candidates []int, target int, res []int, sum int, last int, ans *[][]int) {
+func combinationSumHelper(candidates []int, target int, res []int, sum int, start int, ans *[][]int) {
 	if sum == target {
 		t := make([]int, len(res))
 		copy(t, res)
@@ -132,13 +134,65 @@ func combinationSumHelper(candidates []int, target int, res []int, sum int, last
 		return
 	}
 
-	for i, v := range candidates {
-		if i >= last { // 去重
-			t := make([]int, len(res))
-			copy(t, res)
-			res = append(res, v)
-			combinationSumHelper(candidates, target, res, sum+v, i, ans)
-			res = t
-		}
+	for i := start; i < len(candidates); i++ {
+		t := make([]int, len(res))
+		copy(t, res)
+		res = append(res, candidates[i])
+		combinationSumHelper(candidates, target, res, sum+candidates[i], i, ans) // 一个数可以重复，还是i
+		res = t
 	}
+}
+
+// 40. 组合总和 II
+func combinationSum2(candidates []int, target int) [][]int {
+	// candidates 可能含有重复的数，先拍序
+	sort.Ints(candidates)
+	var ans [][]int
+	var res []int
+	combinationSum2Helper(candidates, target, res, 0, 0, &ans)
+	// ans = [[1 2 5] [1 7] [1 6 1] [2 6] [2 1 5] [7 1]]
+	return duplicate(ans)
+}
+
+func combinationSum2Helper(candidates []int, target int, res []int, sum int, start int, ans *[][]int) {
+	if sum == target {
+		t := make([]int, len(res))
+		copy(t, res)
+		*ans = append(*ans, t)
+		return
+	}
+
+	if sum > target {
+		return
+	}
+
+	for i := start; i < len(candidates); i++ {
+		t := make([]int, len(res))
+		copy(t, res)
+		res = append(res, candidates[i])
+		combinationSum2Helper(candidates, target, res, sum+candidates[i], i+1, ans) // 不可用重复i+1
+		res = t
+	}
+}
+
+func duplicate(ans [][]int) [][]int {
+	var m = make(map[int][]int)
+	for _, a := range ans {
+		k := toInt(a)
+		m[k] = a
+	}
+
+	var res = make([][]int, 0)
+	for _, v := range m {
+		res = append(res, v)
+	}
+	return res
+}
+
+func toInt(nums []int) int {
+	var sum int
+	for _, n := range nums {
+		sum = sum*10 + n
+	}
+	return sum
 }
