@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	fmt.Println(permute([]int{1, 2, 3}))
+	fmt.Println(permuteUnique2([]int{1, 1, 2}))
 }
 
 // 17. 电话号码的字母组合
@@ -226,4 +226,41 @@ func permuteHelper(nums []int, visited []bool, one []int, all *[][]int) {
 		one = t
 		visited[i] = false
 	}
+}
+
+// 47. 全排列 II
+func permuteUnique(nums []int) [][]int {
+	sort.Ints(nums)
+	all := make([][]int, 0)
+	one := make([]int, 0)
+	visited := make([]bool, len(nums))
+	permuteHelper(nums, visited, one, &all)
+	return duplicate(all)
+}
+
+// 47. 全排列 II
+func permuteUnique2(nums []int) (ans [][]int) {
+	sort.Ints(nums)
+	n := len(nums)
+	var perm []int
+	vis := make([]bool, n)
+	var backtrack func(int)
+	backtrack = func(idx int) {
+		if idx == n {
+			ans = append(ans, append([]int(nil), perm...))
+			return
+		}
+		for i, v := range nums {
+			if vis[i] || (i > 0 && v == nums[i-1] && !vis[i-1]) {
+				continue
+			}
+			perm = append(perm, v)
+			vis[i] = true
+			backtrack(idx + 1)
+			vis[i] = false
+			perm = perm[:len(perm)-1]
+		}
+	}
+	backtrack(0)
+	return
 }
