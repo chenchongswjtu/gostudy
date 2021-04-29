@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	fmt.Println(exist([][]byte{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}}, "SEE"))
+	fmt.Println(grayCode(2))
 }
 
 // 17. 电话号码的字母组合
@@ -440,4 +440,26 @@ func exist(board [][]byte, word string) bool {
 		}
 	}
 	return false
+}
+
+// 89. 格雷编码
+func grayCode(n int) []int {
+	if n == 0 {
+		return []int{0}
+	}
+
+	if n == 1 {
+		return []int{0, 1}
+	}
+
+	ans := []int{0, 1}
+	head := 2
+	for i := 2; i <= n; i++ {
+		for j := len(ans) - 1; j >= 0; j-- {
+			ans = append(ans, ans[j]+head)
+		}
+		head = head << 1
+	}
+
+	return ans
 }
