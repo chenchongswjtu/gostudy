@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(subsetsWithDup([]int{1, 2, 2}))
+	fmt.Println(restoreIpAddresses("010010"))
 }
 
 // 17. 电话号码的字母组合
@@ -491,4 +491,65 @@ func subsetsWithDup(nums []int) (ans [][]int) {
 	}
 	dfs(false, 0)
 	return
+}
+
+// 93. 复原 IP 地址
+func restoreIpAddresses(s string) []string {
+	if len(s) < 4 {
+		return nil
+	}
+	var all []string
+	var one string
+	restoreIpAddressesHelper(s, one, &all, 0)
+	return all
+}
+
+func restoreIpAddressesHelper(s string, one string, all *[]string, cur int) {
+	if cur == 4 {
+		if len(s) == 0 {
+			*all = append(*all, one)
+		}
+		return
+	}
+
+	if len(s) < 4-cur {
+		return
+	}
+
+	var n1, n2, n3 string
+	if len(s) >= 1 {
+		n1 = s[:1]
+	}
+
+	if len(s) >= 2 {
+		n2 = s[:2]
+		if n2[0] == '0' {
+			n2 = ""
+		}
+	}
+
+	if len(s) >= 3 {
+		n3 = s[:3]
+		if n3[0] == '0' {
+			n3 = ""
+		}
+	}
+
+	for i, n := range []string{n1, n2, n3} {
+		if len(n) == 0 {
+			continue
+		}
+
+		i1, _ := strconv.Atoi(n)
+		if 0 <= i1 && i1 < 256 {
+			t := one
+			if len(one) == 0 {
+				one = n
+			} else {
+				one = one + "." + n
+			}
+			restoreIpAddressesHelper(s[i+1:], one, all, cur+1)
+			one = t
+		}
+	}
 }
