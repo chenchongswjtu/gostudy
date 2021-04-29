@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	fmt.Println(grayCode(2))
+	fmt.Println(grayCode(3))
 }
 
 // 17. 电话号码的字母组合
@@ -448,13 +448,9 @@ func grayCode(n int) []int {
 		return []int{0}
 	}
 
-	if n == 1 {
-		return []int{0, 1}
-	}
-
-	ans := []int{0, 1}
-	head := 2
-	for i := 2; i <= n; i++ {
+	ans := []int{0}
+	head := 1
+	for i := 1; i <= n; i++ {
 		for j := len(ans) - 1; j >= 0; j-- {
 			ans = append(ans, ans[j]+head)
 		}
