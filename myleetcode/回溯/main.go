@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	fmt.Println(subsets([]int{9, 0, 3, 5, 7}))
+	fmt.Println(exist([][]byte{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}}, "SEE"))
 }
 
 // 17. 电话号码的字母组合
@@ -316,4 +316,128 @@ func subsetsHelper(nums []int, one []int, all *[][]int, start int) {
 
 	subsetsHelper(nums, one, all, start+1)
 	subsetsHelper(nums, append(one, nums[start]), all, start+1)
+}
+
+// 79. 单词搜索
+// fmt.Println(exist([][]byte{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}}, "ABCCED"))
+//func exist(board [][]byte, word string) bool {
+//	m := len(board)
+//	if m == 0 {
+//		return false
+//	}
+//
+//	n := len(board[0])
+//	if n == 0 {
+//		return false
+//	}
+//
+//	visited := make([][]bool, m)
+//	for i := 0; i < m; i++ {
+//		visited[i] = make([]bool, n)
+//	}
+//
+//	return existHelper(board, word, visited, 0, 0, m, n, 0)
+//}
+//
+//func existHelper(board [][]byte, word string, visited [][]bool, x, y, m, n, pos int) bool {
+//	if pos == len(word) {
+//		return true
+//	}
+//
+//	for i := x; i < m; i++ {
+//		for j := y; j < n; j++ {
+//			if !visited[i][j] && board[i][j] == word[pos] {
+//				ans := false
+//				visited[i][j] = true
+//
+//				if i == 0 && j == 0 {
+//					ans = ans || existHelper(board, word, visited, i+1, j, m, n, pos+1) ||
+//						existHelper(board, word, visited, i, j+1, m, n, pos+1)
+//				} else if i == 0 && j == n-1 {
+//					ans = ans || existHelper(board, word, visited, i+1, j, m, n, pos+1) ||
+//						existHelper(board, word, visited, i, j-1, m, n, pos+1)
+//				} else if i == m-1 && j == 0 {
+//					ans = ans || existHelper(board, word, visited, i, j+1, m, n, pos+1) ||
+//						existHelper(board, word, visited, i-1, j, m, n, pos+1)
+//				} else if i == m-1 && j == n-1 {
+//					ans = ans || existHelper(board, word, visited, i, j-1, m, n, pos+1) ||
+//						existHelper(board, word, visited, i-1, j, m, n, pos+1)
+//				} else if i == 0 {
+//					ans = ans || existHelper(board, word, visited, i+1, j, m, n, pos+1) ||
+//						existHelper(board, word, visited, i, j-1, m, n, pos+1) ||
+//						existHelper(board, word, visited, i, j+1, m, n, pos+1)
+//				} else if i == m-1 {
+//					ans = ans || existHelper(board, word, visited, i-1, j, m, n, pos+1) ||
+//						existHelper(board, word, visited, i, j-1, m, n, pos+1) ||
+//						existHelper(board, word, visited, i, j+1, m, n, pos+1)
+//				} else if j == 0 {
+//					ans = ans || existHelper(board, word, visited, i, j+1, m, n, pos+1) ||
+//						existHelper(board, word, visited, i-1, j, m, n, pos+1) ||
+//						existHelper(board, word, visited, i+1, j, m, n, pos+1)
+//				} else if j == n-1 {
+//					ans = ans || existHelper(board, word, visited, i, j-1, m, n, pos+1) ||
+//						existHelper(board, word, visited, i-1, j, m, n, pos+1) ||
+//						existHelper(board, word, visited, i+1, j, m, n, pos+1)
+//				} else {
+//					ans = ans || existHelper(board, word, visited, i, j-1, m, n, pos+1) ||
+//						existHelper(board, word, visited, i, j+1, m, n, pos+1) ||
+//						existHelper(board, word, visited, i-1, j, m, n, pos+1) ||
+//						existHelper(board, word, visited, i+1, j, m, n, pos+1)
+//				}
+//
+//				if ans {
+//					return true
+//				}
+//
+//				visited[i][j] = false
+//			}
+//		}
+//	}
+//
+//	return false
+//}
+
+type pair struct{ x, y int }
+
+var directions = []pair{{-1, 0}, {1, 0}, {0, -1}, {0, 1}} // 上下左右
+// 79. 单词搜索
+func exist(board [][]byte, word string) bool {
+	h, w := len(board), len(board[0])
+
+	vis := make([][]bool, h)
+	for i := range vis {
+		vis[i] = make([]bool, w)
+	}
+
+	var check func(i, j, k int) bool
+	check = func(i, j, k int) bool {
+		if board[i][j] != word[k] { // 剪枝：当前字符不匹配
+			return false
+		}
+		if k == len(word)-1 { // 单词存在于网格中
+			return true
+		}
+		vis[i][j] = true
+		defer func() {
+			vis[i][j] = false
+		}() // 回溯时还原已访问的单元格
+
+		for _, dir := range directions {
+			if newI, newJ := i+dir.x, j+dir.y; 0 <= newI && newI < h && 0 <= newJ && newJ < w && !vis[newI][newJ] {
+				if check(newI, newJ, k+1) {
+					return true
+				}
+			}
+		}
+		return false
+	}
+
+	for i, row := range board {
+		for j := range row {
+			if check(i, j, 0) {
+				return true
+			}
+		}
+	}
+	return false
 }
