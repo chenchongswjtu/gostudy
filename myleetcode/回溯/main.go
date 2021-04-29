@@ -3,10 +3,11 @@ package main
 import (
 	"fmt"
 	"sort"
+	"strconv"
 )
 
 func main() {
-	fmt.Println(grayCode(3))
+	fmt.Println(subsetsWithDup([]int{1, 2, 2}))
 }
 
 // 17. 电话号码的字母组合
@@ -176,9 +177,9 @@ func combinationSum2Helper(candidates []int, target int, res []int, sum int, sta
 }
 
 func duplicate(ans [][]int) [][]int {
-	var m = make(map[int][]int)
+	var m = make(map[string][]int)
 	for _, a := range ans {
-		k := toInt(a)
+		k := toString(a)
 		m[k] = a
 	}
 
@@ -186,15 +187,16 @@ func duplicate(ans [][]int) [][]int {
 	for _, v := range m {
 		res = append(res, v)
 	}
+
 	return res
 }
 
-func toInt(nums []int) int {
-	var sum int
+func toString(nums []int) string {
+	var res string
 	for _, n := range nums {
-		sum = sum*10 + n
+		res += strconv.Itoa(n)
 	}
-	return sum
+	return res
 }
 
 // 46. 全排列
@@ -458,4 +460,35 @@ func grayCode(n int) []int {
 	}
 
 	return ans
+}
+
+// 90. 子集 II(先排列所有的子集再去重)
+func subsetsWithDup2(nums []int) [][]int {
+	sort.Ints(nums)
+	var all [][]int
+	var one []int
+	subsetsHelper(nums, one, &all, 0)
+	return duplicate(all)
+}
+
+// 90. 子集 II
+func subsetsWithDup(nums []int) (ans [][]int) {
+	sort.Ints(nums)
+	var t []int
+	var dfs func(bool, int)
+	dfs = func(choosePre bool, cur int) {
+		if cur == len(nums) {
+			ans = append(ans, append([]int(nil), t...))
+			return
+		}
+		dfs(false, cur+1)
+		if !choosePre && cur > 0 && nums[cur-1] == nums[cur] {
+			return
+		}
+		t = append(t, nums[cur])
+		dfs(true, cur+1)
+		t = t[:len(t)-1]
+	}
+	dfs(false, 0)
+	return
 }
