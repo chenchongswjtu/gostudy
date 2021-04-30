@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(partition("a"))
+	fmt.Println(partition2("ababbbabbaba"))
 }
 
 // 17. 电话号码的字母组合
@@ -564,7 +564,9 @@ func partition(s string) [][]string {
 
 func partitionHelper(s string, one []string, ans *[][]string) {
 	if len(s) == 0 {
-		*ans = append(*ans, one)
+		t := make([]string, len(one))
+		copy(t, one)
+		*ans = append(*ans, t)
 		return
 	}
 
@@ -584,10 +586,48 @@ func partitionHelper(s string, one []string, ans *[][]string) {
 	for i := 0; i < len(s); i++ {
 		n := s[:i+1]
 		if isValid(n) {
-			t := one
+			// copy 一个对象
+			t := make([]string, len(one))
+			copy(t, one)
 			one = append(one, n)
 			partitionHelper(s[i+1:], one, ans)
 			one = t
 		}
 	}
+}
+
+// 回溯加动态规划
+func partition2(s string) (ans [][]string) {
+	n := len(s)
+	f := make([][]bool, n)
+	for i := range f {
+		f[i] = make([]bool, n)
+		for j := range f[i] {
+			f[i][j] = true
+		}
+	}
+
+	for i := n - 1; i >= 0; i-- {
+		for j := i + 1; j < n; j++ {
+			f[i][j] = s[i] == s[j] && f[i+1][j-1]
+		}
+	}
+
+	var splits []string
+	var dfs func(int)
+	dfs = func(i int) {
+		if i == n {
+			ans = append(ans, append([]string(nil), splits...))
+		}
+		for j := i; j < n; j++ {
+			if f[i][j] {
+				splits = append(splits, s[i:j+1])
+				dfs(j + 1)
+				splits = splits[:len(splits)-1]
+			}
+		}
+	}
+
+	dfs(0)
+	return
 }
