@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(readBinaryWatch(1))
+	fmt.Println(countArrangement(2))
 }
 
 // 17. 电话号码的字母组合
@@ -758,4 +758,31 @@ func gen(h int, m int) []string {
 		}
 	}
 	return res
+}
+
+// 526. 优美的排列
+func countArrangement(n int) int {
+	var nums = make([]int, n)
+	for i := 0; i < n; i++ {
+		nums[i] = i + 1
+	}
+
+	var count int
+	countArrangementHelper(nums, 0, &count)
+	return count
+}
+
+func countArrangementHelper(nums []int, start int, count *int) {
+	if start == len(nums) {
+		*count++
+		return
+	}
+
+	for i := start; i < len(nums); i++ {
+		nums[i], nums[start] = nums[start], nums[i]
+		if nums[start]%(start+1) == 0 || (start+1)%nums[start] == 0 {
+			countArrangementHelper(nums, start+1, count)
+		}
+		nums[i], nums[start] = nums[start], nums[i]
+	}
 }
