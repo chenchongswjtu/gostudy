@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(restoreIpAddresses("010010"))
+	fmt.Println(partition("a"))
 }
 
 // 17. 电话号码的字母组合
@@ -549,6 +549,44 @@ func restoreIpAddressesHelper(s string, one string, all *[]string, cur int) {
 				one = one + "." + n
 			}
 			restoreIpAddressesHelper(s[i+1:], one, all, cur+1)
+			one = t
+		}
+	}
+}
+
+// 131. 分割回文串
+func partition(s string) [][]string {
+	var ans [][]string
+	var one []string
+	partitionHelper(s, one, &ans)
+	return ans
+}
+
+func partitionHelper(s string, one []string, ans *[][]string) {
+	if len(s) == 0 {
+		*ans = append(*ans, one)
+		return
+	}
+
+	var isValid func(n string) bool
+	isValid = func(n string) bool {
+		i, j := 0, len(n)-1
+		for i < j {
+			if n[i] != n[j] {
+				return false
+			}
+			i++
+			j--
+		}
+		return true
+	}
+
+	for i := 0; i < len(s); i++ {
+		n := s[:i+1]
+		if isValid(n) {
+			t := one
+			one = append(one, n)
+			partitionHelper(s[i+1:], one, ans)
 			one = t
 		}
 	}
