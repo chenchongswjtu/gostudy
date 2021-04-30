@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(combinationSum3(3, 9))
+	fmt.Println(countNumbersWithUniqueDigits(3))
 }
 
 // 17. 电话号码的字母组合
@@ -696,4 +696,21 @@ func fetchCurValue(num string, l int, r int) int {
 		l++
 	}
 	return res
+}
+
+// 357. 计算各个位数不同的数字个数
+func countNumbersWithUniqueDigits(n int) int {
+	if n == 0 {
+		return 1
+	}
+	if n == 1 {
+		return 10
+	}
+
+	res := 9
+	for i := 1; i < n; i++ {
+		res = res * (10 - i)
+	}
+
+	return res + countNumbersWithUniqueDigits(n-1)
 }
