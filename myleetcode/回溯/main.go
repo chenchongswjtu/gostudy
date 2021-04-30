@@ -659,14 +659,12 @@ func isAdditiveNumber(num string) bool {
 	return isAdditiveNumberHelper(num, len(num), 0, 0, 0, 0)
 }
 
-/**
- * @param num    原始字符串
- * @param size   原始字符串长度
- * @param idx    当前处理下标
- * @param sum    前面的两个数字之和
- * @param pre    前一个数字
- * @param k      当前是处理的第几个数字
- */
+// @param num    原始字符串
+// @param size   原始字符串长度
+// @param idx    当前处理下标
+// @param sum    前面的两个数字之和
+// @param pre    前一个数字
+// @param k      当前是处理的第几个数字
 func isAdditiveNumberHelper(num string, size int, idx int, sum int, pre int, k int) bool {
 	if idx == size {
 		return k > 2
@@ -686,9 +684,7 @@ func isAdditiveNumberHelper(num string, size int, idx int, sum int, pre int, k i
 	return false
 }
 
-/**
- * 获取 l ~ r 组成的有效数字
- */
+// 获取 l ~ r 组成的有效数字
 func fetchCurValue(num string, l int, r int) int {
 	if l < r && num[l] == '0' {
 		return -1
