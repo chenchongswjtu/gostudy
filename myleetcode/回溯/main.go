@@ -653,3 +653,51 @@ func combinationSum3Helper(k int, n int, cur int, sum int, start int, one []int,
 		one = one[:len(one)-1]
 	}
 }
+
+// 306. 累加数
+func isAdditiveNumber(num string) bool {
+	return isAdditiveNumberHelper(num, len(num), 0, 0, 0, 0)
+}
+
+/**
+ * @param num    原始字符串
+ * @param size   原始字符串长度
+ * @param idx    当前处理下标
+ * @param sum    前面的两个数字之和
+ * @param pre    前一个数字
+ * @param k      当前是处理的第几个数字
+ */
+func isAdditiveNumberHelper(num string, size int, idx int, sum int, pre int, k int) bool {
+	if idx == size {
+		return k > 2
+	}
+	for i := idx; i < size; i++ {
+		cur := fetchCurValue(num, idx, i)
+		if cur < 0 {
+			continue
+		}
+		if k >= 2 && cur != sum {
+			continue
+		}
+		if isAdditiveNumberHelper(num, size, i+1, pre+cur, cur, k+1) {
+			return true
+		}
+	}
+	return false
+}
+
+/**
+ * 获取 l ~ r 组成的有效数字
+ */
+func fetchCurValue(num string, l int, r int) int {
+	if l < r && num[l] == '0' {
+		return -1
+	}
+	res := 0
+	for l <= r {
+		n := num[l] - '0'
+		res = res*10 + int(n)
+		l++
+	}
+	return res
+}
