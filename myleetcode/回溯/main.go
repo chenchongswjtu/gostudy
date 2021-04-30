@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(countNumbersWithUniqueDigits(3))
+	fmt.Println(readBinaryWatch(1))
 }
 
 // 17. 电话号码的字母组合
@@ -713,4 +713,49 @@ func countNumbersWithUniqueDigits(n int) int {
 	}
 
 	return res + countNumbersWithUniqueDigits(n-1)
+}
+
+// 401. 二进制手表
+func readBinaryWatch(turnedOn int) []string {
+	if turnedOn > 10 || turnedOn < 0 {
+		return nil
+	}
+
+	var ans []string
+	for i := 0; i <= 4; i++ {
+		j := turnedOn - i
+		if j > 6 || j < 0 {
+			continue
+		}
+		ans = append(ans, gen(i, j)...)
+	}
+	return ans
+}
+
+var hm = map[int][]string{
+	0: {"0"},
+	1: {"1", "2", "4", "8"},
+	2: {"3", "5", "9", "6", "10"},
+	3: {"7", "11"},
+}
+
+var mm = map[int][]string{
+	0: {"00"},
+	1: {"01", "02", "04", "08", "16", "32"},
+	2: {"03", "05", "09", "17", "33", "06", "10", "18", "34", "12", "20", "36", "24", "40", "48"},
+	3: {"07", "11", "19", "35", "14", "22", "38", "13", "21", "37", "25", "41", "49", "26", "42", "50", "28", "44", "52", "56"},
+	4: {"58", "54", "46", "30", "57", "53", "45", "29", "51", "43", "27", "39", "23", "15"},
+	5: {"59", "55", "47", "31"},
+}
+
+func gen(h int, m int) []string {
+	hv := hm[h]
+	mv := mm[m]
+	var res []string
+	for _, v := range hv {
+		for _, vv := range mv {
+			res = append(res, v+":"+vv)
+		}
+	}
+	return res
 }
