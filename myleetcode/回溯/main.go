@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(partition("ababbbabbaba"))
+	fmt.Println(combinationSum3(3, 9))
 }
 
 // 17. 电话号码的字母组合
@@ -630,4 +630,26 @@ func partition2(s string) (ans [][]string) {
 
 	dfs(0)
 	return
+}
+
+// 216. 组合总和 III
+func combinationSum3(k int, n int) [][]int {
+	var ans [][]int
+	combinationSum3Helper(k, n, 0, 0, 1, []int(nil), &ans)
+	return ans
+}
+
+func combinationSum3Helper(k int, n int, cur int, sum int, start int, one []int, all *[][]int) {
+	if cur == k {
+		if sum == n {
+			*all = append(*all, append([]int(nil), one...))
+		}
+		return
+	}
+
+	for i := start; i <= 9; i++ {
+		one = append(one, i)
+		combinationSum3Helper(k, n, cur+1, sum+i, i+1, one, all)
+		one = one[:len(one)-1]
+	}
 }
