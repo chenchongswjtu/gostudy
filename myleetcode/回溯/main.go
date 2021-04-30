@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fmt.Println(partition2("ababbbabbaba"))
+	fmt.Println(partition("ababbbabbaba"))
 }
 
 // 17. 电话号码的字母组合
@@ -564,9 +564,9 @@ func partition(s string) [][]string {
 
 func partitionHelper(s string, one []string, ans *[][]string) {
 	if len(s) == 0 {
-		t := make([]string, len(one))
-		copy(t, one)
-		*ans = append(*ans, t)
+		//t := make([]string, len(one))
+		//copy(t, one)
+		*ans = append(*ans, append([]string(nil), one...))
 		return
 	}
 
@@ -587,11 +587,11 @@ func partitionHelper(s string, one []string, ans *[][]string) {
 		n := s[:i+1]
 		if isValid(n) {
 			// copy 一个对象
-			t := make([]string, len(one))
-			copy(t, one)
+			//t := make([]string, len(one))
+			//copy(t, one)
 			one = append(one, n)
 			partitionHelper(s[i+1:], one, ans)
-			one = t
+			one = one[:len(one)-1]
 		}
 	}
 }
