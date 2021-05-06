@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	fmt.Println(letterCasePermutation("a1b2"))
+	fmt.Println(allPathsSourceTarget([][]int{{4, 3, 1}, {3, 2, 4}, {3}, {4}, {}}))
 }
 
 // 17. 电话号码的字母组合
@@ -822,9 +822,24 @@ func letterCasePermutationHelper(s string, one string, start int, all *[]string)
 // 797. 所有可能的路径
 func allPathsSourceTarget(graph [][]int) [][]int {
 	n := len(graph)
-	return *allPathsSourceTargetHelper(graph, n, 0)
+	var ans [][]int
+	allPathsSourceTargetHelper(graph, n, 0, []int{0}, &ans)
+	return ans
 }
 
-func allPathsSourceTargetHelper(graph [][]int, n int, i int) *[][]int {
+func allPathsSourceTargetHelper(graph [][]int, n int, i int, one []int, all *[][]int) {
+	if i == n-1 {
+		*all = append(*all, one)
+		return
+	}
 
+	for _, g := range graph[i] {
+		t := make([]int, len(one))
+		copy(t, one)
+		one = append(one, g)
+		allPathsSourceTargetHelper(graph, n, g, one, all)
+		one = t
+	}
+
+	return
 }
