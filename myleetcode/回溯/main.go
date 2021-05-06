@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println(splitIntoFibonacci("112358"))
+	fmt.Println(numsSameConsecDiff(2, 0))
 }
 
 // 17. 电话号码的字母组合
@@ -890,4 +890,59 @@ func splitIntoFibonacci(s string) (f []int) {
 	}
 	backtrack(0, 0, 0)
 	return
+}
+
+// 967. 连续差相同的数字
+func numsSameConsecDiff(n int, k int) []int {
+	if n <= 0 || k < 0 {
+		return nil
+	}
+
+	if n == 1 {
+		if k == 0 {
+			return []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+		}
+		return nil
+	}
+
+	var all []int
+	numsSameConsecDiffHelper(n, k, "", 0, &all)
+	return all
+}
+
+func numsSameConsecDiffHelper(n int, k int, cur string, prev int, all *[]int) {
+	if len(cur) == n {
+		i, _ := strconv.Atoi(cur)
+		*all = append(*all, i)
+		return
+	}
+
+	if cur == "" {
+		for i := 1; i <= 9; i++ {
+			t := cur
+			cur = cur + strconv.Itoa(i)
+			numsSameConsecDiffHelper(n, k, cur, i, all)
+			cur = t
+		}
+	} else {
+		if k == 0 {
+			numsSameConsecDiffHelper(n, k, cur+strconv.Itoa(prev), prev, all)
+			return
+		}
+
+		found := false
+		if prev-k >= 0 && prev-k <= 9 {
+			found = true
+			numsSameConsecDiffHelper(n, k, cur+strconv.Itoa(prev-k), prev-k, all)
+		}
+
+		if prev+k >= 0 && prev+k <= 9 {
+			found = true
+			numsSameConsecDiffHelper(n, k, cur+strconv.Itoa(prev+k), prev+k, all)
+		}
+
+		if !found {
+			return
+		}
+	}
 }
