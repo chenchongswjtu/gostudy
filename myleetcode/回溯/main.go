@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println(numsSameConsecDiff(2, 0))
+	fmt.Println(numTilePossibilities("AAB"))
 }
 
 // 17. 电话号码的字母组合
@@ -944,5 +944,38 @@ func numsSameConsecDiffHelper(n int, k int, cur string, prev int, all *[]int) {
 		if !found {
 			return
 		}
+	}
+}
+
+// 1079. 活字印刷
+func numTilePossibilities(tiles string) int {
+	chars := make([]int, len(tiles))
+	for i, v := range tiles {
+		chars[i] = int(v)
+	}
+
+	sort.Ints(chars)
+	sum := 0
+	used := make([]bool, len(tiles))
+	numTilePossibilitiesHelper(&sum, chars, used, len(tiles), 0)
+	return sum
+}
+
+func numTilePossibilitiesHelper(sum *int, chars []int, used []bool, n int, index int) {
+	if n == index {
+		return
+	}
+
+	for i := 0; i < n; i++ {
+		if used[i] {
+			continue
+		}
+		if i >= 1 && chars[i] == chars[i-1] && !used[i-1] {
+			continue
+		}
+		used[i] = true
+		*sum++
+		numTilePossibilitiesHelper(sum, chars, used, n, index+1)
+		used[i] = false
 	}
 }
