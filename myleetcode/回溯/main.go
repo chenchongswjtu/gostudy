@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 func main() {
-	fmt.Println(readBinaryWatch(1))
+	fmt.Println(letterCasePermutation("a1b2"))
 }
 
 // 17. 电话号码的字母组合
@@ -787,4 +788,43 @@ func countArrangementHelper(nums []int, start int, count *int) {
 		// 交换回来，回溯
 		nums[i], nums[start] = nums[start], nums[i]
 	}
+}
+
+// 784. 字母大小写全排列
+func letterCasePermutation(S string) []string {
+	var all []string
+	var one string
+	letterCasePermutationHelper(S, one, 0, &all)
+	return all
+}
+
+func letterCasePermutationHelper(s string, one string, start int, all *[]string) {
+	if len(s) == len(one) {
+		*all = append(*all, one)
+		return
+	}
+
+	i := start
+
+	t := one
+	one = t + s[i:i+1]
+	letterCasePermutationHelper(s, one, start+1, all)
+
+	if s[i] >= 'a' && s[i] <= 'z' {
+		one = t + strings.ToUpper(s[i:i+1])
+		letterCasePermutationHelper(s, one, start+1, all)
+	} else if s[i] >= 'A' && s[i] <= 'Z' {
+		one = t + strings.ToLower(s[i:i+1])
+		letterCasePermutationHelper(s, one, start+1, all)
+	}
+}
+
+// 797. 所有可能的路径
+func allPathsSourceTarget(graph [][]int) [][]int {
+	n := len(graph)
+	return *allPathsSourceTargetHelper(graph, n, 0)
+}
+
+func allPathsSourceTargetHelper(graph [][]int, n int, i int) *[][]int {
+
 }
