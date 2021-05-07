@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println(getMaximumGold([][]int{{0, 6, 0}, {5, 8, 7}, {0, 9, 0}}))
+	fmt.Println(maxLength([]string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p"}))
 }
 
 // 17. 电话号码的字母组合
@@ -1074,4 +1074,50 @@ func getMaximumGold1(grid [][]int) int {
 		}
 	}
 	return ans
+}
+
+// 1239. 串联字符串的最大长度
+func maxLength(arr []string) int {
+	var maxLen int
+	var n = len(arr)
+
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	repeat := func(s string) bool {
+		m := make(map[rune]int)
+		for _, c := range s {
+			m[c]++
+			if m[c] > 1 {
+				return true
+			}
+		}
+		return false
+	}
+
+	var back func(cur string, index int)
+	back = func(cur string, index int) {
+		if index == n {
+			return
+		}
+
+		for i := index; i < n; i++ {
+			if repeat(arr[i]) || repeat(cur+arr[i]) {
+				continue
+			}
+
+			t := cur
+			cur += arr[i]
+			maxLen = max(maxLen, len(cur))
+			back(cur, index+1)
+			cur = t
+		}
+	}
+
+	back("", 0)
+	return maxLen
 }
