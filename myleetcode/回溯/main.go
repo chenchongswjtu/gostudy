@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println(numTilePossibilities("AAB"))
+	fmt.Println(sequentialDigits(100, 300))
 }
 
 // 17. 电话号码的字母组合
@@ -978,4 +978,20 @@ func numTilePossibilitiesHelper(sum *int, chars []int, used []bool, n int, index
 		numTilePossibilitiesHelper(sum, chars, used, n, index+1)
 		used[i] = false
 	}
+}
+
+// 1291. 顺次数
+func sequentialDigits(low int, high int) []int {
+	var ans []int
+	for i := 1; i <= 9; i++ {
+		var num = i
+		for j := i + 1; j <= 9; j++ {
+			num = num*10 + j
+			if num >= low && num <= high {
+				ans = append(ans, num)
+			}
+		}
+	}
+	sort.Ints(ans)
+	return ans
 }
