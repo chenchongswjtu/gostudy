@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println(sequentialDigits(100, 300))
+	fmt.Println(getMaximumGold([][]int{{0, 6, 0}, {5, 8, 7}, {0, 9, 0}}))
 }
 
 // 17. 电话号码的字母组合
@@ -993,5 +993,85 @@ func sequentialDigits(low int, high int) []int {
 		}
 	}
 	sort.Ints(ans)
+	return ans
+}
+
+// 1219. 黄金矿工
+func getMaximumGold(grid [][]int) int {
+	m, n := len(grid), len(grid[0])
+	dirs := [][]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
+	ans := 0
+
+	var max = func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	var dfs func(i, j int) int
+	dfs = func(i, j int) int {
+		if i < 0 || i >= m || j < 0 || j >= n || grid[i][j] == 0 {
+			return 0
+		}
+
+		res := 0
+		t := grid[i][j]
+		grid[i][j] = 0
+		for _, dir := range dirs {
+			nx := dir[0] + i
+			ny := dir[1] + j
+			res = max(res, dfs(nx, ny))
+		}
+		grid[i][j] = t
+		return t + res
+	}
+
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			ans = max(ans, dfs(i, j))
+		}
+	}
+
+	return ans
+}
+
+func getMaximumGold1(grid [][]int) int {
+	if len(grid) == 0 {
+		return 0
+	}
+
+	m, n := len(grid), len(grid[0])
+
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	var dfs func(grid [][]int, i, j int) int
+	dfs = func(grid [][]int, i, j int) int {
+		if i < 0 || i >= m || j < 0 || j >= n || grid[i][j] == 0 {
+			return 0
+		}
+		t := grid[i][j]
+		grid[i][j] = 0
+
+		up := dfs(grid, i, j-1)
+		down := dfs(grid, i, j+1)
+		left := dfs(grid, i-1, j)
+		right := dfs(grid, i+1, j)
+
+		grid[i][j] = t
+		return grid[i][j] + max(max(up, down), max(left, right))
+	}
+
+	var ans int
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			ans = max(ans, dfs(grid, i, j))
+		}
+	}
 	return ans
 }
