@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println(maxLength([]string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p"}))
+	fmt.Println(getHappyString(3, 9))
 }
 
 // 17. 电话号码的字母组合
@@ -1120,4 +1120,34 @@ func maxLength(arr []string) int {
 
 	back("", 0)
 	return maxLen
+}
+
+// 1415. 长度为 n 的开心字符串中字典序第 k 小的字符串
+func getHappyString(n int, k int) string {
+	s := []string{"a", "b", "c"}
+	ans := ""
+	count := 0
+
+	var backtrack func(cur, prev string, index int)
+	backtrack = func(cur, prev string, index int) {
+		if len(cur) == n {
+			count++
+			if count == k {
+				ans = cur
+			}
+			return
+		}
+		for _, c := range s {
+			if prev == c {
+				continue
+			}
+			t := cur
+			cur += c
+			backtrack(cur, c, index+1)
+			cur = t
+		}
+	}
+
+	backtrack("", "", 0)
+	return ans
 }
