@@ -1076,7 +1076,7 @@ func getMaximumGold1(grid [][]int) int {
 	return ans
 }
 
-// 1239. 串联字符串的最大长度
+// 1239. 串联字符串的最大长度(超时)
 func maxLength(arr []string) int {
 	var maxLen int
 	var n = len(arr)
