@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println(maxUniqueSplit("aa"))
+	fmt.Println(countVowelStrings(0))
 }
 
 // 17. 电话号码的字母组合
@@ -1183,4 +1183,25 @@ func maxUniqueSplit(s string) int {
 
 	backtrack(0, 0, s, set)
 	return ans
+}
+
+// 1641. 统计字典序元音字符串的数目
+func countVowelStrings(n int) int {
+	var s = []string{"a", "e", "i", "o", "u"}
+	var count int
+
+	var backtrack func(n int, index int, cur int)
+	backtrack = func(n int, index int, cur int) {
+		if index == n {
+			count++
+			return
+		}
+
+		for i := cur; i < len(s); i++ {
+			backtrack(n, index+1, i)
+		}
+	}
+
+	backtrack(n, 0, 0)
+	return count
 }
