@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println(countVowelStrings(0))
+	fmt.Println(numberOfMatches(14))
 }
 
 // 17. 电话号码的字母组合
@@ -1204,4 +1204,20 @@ func countVowelStrings(n int) int {
 
 	backtrack(n, 0, 0)
 	return count
+}
+
+// 1688. 比赛中的配对次数
+func numberOfMatches(n int) int {
+	var ans int
+	for n != 1 {
+		if n%2 == 1 {
+			ans += n / 2
+			n = n/2 + 1
+		} else {
+			ans += n / 2
+			n = n / 2
+		}
+	}
+
+	return ans
 }
