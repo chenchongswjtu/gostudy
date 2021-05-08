@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println(getHappyString(3, 9))
+	fmt.Println(maxUniqueSplit("aa"))
 }
 
 // 17. 电话号码的字母组合
@@ -1149,5 +1149,38 @@ func getHappyString(n int, k int) string {
 	}
 
 	backtrack("", "", 0)
+	return ans
+}
+
+// 1593. 拆分字符串使唯一子字符串的数目最大
+func maxUniqueSplit(s string) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	var ans int
+	var set = make(map[string]struct{})
+
+	var backtrack func(index int, split int, s string, set map[string]struct{})
+	backtrack = func(index int, split int, s string, set map[string]struct{}) {
+		if index == len(s) {
+			ans = max(ans, split)
+			return
+		}
+
+		for i := index; i < len(s); i++ {
+			cur := s[index : i+1]
+			if _, ok := set[cur]; !ok {
+				set[cur] = struct{}{}
+				backtrack(i+1, split+1, s, set)
+				delete(set, cur)
+			}
+		}
+	}
+
+	backtrack(0, 0, s, set)
 	return ans
 }
