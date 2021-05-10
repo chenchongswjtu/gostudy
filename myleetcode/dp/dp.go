@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
 	fmt.Println(longestPalindrome1("abab"))
@@ -93,4 +95,54 @@ func longestPalindrome1(s string) string {
 		}
 	}
 	return s[begin : begin+maxLen]
+}
+
+//53. 最大子序和
+func maxSubArray(nums []int) int {
+	if len(nums) == 0 {
+		return 0
+	}
+
+	if len(nums) == 1 {
+		return nums[0]
+	}
+
+	max := nums[0]
+	for i := 1; i < len(nums); i++ {
+		if nums[i]+nums[i-1] > nums[i] {
+			nums[i] += nums[i-1]
+		}
+
+		if nums[i] > max {
+			max = nums[i]
+		}
+	}
+	return max
+}
+
+//53. 最大子序和
+func maxSubArray1(nums []int) int {
+	if len(nums) == 0 {
+		return 0
+	}
+
+	if len(nums) == 1 {
+		return nums[0]
+	}
+
+	dp := make([]int, len(nums))
+	dp[0] = nums[0]
+	max := dp[0]
+	for i := 1; i < len(nums); i++ {
+		if dp[i-1]+nums[i] > nums[i] {
+			dp[i] = dp[i-1] + nums[i]
+		} else {
+			dp[i] = nums[i]
+		}
+
+		if max < dp[i] {
+			max = dp[i]
+		}
+	}
+	return max
 }
