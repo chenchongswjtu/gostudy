@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println(numberOfMatches(14))
+	fmt.Println(checkPowersOfThree(12))
 }
 
 // 17. 电话号码的字母组合
@@ -1265,4 +1265,32 @@ func constructDistancedSequence(n int) []int {
 
 	dfs(n, 0, res, set)
 	return res
+}
+
+// 1780. 判断一个数字是否可以表示成三的幂的和
+func checkPowersOfThree(n int) bool {
+	if n == 0 {
+		return false
+	}
+
+	var backtrack func(n int, start int) bool
+	backtrack = func(n int, start int) bool {
+		if n == 0 {
+			return true
+		}
+
+		for i := start; ; {
+			m := int(math.Pow(3, float64(i)))
+			if m <= n {
+				if backtrack(n-m, i+1) {
+					return true
+				}
+			} else {
+				break
+			}
+			i++
+		}
+		return false
+	}
+	return backtrack(n, 0)
 }
