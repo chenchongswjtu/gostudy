@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println(checkPowersOfThree(12))
+	fmt.Println(splitString("4771447713"))
 }
 
 // 17. 电话号码的字母组合
@@ -1293,4 +1293,45 @@ func checkPowersOfThree(n int) bool {
 		return false
 	}
 	return backtrack(n, 0)
+}
+
+// 1849. 将字符串拆分为递减的连续值
+func splitString(s string) bool {
+	//s要分割的字符串；prev前面一个数的值；index当前字符串已经用到了哪个位置
+	var backtrack func(s string, prev int, index int) bool
+	backtrack = func(s string, prev int, index int) bool {
+		if index == len(s) { //代表能组成递减的连续值
+			return true
+		}
+		t := 0                            //枚举pre后面的一个数字的值
+		for i := index; i < len(s); i++ { //从第index个字符开始组成数字
+			t = t*10 + int(s[i]-'0')
+			if t > 10e10 {
+				return false
+			}
+
+			if t >= prev { //当前组成的数大于前面的数表示不符合要求，直接返回false
+				return false
+			}
+
+			if prev-1 == t && backtrack(s, t, i+1) { //如果前面一个数字和当前数组相差为1，则继续往下面寻找满足条件的数组
+				return true
+			}
+
+		}
+		return false
+	}
+
+	t := 0                          //枚举第一个数字的值，因为s长度为20，所以会超过int，要用long类型
+	for i := 0; i < len(s)-1; i++ { //因为必须要分割成两个子串，所以最后一个字符不可能是组成第一个数字的字符，我们这里也是为了防止刚好20位导致long也会溢出的情况
+		t = t*10 + int(s[i]-'0') //把当前字符加入到组成第一个数字的字符集中
+		if t > 10e10 {           //如果t大于10^10那么后面最多还有9位数，所以不可能组成递减的连续值
+			return false
+		}
+
+		if backtrack(s, t, i+1) { //把t当作第一个数字，找寻后面递减的数
+			return true
+		}
+	}
+	return false
 }
