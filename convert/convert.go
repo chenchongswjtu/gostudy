@@ -52,4 +52,10 @@ func main() {
 		fmt.Println("string to float32 err:", err)
 	}
 	fmt.Println(f64)
+
+	//string 转 rune
+	fmt.Println([]rune("sss"))
+
+	//rune 转 string
+	fmt.Println(string(rune(int('a' + 2))))
 }
