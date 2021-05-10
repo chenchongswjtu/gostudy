@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println(splitString("4771447713"))
+	fmt.Println(permutation("baa"))
 }
 
 // 17. 电话号码的字母组合
@@ -1334,4 +1334,38 @@ func splitString(s string) bool {
 		}
 	}
 	return false
+}
+
+// 含有重复字符的字符串排列
+func permutation(S string) []string {
+	var ss []string
+	for i := range S {
+		ss = append(ss, S[i:i+1])
+	}
+
+	sort.Strings(ss)
+	S = strings.Join(ss, "")
+
+	all := make([]string, 0)
+	visited := make([]bool, len(S))
+	permutationHelper(S, visited, "", &all)
+	return all
+}
+
+func permutationHelper(S string, visited []bool, one string, all *[]string) {
+	if len(one) == len(S) {
+		*all = append(*all, one)
+		return
+	}
+
+	for i := 0; i < len(S); i++ {
+		if visited[i] || ((i > 0) && S[i] == S[i-1] && visited[i-1]) {
+			continue
+		}
+		one = one + S[i:i+1]
+		visited[i] = true
+		permutationHelper(S, visited, one, all)
+		one = one[:len(one)-1]
+		visited[i] = false
+	}
 }
