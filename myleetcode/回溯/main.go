@@ -1221,3 +1221,48 @@ func numberOfMatches(n int) int {
 
 	return ans
 }
+
+// 1718. 构建字典序最大的可行序列
+func constructDistancedSequence(n int) []int {
+	res := make([]int, 2*n-1)
+	set := make(map[int]struct{})
+
+	// index 第几位数
+	var dfs func(n int, index int, res []int, set map[int]struct{}) bool
+	dfs = func(n int, index int, res []int, set map[int]struct{}) bool {
+		if index == len(res) {
+			return true
+		}
+
+		if res[index] != 0 {
+			return dfs(n, index+1, res, set)
+		}
+
+		for i := n; i >= 1; i-- {
+			_, ok := set[i]
+			if ok || (i != 1 && index+i >= len(res)) || (i != 1 && res[index+i] != 0) {
+				continue
+			}
+
+			res[index] = i
+			if i != 1 {
+				res[index+i] = i
+			}
+			set[i] = struct{}{}
+
+			if dfs(n, index+1, res, set) {
+				return true
+			}
+
+			delete(set, i)
+			res[i] = 0
+			if i != 1 {
+				res[index+i] = 0
+			}
+		}
+		return false
+	}
+
+	dfs(n, 0, res, set)
+	return res
+}
