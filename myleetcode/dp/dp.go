@@ -1,0 +1,96 @@
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println(longestPalindrome1("abab"))
+}
+
+// 5. 最长回文子串
+func longestPalindrome(s string) string {
+	n := len(s)
+	if n < 2 {
+		return s
+	}
+
+	var maxLen = 1
+	var ans = s[:1]
+	// dp 二维数组表示s[i:j+1]是不是回文子串
+	var dp = make([][]bool, n)
+	for i := range dp {
+		dp[i] = make([]bool, n)
+	}
+
+	update := func(i, j int) {
+		if !dp[i][j] {
+			return
+		}
+		if j-i+1 <= maxLen {
+			return
+		}
+		maxLen = j - i + 1
+		ans = s[i : j+1]
+	}
+
+	// 初始化s[i:i+1]一个字符肯定是回文子串
+	for i := range dp {
+		dp[i][i] = true
+		j := i + 1
+		if j < n && s[i] == s[j] {
+			dp[i][j] = true
+			update(i, j)
+		}
+	}
+
+	for i := n - 3; i >= 0; i-- {
+		for j := i + 2; j < n; j++ {
+			dp[i][j] = dp[i+1][j-1] && s[i] == s[j]
+			update(i, j)
+		}
+	}
+	return ans
+}
+
+func longestPalindrome1(s string) string {
+	n := len(s)
+	if n < 2 {
+		return s
+	}
+
+	var maxLen = 1
+	var begin = 0
+	// dp 二维数组表示s[i:j+1]是不是回文子串
+	var dp = make([][]bool, n)
+	for i := range dp {
+		dp[i] = make([]bool, n)
+	}
+
+	// 初始化s[i:i+1]一个字符肯定是回文子串
+	for i := range dp {
+		dp[i][i] = true
+	}
+
+	for l := 2; l <= n; l++ {
+		for i := 0; i < n; i++ {
+			j := i + l - 1
+			if j >= n {
+				break
+			}
+			if s[i] != s[j] {
+				dp[i][j] = false
+			} else {
+				if j-i < 3 {
+					dp[i][j] = true
+				} else {
+					dp[i][j] = dp[i+1][j-1]
+				}
+			}
+
+			if dp[i][j] && j-i+1 > maxLen {
+				maxLen = j - i + 1
+				begin = i
+			}
+		}
+	}
+	return s[begin : begin+maxLen]
+}
