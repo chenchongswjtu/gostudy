@@ -338,7 +338,31 @@ func maxProfit(prices []int) int {
 	return max
 }
 
-// 121. 买卖股票的最佳时机II
+func maxProfit1(prices []int) int {
+	if len(prices) < 2 {
+		return 0
+	}
+
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	n := len(prices)
+	dp := make([][2]int, n)
+	dp[0][0] = 0
+	dp[0][1] = -prices[0]
+	for i := 1; i < n; i++ {
+		dp[i][0] = max(dp[i-1][0], dp[i-1][1]+prices[i])
+		dp[i][1] = max(dp[i-1][1], -prices[i])
+	}
+
+	return dp[n-1][0]
+}
+
+// 122. 买卖股票的最佳时机II
 // 买卖次数不限
 // 定义状态 dp[i][0] 表示第 ii 天交易完后手里没有股票的最大利润
 // dp[i][1] 表示第 ii 天交易完后手里持有一支股票的最大利润（ii 从 00 开始）
@@ -363,4 +387,65 @@ func maxProfit2(prices []int) int {
 		dp[i][1] = max(dp[i-1][1], dp[i-1][0]-prices[i])
 	}
 	return dp[n-1][0]
+}
+
+// 123. 买卖股票的最佳时机 III
+func maxProfit3(prices []int) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	buy1, sell1 := -prices[0], 0
+	buy2, sell2 := -prices[0], 0
+	for i := 1; i < len(prices); i++ {
+		buy1 = max(buy1, -prices[i])
+		sell1 = max(sell1, buy1+prices[i])
+		buy2 = max(buy2, sell1-prices[i])
+		sell2 = max(sell2, buy2+prices[i])
+	}
+	return sell2
+}
+
+// 124. 买卖股票的最佳时机 IV
+// 因此对 dp[i][k] 的定义需要分成两项：
+
+// dp[i][k][0] 表示在第 i 天结束时，最多进行 k 次交易且在进行操作后持有 0 份股票的情况下可以获得的最大收益；
+// dp[i][k][1] 表示在第 i 天结束时，最多进行 k 次交易且在进行操作后持有 1 份股票的情况下可以获得的最大收益。
+func maxProfit4(k int, prices []int) int {
+	if len(prices) < 2 {
+		return 0
+	}
+
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	n := len(prices)
+	if k >= n/2 { //如果股票价格数组的长度为 n，则有收益的交易的数量最多为 n / 2（整数除法）。因此 k 的临界值是 n / 2。如果给定的 k 不小于临界值，即 k >= n / 2，则可以将 k 扩展为正无穷，此时问题等价于情况二。
+		return maxProfit2(prices)
+	}
+
+	dp := make([][][2]int, n)
+	for i := 0; i < n; i++ {
+		dp[i] = make([][2]int, k+1)
+	}
+
+	for i := 1; i <= k; i++ {
+		dp[0][i][0] = 0
+		dp[0][i][1] = -prices[0]
+	}
+
+	for i := 1; i < n; i++ {
+		for j := k; j > 0; j-- {
+			dp[i][j][0] = max(dp[i-1][j][0], dp[i-1][j][1]+prices[i])
+			dp[i][j][1] = max(dp[i-1][j][1], dp[i-1][j-1][0]-prices[i])
+		}
+	}
+
+	return dp[n-1][k][0]
 }
