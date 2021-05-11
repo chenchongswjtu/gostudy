@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 )
 
 func main() {
@@ -315,4 +316,51 @@ func minimumTotal(triangle [][]int) int {
 		}
 	}
 	return dp[0][0]
+}
+
+// 121. 买卖股票的最佳时机
+// 只能买卖一次
+func maxProfit(prices []int) int {
+	if len(prices) < 2 {
+		return 0
+	}
+	max := 0
+	min := math.MaxInt32
+	for i := 0; i < len(prices); i++ {
+		if prices[i] < min {
+			min = prices[i]
+		}
+
+		if prices[i]-min > max {
+			max = prices[i] - min
+		}
+	}
+	return max
+}
+
+// 121. 买卖股票的最佳时机II
+// 买卖次数不限
+// 定义状态 dp[i][0] 表示第 ii 天交易完后手里没有股票的最大利润
+// dp[i][1] 表示第 ii 天交易完后手里持有一支股票的最大利润（ii 从 00 开始）
+func maxProfit2(prices []int) int {
+	if len(prices) < 2 {
+		return 0
+	}
+
+	n := len(prices)
+
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	dp := make([][2]int, n)
+	dp[0][0] = 0
+	dp[0][1] = -prices[0]
+	for i := 1; i < n; i++ {
+		dp[i][0] = max(dp[i-1][0], dp[i-1][1]+prices[i])
+		dp[i][1] = max(dp[i-1][1], dp[i-1][0]-prices[i])
+	}
+	return dp[n-1][0]
 }
