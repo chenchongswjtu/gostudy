@@ -285,3 +285,34 @@ func isInterleave(s1 string, s2 string, s3 string) bool {
 
 	return f[n1][n2]
 }
+
+// 120. 三角形最小路径和
+func minimumTotal(triangle [][]int) int {
+	if len(triangle) == 0 || len(triangle[0]) == 0 {
+		return 0
+	}
+
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+
+	m, n := len(triangle), len(triangle[len(triangle)-1])
+	dp := make([][]int, m)
+	for i := 0; i < m; i++ {
+		dp[i] = make([]int, n)
+	}
+
+	for i := 0; i < n; i++ {
+		dp[n-1][i] = triangle[n-1][i]
+	}
+
+	for i := m - 2; i >= 0; i-- {
+		for j := 0; j <= i; j++ {
+			dp[i][j] = min(dp[i+1][j], dp[i+1][j+1]) + triangle[i][j]
+		}
+	}
+	return dp[0][0]
+}
