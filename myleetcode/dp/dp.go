@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	fmt.Println(uniquePathsWithObstacles([][]int{{0, 1}, {0, 0}}))
+	fmt.Println(maxProfit4(2, []int{6, 5, 2, 7, 2, 9}))
 }
 
 // 5. 最长回文子串
@@ -436,14 +436,14 @@ func maxProfit4(k int, prices []int) int {
 	}
 
 	for i := 1; i <= k; i++ {
-		dp[0][i][0] = 0
 		dp[0][i][1] = -prices[0]
+		dp[0][i][0] = 0
 	}
 
 	for i := 1; i < n; i++ {
 		for j := k; j > 0; j-- {
-			dp[i][j][0] = max(dp[i-1][j][0], dp[i-1][j][1]+prices[i])
 			dp[i][j][1] = max(dp[i-1][j][1], dp[i-1][j-1][0]-prices[i])
+			dp[i][j][0] = max(dp[i-1][j][0], dp[i-1][j][1]+prices[i])
 		}
 	}
 
