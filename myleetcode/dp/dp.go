@@ -576,3 +576,35 @@ func maxProduct(nums []int) int {
 	}
 	return ans
 }
+
+// 213. 打家劫舍 II
+func rob2(nums []int) int {
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	n := len(nums)
+	if n == 0 {
+		return 0
+	}
+	if n == 1 {
+		return nums[0]
+	}
+	if n == 2 {
+		return max(nums[0], nums[1])
+	}
+
+	var _rob func(nums []int) int
+	_rob = func(nums []int) int {
+		first, second := nums[0], max(nums[0], nums[1])
+		for _, v := range nums[2:] {
+			first, second = second, max(first+v, second)
+		}
+		return second
+	}
+
+	return max(_rob(nums[:n-1]), _rob(nums[1:]))
+}
