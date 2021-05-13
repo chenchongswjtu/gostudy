@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	fmt.Println(maxProfit4(2, []int{6, 5, 2, 7, 2, 9}))
+	fmt.Println(numDecodings("226"))
 }
 
 // 5. 最长回文子串
@@ -487,4 +487,59 @@ func partition(s string) [][]string {
 
 	dfs(0)
 	return ans
+}
+
+// 91. 解码方法(回溯解法超时)
+func numDecodings1(s string) int {
+	var count int
+
+	isValid := func(s string) bool {
+		if s[0] == '0' {
+			return false
+		}
+
+		var res int
+		for i := range s {
+			res = res*10 + int(s[i]-'0')
+		}
+		if res >= 1 && res <= 26 {
+			return true
+		}
+		return false
+	}
+
+	var dfs func(index int)
+	dfs = func(index int) {
+		if index == len(s) {
+			count++
+			return
+		}
+		for i := index; i < len(s); i++ {
+			t := s[index : i+1]
+			if isValid(t) {
+				dfs(i + 1)
+			} else {
+				break
+			}
+		}
+	}
+
+	dfs(0)
+	return count
+}
+
+// 91. 解码方法(动态规划解法)
+func numDecodings(s string) int {
+	n := len(s)
+	f := make([]int, n+1)
+	f[0] = 1
+	for i := 1; i <= n; i++ {
+		if s[i-1] != '0' {
+			f[i] += f[i-1]
+		}
+		if i > 1 && s[i-2] != '0' && ((s[i-2]-'0')*10+(s[i-1]-'0') <= 26) {
+			f[i] += f[i-2]
+		}
+	}
+	return f[n]
 }
