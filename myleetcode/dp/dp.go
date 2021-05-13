@@ -568,7 +568,7 @@ func maxProduct(nums []int) int {
 		maxf[i] = max(maxf[i-1]*nums[i], max(nums[i], minf[i-1]*nums[i]))
 		minf[i] = min(minf[i-1]*nums[i], min(nums[i], maxf[i-1]*nums[i]))
 	}
-	var ans int
+	var ans = maxf[0]
 	for _, m := range maxf {
 		if m > ans {
 			ans = m
