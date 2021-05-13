@@ -608,3 +608,39 @@ func rob2(nums []int) int {
 
 	return max(_rob(nums[:n-1]), _rob(nums[1:]))
 }
+
+// 221. 最大正方形(动态规划)
+// dp(i,j) 表示以 (i,j) 为右下角，且只包含 1 的正方形的边长最大值
+// dp(i,j)=min(dp(i−1,j),dp(i−1,j−1),dp(i,j−1))+1
+func maximalSquare(matrix [][]byte) int {
+	dp := make([][]int, len(matrix))
+	maxSide := 0
+	for i := 0; i < len(matrix); i++ {
+		dp[i] = make([]int, len(matrix[i]))
+		for j := 0; j < len(matrix[i]); j++ {
+			dp[i][j] = int(matrix[i][j] - '0')
+			if dp[i][j] == 1 {
+				maxSide = 1
+			}
+		}
+	}
+
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+
+	for i := 1; i < len(matrix); i++ {
+		for j := 1; j < len(matrix[i]); j++ {
+			if dp[i][j] == 1 {
+				dp[i][j] = min(min(dp[i-1][j], dp[i][j-1]), dp[i-1][j-1]) + 1
+				if dp[i][j] > maxSide {
+					maxSide = dp[i][j]
+				}
+			}
+		}
+	}
+	return maxSide * maxSide
+}
