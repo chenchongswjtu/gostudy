@@ -543,3 +543,36 @@ func numDecodings(s string) int {
 	}
 	return f[n]
 }
+
+// 152. 乘积最大子数组
+func maxProduct(nums []int) int {
+	n := len(nums)
+	maxf := make([]int, n)
+	minf := make([]int, n)
+	copy(maxf, nums)
+	copy(minf, nums)
+
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+	for i := 1; i < n; i++ {
+		maxf[i] = max(maxf[i-1]*nums[i], max(nums[i], minf[i-1]*nums[i]))
+		minf[i] = min(minf[i-1]*nums[i], min(nums[i], maxf[i-1]*nums[i]))
+	}
+	var ans int
+	for _, m := range maxf {
+		if m > ans {
+			ans = m
+		}
+	}
+	return ans
+}
