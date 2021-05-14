@@ -493,7 +493,7 @@ func searchRange1(nums []int, target int) []int {
 			}
 		}
 
-		if nums[m] >= target {
+		if target <= nums[m] {
 			r = m - 1
 		} else {
 			l = m + 1
