@@ -394,3 +394,31 @@ func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 
 	return head.Next
 }
+
+// 31. 下一个排列
+func nextPermutation(nums []int) {
+	if len(nums) <= 1 {
+		return
+	}
+
+	i, j, k := len(nums)-2, len(nums)-1, len(nums)-1
+	for i >= 0 && nums[i] >= nums[j] {
+		i--
+		j--
+	}
+
+	// 不是最后一个排列
+	if i >= 0 {
+		for nums[i] >= nums[k] {
+			k--
+		}
+		nums[i], nums[k] = nums[k], nums[i]
+	}
+
+	x, y := j, len(nums)-1
+	for x < y {
+		nums[x], nums[y] = nums[y], nums[x]
+		x++
+		y--
+	}
+}
