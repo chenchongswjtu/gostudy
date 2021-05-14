@@ -121,3 +121,44 @@ func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
 	}
 	return -1
 }
+
+// 4. 寻找两个正序数组的中位数
+func findMedianSortedArrays1(nums1 []int, nums2 []int) float64 {
+	n1, n2 := len(nums1), len(nums2)
+	if (n1+n2)&1 == 0 {
+		l := find(nums1, 0, nums2, 0, (n1+n2)/2)
+		r := find(nums1, 0, nums2, 0, (n1+n2)/2+1)
+		return float64(l+r) / 2
+	}
+
+	return float64(find(nums1, 0, nums2, 0, (n1+n2)/2+1))
+}
+
+func find(nums1 []int, i int, nums2 []int, j int, k int) int {
+	if len(nums1)-i > len(nums2)-j {
+		return find(nums2, j, nums1, i, k)
+	}
+
+	if len(nums1) == i {
+		return nums2[j+k-1]
+	}
+
+	if k == 1 {
+		return min(nums1[i], nums2[j])
+	}
+
+	si := min(len(nums1), i+k/2)
+	sj := j + k - k/2
+	if nums1[si-1] > nums2[sj-1] {
+		return find(nums1, i, nums2, sj, k-(sj-j))
+	} else {
+		return find(nums1, si, nums2, j, k-(si-i))
+	}
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
