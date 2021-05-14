@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	fmt.Println(findMedianSortedArrays([]int{1, 2}, []int{3, 4}))
+	fmt.Println(searchRange1([]int{5, 7, 7, 8, 8, 10}, 8))
 }
 
 // 3. 无重复字符的最长子串(滑动窗口)
@@ -451,4 +451,69 @@ func search(nums []int, target int) int {
 		}
 	}
 	return -1
+}
+
+// 34. 在排序数组中查找元素的第一个和最后一个位置
+func searchRange(nums []int, target int) []int {
+	i, j := 0, len(nums)-1
+	x, y := -1, -1
+	for i <= j {
+		if x == -1 && nums[i] == target {
+			x = i
+		}
+
+		if y == -1 && nums[j] == target {
+			y = j
+		}
+
+		if x != -1 && y != -1 {
+			break
+		}
+
+		if x == -1 {
+			i++
+		}
+		if y == -1 {
+			j--
+		}
+	}
+
+	return []int{x, y}
+}
+
+// 34. 在排序数组中查找元素的第一个和最后一个位置
+func searchRange1(nums []int, target int) []int {
+	x, y := -1, -1
+	l, r := 0, len(nums)-1
+	for l <= r {
+		m := (l + r) / 2
+		if target == nums[m] {
+			if m == 0 || m-1 >= 0 && nums[m-1] != target {
+				x = m
+			}
+		}
+
+		if nums[m] >= target {
+			r = m - 1
+		} else {
+			l = m + 1
+		}
+	}
+
+	l, r = 0, len(nums)-1
+	for l <= r {
+		m := (l + r) / 2
+		if target == nums[m] {
+			if m == len(nums)-1 || m+1 < len(nums) && nums[m+1] != target {
+				y = m
+			}
+		}
+
+		if nums[m] <= target {
+			l = m + 1
+		} else {
+			r = m - 1
+		}
+	}
+	return []int{x, y}
 }
