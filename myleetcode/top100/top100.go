@@ -514,3 +514,51 @@ func searchRange1(nums []int, target int) []int {
 	}
 	return []int{x, y}
 }
+
+// 23. 合并K个升序链表
+func mergeKLists(lists []*ListNode) *ListNode {
+	var mergeTwoLists func(l1 *ListNode, l2 *ListNode) *ListNode
+	mergeTwoLists = func(l1 *ListNode, l2 *ListNode) *ListNode {
+		head := &ListNode{}
+		cur := head
+		for l1 != nil && l2 != nil {
+			if l1.Val < l2.Val {
+				node := &ListNode{Val: l1.Val, Next: nil}
+				cur.Next = node
+				cur = cur.Next
+				l1 = l1.Next
+			} else {
+				node := &ListNode{Val: l2.Val, Next: nil}
+				cur.Next = node
+				cur = cur.Next
+				l2 = l2.Next
+			}
+		}
+
+		if l1 == nil {
+			cur.Next = l2
+		}
+
+		if l2 == nil {
+			cur.Next = l1
+		}
+
+		return head.Next
+	}
+
+	var merge func(lists []*ListNode, l, r int) *ListNode
+	merge = func(lists []*ListNode, l, r int) *ListNode {
+		if l == r {
+			return lists[l]
+		}
+
+		if l > r {
+			return nil
+		}
+
+		m := (l + r) >> 1
+		return mergeTwoLists(merge(lists, l, m), merge(lists, m+1, r))
+	}
+
+	return merge(lists, 0, len(lists)-1)
+}
