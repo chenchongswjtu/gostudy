@@ -871,6 +871,7 @@ func numIslands(grid [][]byte) int {
 			return
 		}
 
+		// 遍历到的1设置为0
 		grid[i][j] = '0'
 		dfs(i+1, j)
 		dfs(i-1, j)
