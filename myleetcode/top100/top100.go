@@ -819,3 +819,24 @@ func (this *LRUCache) Put(key int, value int) {
 	this.order = append(this.order[1:], key)
 	this.cache[key] = value
 }
+
+// 160. 相交链表
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+	curA := headA
+	curB := headB
+	m := make(map[*ListNode]struct{})
+
+	for curA != nil {
+		m[curA] = struct{}{}
+		curA = curA.Next
+	}
+
+	for curB != nil {
+		if _, ok := m[curB]; ok {
+			return curB
+		}
+		curB = curB.Next
+	}
+
+	return nil
+}
