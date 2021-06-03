@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"sort"
 )
 
 func main() {
-	fmt.Println(searchRange1([]int{5, 7, 7, 8, 8, 10}, 8))
+	rotate([][]int{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})
 }
 
 // 3. 无重复字符的最长子串(滑动窗口)
@@ -561,4 +560,26 @@ func mergeKLists(lists []*ListNode) *ListNode {
 	}
 
 	return merge(lists, 0, len(lists)-1)
+}
+
+// 48. 旋转图像(顺时针旋转90度)
+// m[x][y] = m[y][n-1-x] (旋转90)
+// 先上下调整  m[x][y] = m[n-1-x][y]
+// 在对角线调整m[n-1-x][y] =m[y][n-1-x]
+// 则为 m[x][y] = m[y][n-1-x] (旋转90)
+func rotate(matrix [][]int) {
+	n := len(matrix)
+	if n <= 1 {
+		return
+	}
+
+	for i := 0; i < n/2; i++ {
+		matrix[i], matrix[n-1-i] = matrix[n-1-i], matrix[i]
+	}
+
+	for i := 0; i < n; i++ {
+		for j := i + 1; j < n; j++ {
+			matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+		}
+	}
 }
