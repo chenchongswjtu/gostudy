@@ -747,3 +747,67 @@ func detectCycle(head *ListNode) *ListNode {
 		cur = next
 	}
 }
+
+// LRUCache 146. LRU 缓存机制
+type LRUCache struct {
+	cache map[int]int
+	order []int // 记录key的顺序
+	cap   int   // 记录容量
+}
+
+func Constructor(capacity int) LRUCache {
+	return LRUCache{
+		cache: make(map[int]int),
+		order: make([]int, 0),
+		cap:   capacity,
+	}
+}
+
+func (this *LRUCache) Get(key int) int {
+	// 判断是否是在缓存中
+	if v, ok := this.cache[key]; ok {
+		pos := 0
+		// 在order中找到这个key
+		for i, k := range this.order {
+			if k == key {
+				pos = i
+			}
+		}
+		// 将key的顺序更新到最新
+		this.order = append(this.order[:pos], this.order[pos+1:]...)
+		this.order = append(this.order, key)
+		return v
+	} else {
+		return -1
+	}
+}
+
+func (this *LRUCache) Put(key int, value int) {
+	// 先判断缓存中是否已经存在
+	if _, ok := this.cache[key]; ok {
+		pos := 0
+		for i, k := range this.order {
+			if k == key {
+				pos = i
+			}
+		}
+		// 存在更新order的顺序，并且更新这个key的值
+		this.order = append(this.order[:pos], this.order[pos+1:]...)
+		this.order = append(this.order, key)
+		this.cache[key] = value
+		return
+	}
+
+	// 判断缓存的数量是否小于容量
+	if len(this.cache) < this.cap {
+		// 小于直接添加
+		this.cache[key] = value
+		this.order = append(this.order, key)
+		return
+	}
+
+	// 等于直接删除第一个顺序中key的缓存，将新的key添加到orderer的最后存入缓存
+	delete(this.cache, this.order[0])
+	this.order = append(this.order[1:], key)
+	this.cache[key] = value
+}
