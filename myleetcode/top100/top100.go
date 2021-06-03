@@ -710,24 +710,16 @@ func longestConsecutive1(nums []int) int {
 func detectCycle(head *ListNode) *ListNode {
 	var hasCycle func(head *ListNode) bool
 	hasCycle = func(head *ListNode) bool {
-		if head == nil {
+		if head == nil || head.Next == nil {
 			return false
 		}
-		if head.Next == nil {
-			return false
-		}
-		fast, slow := head.Next, head
-		for fast != nil && slow != nil {
+		fast, slow := head, head
+		for fast != nil && fast.Next != nil {
+			fast = fast.Next.Next
+			slow = slow.Next
 			if fast == slow {
 				return true
 			}
-
-			if fast.Next != nil {
-				fast = fast.Next.Next
-			} else {
-				return false
-			}
-			slow = slow.Next
 		}
 		return false
 	}
