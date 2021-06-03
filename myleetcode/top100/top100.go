@@ -706,6 +706,22 @@ func longestConsecutive1(nums []int) int {
 	return longest
 }
 
+// 141. 环形链表
+func hasCycle(head *ListNode) bool {
+	if head == nil || head.Next == nil {
+		return false
+	}
+	fast, slow := head, head
+	for fast != nil && fast.Next != nil {
+		fast = fast.Next.Next
+		slow = slow.Next
+		if fast == slow {
+			return true
+		}
+	}
+	return false
+}
+
 // 142. 环形链表 II
 func detectCycle(head *ListNode) *ListNode {
 	var hasCycle func(head *ListNode) bool
