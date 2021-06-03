@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"sort"
 )
 
 func main() {
-	fmt.Println(canJump([]int{3, 2, 1, 0, 4}))
+	sortColors1([]int{2, 0, 2, 1, 1, 0})
 }
 
 // 3. 无重复字符的最长子串(滑动窗口)
@@ -621,4 +620,41 @@ func canJump(nums []int) bool {
 	}
 
 	return false
+}
+
+// 75. 颜色分类
+func sortColors(nums []int) {
+	m := make(map[int]int)
+	for _, num := range nums {
+		m[num]++
+	}
+
+	var ans []int
+	for _, color := range []int{0, 1, 2} {
+		if c, ok := m[color]; ok {
+			for i := 0; i < c; i++ {
+				ans = append(ans, color)
+			}
+		}
+	}
+
+	copy(nums, ans)
+}
+
+// 75. 颜色分类(原地排序)
+func sortColors1(nums []int) {
+	n := len(nums)
+	i0, i2 := 0, n-1
+
+	for i := 0; i <= i2; {
+		if nums[i] == 0 && i != i0 {
+			nums[i], nums[i0] = nums[i0], nums[i]
+			i0++
+		} else if nums[i] == 2 && i != i2 {
+			nums[i], nums[i2] = nums[i2], nums[i]
+			i2--
+		} else {
+			i++
+		}
+	}
 }
