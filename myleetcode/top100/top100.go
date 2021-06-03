@@ -658,3 +658,50 @@ func sortColors1(nums []int) {
 		}
 	}
 }
+
+// 128. 最长连续序列
+func longestConsecutive(nums []int) int {
+	if len(nums) == 0 {
+		return 0
+	}
+
+	sort.Ints(nums)
+	maxLen := 1
+	curLen := 1
+	for i := 1; i < len(nums); i++ {
+		if nums[i]-nums[i-1] == 1 {
+			curLen++
+			if curLen > maxLen {
+				maxLen = curLen
+			}
+		} else if nums[i]-nums[i-1] == 0 {
+			// 相等，不执行操作，只是i++
+		} else {
+			curLen = 1
+		}
+	}
+	return maxLen
+}
+
+// 128. 最长连续序(o(n)时间复杂度)
+func longestConsecutive1(nums []int) int {
+	numSet := map[int]bool{}
+	for _, num := range nums {
+		numSet[num] = true
+	}
+	longest := 0
+	for num := range numSet {
+		if !numSet[num-1] {
+			curNum := num
+			cur := 1
+			for numSet[curNum+1] {
+				curNum++
+				cur++
+			}
+			if longest < cur {
+				longest = cur
+			}
+		}
+	}
+	return longest
+}
