@@ -840,3 +840,18 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 
 	return nil
 }
+
+// 206. 反转链表
+func reverseList(head *ListNode) *ListNode {
+	var pre *ListNode
+	var cur = head
+
+	for cur != nil {
+		next := cur.Next
+		cur.Next = pre
+		pre = cur
+		cur = next
+	}
+
+	return pre
+}
