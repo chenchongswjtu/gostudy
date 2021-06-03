@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"sort"
 )
 
 func main() {
-	rotate([][]int{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}})
+	fmt.Println(canJump([]int{3, 2, 1, 0, 4}))
 }
 
 // 3. 无重复字符的最长子串(滑动窗口)
@@ -600,4 +601,24 @@ func groupAnagrams(strs []string) [][]string {
 	}
 
 	return ans
+}
+
+// 55. 跳跃游戏
+func canJump(nums []int) bool {
+	n := len(nums)
+	max := 0
+	for i := 0; i < n; i++ {
+		if i > max {
+			break
+		}
+		if i+nums[i] > max {
+			max = i + nums[i]
+		}
+
+		if max >= n-1 {
+			return true
+		}
+	}
+
+	return false
 }
