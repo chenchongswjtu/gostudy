@@ -583,3 +583,21 @@ func rotate(matrix [][]int) {
 		}
 	}
 }
+
+// 49. 字母异位词分组
+func groupAnagrams(strs []string) [][]string {
+	m := map[string][]string{}
+	for _, str := range strs {
+		s := []byte(str)
+		sort.Slice(s, func(i, j int) bool { return s[i] < s[j] })
+		sortedStr := string(s)
+		m[sortedStr] = append(m[sortedStr], str)
+	}
+
+	ans := make([][]string, 0, len(m))
+	for _, v := range m {
+		ans = append(ans, v)
+	}
+
+	return ans
+}
