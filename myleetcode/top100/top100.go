@@ -1,12 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"sort"
 )
 
 func main() {
-	sortColors1([]int{2, 0, 2, 1, 1, 0})
+	fmt.Println(coinChange([]int{2}, 3))
 }
 
 // 3. 无重复字符的最长子串(滑动窗口)
@@ -944,4 +945,32 @@ func numSquares(n int) int {
 		}
 	}
 	return dp[n]
+}
+
+// 322. 零钱兑换
+func coinChange(coins []int, amount int) int {
+	dp := make([]int, amount+1)
+	for i := 0; i <= amount; i++ {
+		dp[i] = math.MaxInt64
+	}
+	dp[0] = 0
+
+	for i := 1; i <= amount; i++ {
+		for _, coin := range coins {
+			if i-coin < 0 {
+				continue
+			}
+
+			if dp[i-coin] == math.MaxInt64 {
+				continue
+			}
+
+			dp[i] = min(dp[i], dp[i-coin]+1)
+		}
+	}
+
+	if dp[amount] == math.MaxInt64 {
+		return -1
+	}
+	return dp[amount]
 }
