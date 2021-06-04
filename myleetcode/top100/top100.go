@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"sort"
 )
 
@@ -918,4 +919,29 @@ func searchMatrix(matrix [][]int, target int) bool {
 		}
 	}
 	return false
+}
+
+// 279. 完全平方数 (动态规划)
+func numSquares(n int) int {
+	dp := make([]int, n+1)
+	for i := 0; i <= n; i++ {
+		dp[i] = math.MaxInt64
+	}
+	dp[0] = 0
+
+	maxSqrtIndex := int(math.Sqrt(float64(n))) + 1
+	squNums := make([]int, maxSqrtIndex)
+	for i := 1; i < maxSqrtIndex; i++ {
+		squNums[i] = i * i
+	}
+
+	for i := 1; i <= n; i++ {
+		for j := 1; j < maxSqrtIndex; j++ {
+			if i < squNums[j] {
+				break
+			}
+			dp[i] = min(dp[i], dp[i-squNums[j]]+1)
+		}
+	}
+	return dp[n]
 }
