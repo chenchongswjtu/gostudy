@@ -890,3 +890,32 @@ func numIslands(grid [][]byte) int {
 
 	return ans
 }
+
+// 240. 搜索二维矩阵 II (从矩阵的右上角开始)
+func searchMatrix(matrix [][]int, target int) bool {
+	x := len(matrix)
+	if x == 0 {
+		return false
+	}
+
+	y := len(matrix[0])
+	if y == 0 {
+		return false
+	}
+
+	i := 0
+	j := y - 1
+
+	for i >= 0 && i < x && j >= 0 && j < y {
+		if matrix[i][j] == target {
+			return true
+		}
+
+		if matrix[i][j] > target {
+			j--
+		} else {
+			i++
+		}
+	}
+	return false
+}
