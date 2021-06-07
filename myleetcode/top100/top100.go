@@ -787,9 +787,9 @@ func (this *LRUCache) Get(key int) int {
 		this.order = append(this.order[:pos], this.order[pos+1:]...)
 		this.order = append(this.order, key)
 		return v
-	} else {
-		return -1
 	}
+
+	return -1
 }
 
 func (this *LRUCache) Put(key int, value int) {
