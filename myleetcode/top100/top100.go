@@ -1054,17 +1054,21 @@ func decodeString(s string) string {
 			stk = append(stk, string(cur))
 			ptr++
 		} else {
+			// 跳过']'
 			ptr++
 			var sub []string
 			for stk[len(stk)-1] != "[" {
 				sub = append(sub, stk[len(stk)-1])
 				stk = stk[:len(stk)-1]
 			}
+			// sub从stk中取出，顺序反了，进行调整
 			for i := 0; i < len(sub)/2; i++ {
 				sub[i], sub[len(sub)-i-1] = sub[len(sub)-i-1], sub[i]
 			}
+			// 跳过'['
 			stk = stk[:len(stk)-1]
 			repTime, _ := strconv.Atoi(stk[len(stk)-1])
+			// 跳过数字
 			stk = stk[:len(stk)-1]
 			t := strings.Repeat(getString(sub), repTime)
 			stk = append(stk, t)
