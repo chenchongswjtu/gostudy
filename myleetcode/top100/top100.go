@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 func main() {
-	fmt.Println(maxProfit([]int{1, 2, 4}))
+	fmt.Println(decodeString("3[a2[c]]"))
 }
 
 // 3. 无重复字符的最长子串(滑动窗口)
@@ -1037,4 +1039,52 @@ func (h *IHeap) Pop() interface{} {
 	x := old[n-1]
 	*h = old[0 : n-1]
 	return x
+}
+
+// 394. 字符串解码
+func decodeString(s string) string {
+	var stk []string
+	ptr := 0
+	for ptr < len(s) {
+		cur := s[ptr]
+		if cur >= '0' && cur <= '9' {
+			digits := getDigits(s, &ptr)
+			stk = append(stk, digits)
+		} else if (cur >= 'a' && cur <= 'z' || cur >= 'A' && cur <= 'Z') || cur == '[' {
+			stk = append(stk, string(cur))
+			ptr++
+		} else {
+			ptr++
+			var sub []string
+			for stk[len(stk)-1] != "[" {
+				sub = append(sub, stk[len(stk)-1])
+				stk = stk[:len(stk)-1]
+			}
+			for i := 0; i < len(sub)/2; i++ {
+				sub[i], sub[len(sub)-i-1] = sub[len(sub)-i-1], sub[i]
+			}
+			stk = stk[:len(stk)-1]
+			repTime, _ := strconv.Atoi(stk[len(stk)-1])
+			stk = stk[:len(stk)-1]
+			t := strings.Repeat(getString(sub), repTime)
+			stk = append(stk, t)
+		}
+	}
+	return getString(stk)
+}
+
+func getDigits(s string, ptr *int) string {
+	ret := ""
+	for ; s[*ptr] >= '0' && s[*ptr] <= '9'; *ptr++ {
+		ret += string(s[*ptr])
+	}
+	return ret
+}
+
+func getString(v []string) string {
+	ret := ""
+	for _, s := range v {
+		ret += s
+	}
+	return ret
 }
