@@ -1159,8 +1159,7 @@ func calcEquation(equations [][]string, values []float64, queries [][]string) []
 // 399. 除法求值
 func calcEquation1(equations [][]string, values []float64, queries [][]string) []float64 {
 	n := len(equations)
-	u := &unionFind{}
-	u.init(2*n + 1)
+	u := new(2*n + 1)
 	m := make(map[string]int)
 	id := 1
 	for i := 0; i < n; i++ {
@@ -1199,7 +1198,8 @@ type unionFind struct {
 	weight []float64 // weight[a] = 2.0，表示结点 a 的直接父亲结点的有向边的权重
 }
 
-func (u *unionFind) init(n int) {
+func new(n int) *unionFind {
+	u := &unionFind{}
 	u.parent = make([]int, n)
 	u.weight = make([]float64, n)
 
@@ -1207,6 +1207,7 @@ func (u *unionFind) init(n int) {
 		u.parent[i] = i
 		u.weight[i] = 1.0
 	}
+	return u
 }
 
 func (u *unionFind) union(x, y int, value float64) {
