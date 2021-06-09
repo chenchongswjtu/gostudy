@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	fmt.Println(decodeString("3[a2[c]]"))
+	fmt.Println(calcEquation1([][]string{{"a", "b"}, {"b", "c"}}, []float64{2.0, 3.0}, [][]string{{"a", "c"}, {"b", "a"}, {"a", "e"}, {"a", "a"}, {"x", "x"}}))
 }
 
 // 3. 无重复字符的最长子串(滑动窗口)
@@ -1091,4 +1091,151 @@ func getString(v []string) string {
 		ret += s
 	}
 	return ret
+}
+
+// 399. 除法求值 (有问题)
+func calcEquation(equations [][]string, values []float64, queries [][]string) []float64 {
+	var all = make(map[string]struct{})
+	var vs = make(map[string]float64)
+	for i, equation := range equations {
+		var f0, f1 = true, true
+		for i2, s := range equation {
+			if _, ok := all[s]; !ok {
+				if i2 == 0 {
+					f0 = false
+				}
+
+				if i2 == 1 {
+					f1 = false
+				}
+				all[s] = struct{}{}
+			}
+		}
+
+		if f0 && f1 {
+			continue
+		}
+
+		if !f0 && !f1 {
+			vs[equation[0]] = 1.0
+			vs[equation[1]] = 1.0 / values[i]
+		}
+
+		if f0 {
+			vs[equation[1]] = vs[equation[0]] / values[i]
+		}
+
+		if f1 {
+			vs[equation[0]] = vs[equation[1]] * values[i]
+		}
+	}
+
+	var ans []float64
+	for _, query := range queries {
+		var f0, f1 = true, true
+		for i2, s := range query {
+			if _, ok := all[s]; !ok {
+				if i2 == 0 {
+					f0 = false
+				}
+
+				if i2 == 1 {
+					f1 = false
+				}
+			}
+		}
+
+		if !f0 || !f1 {
+			ans = append(ans, -1.0)
+			continue
+		}
+
+		ans = append(ans, vs[query[0]]/vs[query[1]])
+	}
+
+	return ans
+}
+
+// 399. 除法求值
+func calcEquation1(equations [][]string, values []float64, queries [][]string) []float64 {
+	n := len(equations)
+	u := &unionFind{}
+	u.init(2*n + 1)
+	m := make(map[string]int)
+	id := 1
+	for i := 0; i < n; i++ {
+		s1 := equations[i][0]
+		s2 := equations[i][1]
+		if _, ok := m[s1]; !ok {
+			m[s1] = id
+			id++
+		}
+		if _, ok := m[s2]; !ok {
+			m[s2] = id
+			id++
+		}
+		u.union(m[s1], m[s2], values[i])
+	}
+
+	n1 := len(queries)
+	ans := make([]float64, n1)
+	for i := 0; i < n1; i++ {
+		s1 := queries[i][0]
+		s2 := queries[i][1]
+		id1 := m[s1]
+		id2 := m[s2]
+
+		if id1 == 0 || id2 == 0 {
+			ans[i] = -1.0
+		} else {
+			ans[i] = u.isConnected(id1, id2)
+		}
+	}
+	return ans
+}
+
+type unionFind struct {
+	parent []int
+	weight []float64
+}
+
+func (u *unionFind) init(n int) {
+	u.parent = make([]int, n)
+	u.weight = make([]float64, n)
+
+	for i := 0; i < n; i++ {
+		u.parent[i] = i
+		u.weight[i] = 1.0
+	}
+}
+
+func (u *unionFind) union(x, y int, value float64) {
+	rootX := u.find(x)
+	rootY := u.find(y)
+	if rootX == rootY {
+		return
+	}
+
+	u.parent[rootX] = rootY
+	u.weight[rootX] = u.weight[y] * value / u.weight[x]
+}
+
+func (u *unionFind) find(x int) int {
+	if x != u.parent[x] {
+		origin := u.parent[x]
+		u.parent[x] = u.find(u.parent[x])
+		u.weight[x] *= u.weight[origin]
+	}
+
+	return u.parent[x]
+}
+
+func (u *unionFind) isConnected(x, y int) float64 {
+	rootX := u.find(x)
+	rootY := u.find(y)
+	if rootX == rootY {
+		return u.weight[x] / u.weight[y]
+	}
+
+	return -1.0
 }
