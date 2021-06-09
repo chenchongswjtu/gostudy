@@ -1195,8 +1195,8 @@ func calcEquation1(equations [][]string, values []float64, queries [][]string) [
 }
 
 type unionFind struct {
-	parent []int
-	weight []float64
+	parent []int     // parent[a] = b, 表示结点 a 的直接父亲结点是 b
+	weight []float64 // weight[a] = 2.0，表示结点 a 的直接父亲结点的有向边的权重
 }
 
 func (u *unionFind) init(n int) {
