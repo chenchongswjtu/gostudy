@@ -1053,7 +1053,7 @@ func decodeString(s string) string {
 		} else if (cur >= 'a' && cur <= 'z' || cur >= 'A' && cur <= 'Z') || cur == '[' {
 			stk = append(stk, string(cur))
 			ptr++
-		} else {
+		} else { // ']'
 			// 跳过']'
 			ptr++
 			var sub []string
