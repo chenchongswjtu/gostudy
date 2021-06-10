@@ -1255,3 +1255,20 @@ func reconstructQueue(people [][]int) (ans [][]int) {
 	}
 	return
 }
+
+// 494. 目标和
+func findTargetSumWays(nums []int, target int) (count int) {
+	var backtrack func(int, int)
+	backtrack = func(index int, sum int) {
+		if index == len(nums) {
+			if sum == target {
+				count++
+			}
+			return
+		}
+		backtrack(index+1, sum+nums[index])
+		backtrack(index+1, sum-nums[index])
+	}
+	backtrack(0, 0)
+	return
+}
