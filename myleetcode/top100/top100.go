@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	fmt.Println(calcEquation1([][]string{{"a", "b"}, {"b", "c"}}, []float64{2.0, 3.0}, [][]string{{"a", "c"}, {"b", "a"}, {"a", "e"}, {"a", "a"}, {"x", "x"}}))
+	fmt.Println(reconstructQueue([][]int{{7, 0}, {4, 4}, {7, 1}, {5, 0}, {6, 1}, {5, 2}}))
 }
 
 // 3. 无重复字符的最长子串(滑动窗口)
@@ -1159,7 +1159,7 @@ func calcEquation(equations [][]string, values []float64, queries [][]string) []
 // 399. 除法求值
 func calcEquation1(equations [][]string, values []float64, queries [][]string) []float64 {
 	n := len(equations)
-	u := new(2*n + 1)
+	u := newUnionFind(2*n + 1)
 	m := make(map[string]int)
 	id := 1
 	for i := 0; i < n; i++ {
@@ -1198,7 +1198,7 @@ type unionFind struct {
 	weight []float64 // weight[a] = 2.0，表示结点 a 的直接父亲结点的有向边的权重
 }
 
-func new(n int) *unionFind {
+func newUnionFind(n int) *unionFind {
 	u := &unionFind{}
 	u.parent = make([]int, n)
 	u.weight = make([]float64, n)
@@ -1239,4 +1239,19 @@ func (u *unionFind) isConnected(x, y int) float64 {
 	}
 
 	return -1.0
+}
+
+// 406 根据身高重建队列
+func reconstructQueue(people [][]int) (ans [][]int) {
+	sort.Slice(people, func(i, j int) bool {
+		a, b := people[i], people[j]
+		return a[0] > b[0] || a[0] == b[0] && a[1] < b[1]
+	})
+
+	fmt.Println(people)
+	for _, person := range people {
+		idx := person[1]
+		ans = append(ans[:idx], append([][]int{person}, ans[idx:]...)...)
+	}
+	return
 }
