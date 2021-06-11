@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	fmt.Println(subarraySum([]int{1, 1, 1}, 2))
+	fmt.Println(countSubstrings2("aaa"))
 }
 
 // 3. 无重复字符的最长子串(滑动窗口)
@@ -1316,6 +1316,67 @@ func dailyTemperatures(temperatures []int) []int {
 			ans[prevIndex] = i - prevIndex
 		}
 		stack = append(stack, i)
+	}
+	return ans
+}
+
+// 647. 回文子串(暴力解法)
+func countSubstrings1(s string) int {
+	n := len(s)
+	count := 0
+
+	is := func(s string) bool {
+		for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+			if s[i] != s[j] {
+				return false
+			}
+		}
+		return true
+	}
+
+	for i := 0; i < n; i++ {
+		for j := i; j < n; j++ {
+			if is(s[i : j+1]) {
+				count++
+			}
+		}
+	}
+	return count
+}
+
+//  647. 回文子串(动态规划)
+func countSubstrings(s string) int {
+	var dp = make([][]bool, len(s))
+	for i := 0; i < len(s); i++ {
+		dp[i] = make([]bool, len(s))
+	}
+
+	var ans = 0
+	for j := 0; j < len(s); j++ {
+		for i := 0; i <= j; i++ {
+			if s[i] == s[j] && (j-i < 2 || dp[i+1][j-1]) {
+				dp[i][j] = true
+				ans++
+			}
+		}
+	}
+	return ans
+}
+
+// 647. 回文子串
+// 中心扩展法
+// 中心点即 left 指针和 right 指针初始化指向的地方，可能是一个也可能是两个
+func countSubstrings2(s string) int {
+	var ans = 0
+
+	for center := 0; center < 2*len(s)-1; center++ {
+		l := center / 2
+		r := l + center%2
+		for l >= 0 && r < len(s) && s[l] == s[r] {
+			ans++
+			l--
+			r++
+		}
 	}
 	return ans
 }
