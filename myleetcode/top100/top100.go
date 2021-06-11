@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	fmt.Println(countSubstrings2("aaa"))
+	fmt.Println(myAtoi("words and 987"))
 }
 
 // 3. 无重复字符的最长子串(滑动窗口)
@@ -1379,4 +1379,66 @@ func countSubstrings2(s string) int {
 		}
 	}
 	return ans
+}
+
+// 8. 字符串转换整数 (atoi) 状态机
+func myAtoi(s string) int {
+	a := auto{}
+	a.init()
+	for i := 0; i < len(s); i++ {
+		a.get(s[i])
+	}
+	return a.sign * a.ans
+}
+
+type auto struct {
+	sign  int
+	ans   int
+	state string
+	table map[string][]string // 状态机
+}
+
+func (a *auto) init() {
+	a.sign = 1
+	a.ans = 0
+	a.state = "start"
+	a.table = make(map[string][]string)
+	a.table["start"] = []string{"start", "signed", "isNumber", "end"}
+	a.table["signed"] = []string{"end", "end", "isNumber", "end"}
+	a.table["isNumber"] = []string{"end", "end", "isNumber", "end"}
+	a.table["end"] = []string{"end", "end", "end", "end"}
+}
+
+func (a *auto) get(c uint8) {
+	a.state = a.table[a.state][getCol(c)]
+	if a.state == "isNumber" {
+		a.ans = a.ans*10 + int(c-'0')
+		if a.sign == 1 {
+			a.ans = min(a.ans, math.MaxInt32)
+		} else {
+			a.ans = min(a.ans, -math.MinInt32)
+		}
+	} else if a.state == "signed" {
+		if c == '+' {
+			a.sign = 1
+		} else {
+			a.sign = -1
+		}
+	}
+}
+
+func getCol(c uint8) int {
+	if c == ' ' { // 空格
+		return 0
+	}
+
+	if c == '+' || c == '-' { // 符号
+		return 1
+	}
+
+	if c >= '0' && c <= '9' { // 数字
+		return 2
+	}
+
+	return 3 // other
 }
