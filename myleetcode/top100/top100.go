@@ -1410,7 +1410,7 @@ func (a *auto) init() {
 	a.ans = 0
 	a.state = start
 	a.table = make(map[int][]int)
-	a.table[start] = []int{start, signed, isNumber, end}
+	a.table[start] = []int{start, signed, isNumber, end} // 从start经过0（空格）,1（符号）,2（数字）,3（其他）转化为对应的状态
 	a.table[signed] = []int{end, end, isNumber, end}
 	a.table[isNumber] = []int{end, end, isNumber, end}
 	a.table[end] = []int{end, end, end, end}
