@@ -1417,7 +1417,7 @@ func (a *auto) init() {
 }
 
 func (a *auto) get(c uint8) {
-	a.state = a.table[a.state][getCol(c)]
+	a.state = a.table[a.state][index(c)]
 	if a.state == isNumber {
 		a.ans = a.ans*10 + int(c-'0')
 		if a.sign == 1 {
@@ -1434,7 +1434,7 @@ func (a *auto) get(c uint8) {
 	}
 }
 
-func getCol(c uint8) int {
+func index(c uint8) int {
 	if c == ' ' { // 空格
 		return 0
 	}
