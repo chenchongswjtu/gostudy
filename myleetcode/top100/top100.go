@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	fmt.Println(myAtoi("words and 987"))
+	fmt.Println(myAtoi("-987"))
 }
 
 // 3. 无重复字符的最长子串(滑动窗口)
@@ -1394,31 +1394,38 @@ func myAtoi(s string) int {
 type auto struct {
 	sign  int
 	ans   int
-	state string
-	table map[string][]string // 状态机
+	state int
+	table map[int][]int // 状态机
 }
+
+const (
+	start = iota
+	signed
+	isNumber
+	end
+)
 
 func (a *auto) init() {
 	a.sign = 1
 	a.ans = 0
-	a.state = "start"
-	a.table = make(map[string][]string)
-	a.table["start"] = []string{"start", "signed", "isNumber", "end"}
-	a.table["signed"] = []string{"end", "end", "isNumber", "end"}
-	a.table["isNumber"] = []string{"end", "end", "isNumber", "end"}
-	a.table["end"] = []string{"end", "end", "end", "end"}
+	a.state = start
+	a.table = make(map[int][]int)
+	a.table[start] = []int{start, signed, isNumber, end}
+	a.table[signed] = []int{end, end, isNumber, end}
+	a.table[isNumber] = []int{end, end, isNumber, end}
+	a.table[end] = []int{end, end, end, end}
 }
 
 func (a *auto) get(c uint8) {
 	a.state = a.table[a.state][getCol(c)]
-	if a.state == "isNumber" {
+	if a.state == isNumber {
 		a.ans = a.ans*10 + int(c-'0')
 		if a.sign == 1 {
 			a.ans = min(a.ans, math.MaxInt32)
 		} else {
 			a.ans = min(a.ans, -math.MinInt32)
 		}
-	} else if a.state == "signed" {
+	} else if a.state == signed {
 		if c == '+' {
 			a.sign = 1
 		} else {
