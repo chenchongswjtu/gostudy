@@ -28,3 +28,19 @@ func findNumberIn2DArray(matrix [][]int, target int) bool {
 	}
 	return false
 }
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+// 剑指 Offer 06. 从尾到头打印链表
+func reversePrint(head *ListNode) []int {
+	var cur = head
+	var ans []int
+	for cur != nil {
+		ans = append([]int{cur.Val}, ans...)
+		cur = cur.Next
+	}
+	return ans
+}
