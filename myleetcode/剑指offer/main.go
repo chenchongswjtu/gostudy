@@ -1,7 +1,9 @@
 package main
 
-func main() {
+import "fmt"
 
+func main() {
+	fmt.Println(exist([][]byte{{'C', 'A', 'A'}, {'A', 'A', 'A'}, {'B', 'C', 'D'}}, "AAB"))
 }
 
 // 剑指 Offer 04. 二维数组中的查找
@@ -119,4 +121,51 @@ func minArray(numbers []int) int {
 		}
 	}
 	return numbers[low]
+}
+
+// 剑指 Offer 12. 矩阵中的路径
+func exist(board [][]byte, word string) bool {
+	if len(board) == 0 {
+		return false
+	}
+	if len(board[0]) == 0 {
+		return false
+	}
+
+	m := len(board)
+	n := len(board[0])
+
+	visited := make([][]bool, m)
+	for i := 0; i < m; i++ {
+		visited[i] = make([]bool, n)
+	}
+
+	var dfs func(i, j, index int, visited [][]bool) bool
+	dfs = func(i, j, index int, visited [][]bool) bool {
+		if index == len(word) {
+			return true
+		}
+
+		if i < 0 || i >= m || j < 0 || j >= n {
+			return false
+		}
+
+		if visited[i][j] || board[i][j] != word[index] {
+			return false
+		}
+
+		visited[i][j] = true
+		res := dfs(i+1, j, index+1, visited) || dfs(i, j+1, index+1, visited) || dfs(i-1, j, index+1, visited) || dfs(i, j-1, index+1, visited)
+		visited[i][j] = false // 回溯
+		return res
+	}
+
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			if dfs(i, j, 0, visited) {
+				return true
+			}
+		}
+	}
+	return false
 }
