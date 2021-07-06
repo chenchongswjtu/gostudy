@@ -433,3 +433,21 @@ func myPow(x float64, n int) float64 {
 	t := myPow(x, n/2)
 	return t * t
 }
+
+// 剑指 Offer 17. 打印从1到最大的n位数
+func printNumbers(n int) []int {
+	maxN := func(n int) int {
+		res := 1
+		for n > 0 {
+			res = res * 10
+			n = n - 1
+		}
+		return res - 1
+	}
+
+	res := make([]int, 0)
+	for i := 1; i <= maxN(n); i++ {
+		res = append(res, i)
+	}
+	return res
+}
