@@ -256,3 +256,40 @@ func cuttingRope2(n int) int {
 
 	return res * n % (1e9 + 7)
 }
+
+// 剑指 Offer 25. 合并两个排序的链表
+func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
+	if l1 == nil {
+		return l2
+	}
+
+	if l2 == nil {
+		return l1
+	}
+
+	var dummy = &ListNode{}
+	var cur = dummy
+	for l1 != nil && l2 != nil {
+		if l1.Val <= l2.Val {
+			t := &ListNode{Val: l1.Val}
+			cur.Next = t
+			cur = cur.Next
+			l1 = l1.Next
+		} else {
+			t := &ListNode{Val: l2.Val}
+			cur.Next = t
+			cur = cur.Next
+			l2 = l2.Next
+		}
+	}
+
+	if l1 != nil {
+		cur.Next = l1
+	}
+
+	if l2 != nil {
+		cur.Next = l2
+	}
+
+	return dummy.Next
+}
