@@ -293,3 +293,24 @@ func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 
 	return dummy.Next
 }
+
+func isSubStructure(A *TreeNode, B *TreeNode) bool {
+	if A == nil || B == nil {
+		return false
+	}
+
+	return helper(A, B) || isSubStructure(A.Left, B) || isSubStructure(A.Right, B)
+}
+
+// 包含以A为根的数是否包含B（必须从A开始）
+func helper(a *TreeNode, b *TreeNode) bool {
+	if b == nil {
+		return true
+	}
+
+	if a == nil || a.Val != b.Val {
+		return false
+	}
+
+	return helper(a.Left, b.Left) && helper(a.Right, b.Right)
+}
