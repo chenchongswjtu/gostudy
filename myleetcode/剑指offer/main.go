@@ -314,3 +314,16 @@ func helper(a *TreeNode, b *TreeNode) bool {
 
 	return helper(a.Left, b.Left) && helper(a.Right, b.Right)
 }
+
+// 剑指 Offer 27. 二叉树的镜像
+func mirrorTree(root *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+
+	l := mirrorTree(root.Right)
+	r := mirrorTree(root.Left)
+	root.Left = l
+	root.Right = r
+	return root
+}
