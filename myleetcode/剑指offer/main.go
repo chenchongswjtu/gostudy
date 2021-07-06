@@ -352,3 +352,24 @@ func isSymmetricHelper(left *TreeNode, right *TreeNode) bool {
 
 	return isSymmetricHelper(left.Left, right.Right) && isSymmetricHelper(left.Right, right.Left)
 }
+
+// 剑指 Offer 21. 调整数组顺序使奇数位于偶数前面
+func exchange(nums []int) []int {
+	i, j := 0, len(nums)-1
+	for i < j {
+		if nums[i]%2 == 1 {
+			i++
+		} else {
+			nums[i], nums[j] = nums[j], nums[i]
+			j--
+		}
+
+		if nums[j]%2 == 0 {
+			j--
+		} else {
+			nums[i], nums[j] = nums[j], nums[i]
+			i++
+		}
+	}
+	return nums
+}
