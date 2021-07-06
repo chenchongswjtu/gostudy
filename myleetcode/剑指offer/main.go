@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Println(exist([][]byte{{'C', 'A', 'A'}, {'A', 'A', 'A'}, {'B', 'C', 'D'}}, "AAB"))
+	fmt.Println(cuttingRope(10))
 }
 
 // 剑指 Offer 04. 二维数组中的查找
@@ -216,4 +216,43 @@ func movingCount(m int, n int, k int) int {
 	}
 
 	return ans
+}
+
+// 剑指 Offer 14- I. 剪绳子
+// 动态规划
+func cuttingRope(n int) int {
+	if n < 4 {
+		return n - 1
+	}
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	dp := make([]int, n+1)
+	dp[1] = 1
+	dp[2] = 2
+	dp[3] = 3
+	for i := 4; i < n+1; i++ {
+		for j := 1; j <= i/2; j++ {
+			dp[i] = max(dp[i], dp[i-j]*j)
+		}
+	}
+
+	return dp[n]
+}
+
+// 剑指 Offer 14- II. 剪绳子
+func cuttingRope2(n int) int {
+	if n < 4 {
+		return n - 1
+	}
+	res := 1
+	for n > 4 {
+		res = res * 3 % (1e9 + 7)
+		n = n - 3
+	}
+
+	return res * n % (1e9 + 7)
 }
