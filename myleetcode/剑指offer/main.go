@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
 	fmt.Println(cuttingRope(10))
@@ -382,4 +384,29 @@ func hammingWeight(num uint32) int {
 		ans++
 	}
 	return ans
+}
+
+// 剑指 Offer 22. 链表中倒数第k个节点
+func getKthFromEnd(head *ListNode, k int) *ListNode {
+	fast := head
+	count := 0
+	for fast != nil {
+		fast = fast.Next
+		count++
+		if count == k {
+			break
+		}
+	}
+
+	if count < k {
+		return nil
+	}
+
+	slow := head
+	for fast != nil {
+		slow = slow.Next
+		fast = fast.Next
+	}
+
+	return slow
 }
