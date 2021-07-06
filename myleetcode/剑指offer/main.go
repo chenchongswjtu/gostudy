@@ -169,3 +169,51 @@ func exist(board [][]byte, word string) bool {
 	}
 	return false
 }
+
+// 剑指 Offer 13. 机器人的运动范围
+// 广度优先搜索
+func movingCount(m int, n int, k int) int {
+	if k == 0 {
+		return 1
+	}
+
+	get := func(x int) int {
+		res := 0
+		for x != 0 {
+			res += x % 10
+			x = x / 10
+		}
+		return res
+	}
+
+	queue := make([][2]int, 0)
+	visited := make([][]bool, m)
+	for i := 0; i < m; i++ {
+		visited[i] = make([]bool, n)
+	}
+	// 向下和向右的方向数组
+	dx := [2]int{0, 1}
+	dy := [2]int{1, 0}
+
+	queue = append(queue, [2]int{0, 0})
+	visited[0][0] = true
+	ans := 1
+	for len(queue) > 0 {
+		tail := queue[len(queue)-1]
+		queue = queue[:len(queue)-1]
+		x := tail[0]
+		y := tail[1]
+		for i := 0; i < 2; i++ {
+			tx := dx[i] + x
+			ty := dy[i] + y
+			if tx < 0 || tx >= m || ty < 0 || ty >= n || visited[tx][ty] || get(tx)+get(ty) > k {
+				continue
+			}
+			queue = append(queue, [2]int{tx, ty})
+			visited[tx][ty] = true
+			ans++
+		}
+	}
+
+	return ans
+}
