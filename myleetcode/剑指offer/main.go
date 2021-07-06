@@ -410,3 +410,26 @@ func getKthFromEnd(head *ListNode, k int) *ListNode {
 
 	return slow
 }
+
+// 剑指 Offer 16. 数值的整数次方
+func myPow(x float64, n int) float64 {
+	if n < 0 {
+		return myPow(1.0/x, -n)
+	}
+
+	if n == 1 {
+		return x
+	}
+
+	if n == 0 {
+		return 1
+	}
+
+	if n%2 == 1 {
+		t := myPow(x, n/2)
+		return t * t * x
+	}
+
+	t := myPow(x, n/2)
+	return t * t
+}
