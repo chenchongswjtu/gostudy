@@ -17,5 +17,5 @@ Please refer to our official github site for more installation instructions:
 
 需要protoc proto-gen-go proto-gen-go-grpc bin工具
 
-protoc --go_out=. hello_grpc.proto
-protoc --go-grpc_out=. hello_grpc.proto
+protoc --go_out=. hello.proto
+protoc --go-grpc_out=. hello.proto

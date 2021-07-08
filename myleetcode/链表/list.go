@@ -214,3 +214,24 @@ func removeNthFromEnd1(head *ListNode, n int) *ListNode {
 
 	return head
 }
+
+// 剑指 Offer 18. 删除链表的节点
+// 删除所有的val节点
+func deleteNode(head *ListNode, val int) *ListNode {
+	var dummy = &ListNode{}
+	dummy.Next = head
+	prev := dummy
+	cur := head
+	for cur != nil {
+		next := cur.Next
+		if cur.Val == val {
+			prev.Next = next
+			cur = next
+			continue
+		}
+		prev = cur
+		cur = next
+	}
+
+	return dummy.Next
+}

@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"io"
 	"log"
 	"net"
+	"time"
 
 	"google.golang.org/grpc"
 
-	pb "grpc/pb"
+	"grpc/pb"
 )
 
 type server struct {
@@ -17,6 +19,28 @@ type server struct {
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
+}
+
+func (s *server) HelloStream(stream pb.Greeter_HelloStreamServer) error {
+	go func() {
+		for {
+			recv, err := stream.Recv()
+			if err == io.EOF {
+				return
+			}
+			if err != nil {
+				return
+			}
+			log.Println(recv.GetName())
+			time.Sleep(100 * time.Millisecond)
+		}
+	}()
+
+	err := stream.Send(&pb.HelloReply{Message: "a"})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func main() {

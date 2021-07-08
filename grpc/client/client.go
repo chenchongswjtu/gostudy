@@ -7,7 +7,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "grpc/pb"
+	"grpc/pb"
 )
 
 func main() {
@@ -30,4 +30,23 @@ func main() {
 		log.Fatalf("could not greet: %v", err)
 	}
 	log.Printf("Greeting: %s", r.GetMessage())
+
+	stream, err := client.HelloStream(ctx)
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
+
+	err = stream.Send(&pb.HelloRequest{Name: "sss"})
+	if err != nil {
+		log.Fatalf("2222 %s", err)
+	}
+
+	recv, err := stream.Recv()
+	if err != nil {
+		log.Fatalf("3333 %s", err)
+	}
+
+	log.Println(recv.GetMessage())
+
+	stream.CloseSend()
 }
