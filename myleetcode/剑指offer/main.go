@@ -496,3 +496,22 @@ func quickSort(nums []int, left, right int, k int) {
 
 	quickSort(nums, left, i-1, k)
 }
+
+// 剑指 Offer 42. 连续子数组的最大和
+// 定义dp[i]表示数组中前i+1（注意这里的i是从0开始的）个元素构成的连续子数组的最大和。
+func maxSubArray(nums []int) int {
+	dp := make([]int, len(nums))
+	dp[0] = nums[0]
+	m := dp[0]
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	for i := 1; i < len(nums); i++ {
+		dp[i] = max(dp[i-1], 0) + nums[i]
+		m = max(m, dp[i])
+	}
+	return m
+}
