@@ -451,3 +451,17 @@ func printNumbers(n int) []int {
 	}
 	return res
 }
+
+// 剑指 Offer 24. 反转链表
+func reverseList(head *ListNode) *ListNode {
+	cur := head
+	var prev *ListNode
+	for cur != nil {
+		next := cur.Next
+		cur.Next = prev
+		prev = cur
+		cur = next
+	}
+
+	return prev
+}
