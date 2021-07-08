@@ -475,12 +475,12 @@ func quickSort(nums []int, left, right int, k int) {
 	if left > right {
 		return
 	}
-	i, j, pivot := left, right, nums[left]
+	i, j, v := left, right, nums[left]
 	for i < j {
-		for i < j && nums[j] >= pivot { //如果是求前k大,这里nums[j]>=pivot改成 nums[j]<=pivot
+		for i < j && nums[j] >= v { //如果是求前k大,这里nums[j]>=pivot改成 nums[j]<=pivot
 			j--
 		}
-		for i < j && nums[i] <= pivot { //如果是求前k大,这里nums[i]<=pivot改成 nums[i]>=pivot即可
+		for i < j && nums[i] <= v { //如果是求前k大,这里nums[i]<=pivot改成 nums[i]>=pivot即可
 			i++
 		}
 		nums[i], nums[j] = nums[j], nums[i] // 交换
