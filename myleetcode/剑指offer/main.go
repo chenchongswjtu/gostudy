@@ -465,3 +465,34 @@ func reverseList(head *ListNode) *ListNode {
 
 	return prev
 }
+
+// top k 剑指 Offer 40. 最小的k个数
+func getLeastNumbers(arr []int, k int) []int {
+	quickSort(arr, 0, len(arr)-1, k-1)
+	return arr[:k]
+}
+func quickSort(nums []int, left, right int, k int) {
+	if left > right {
+		return
+	}
+	i, j, pivot := left, right, nums[left]
+	for i < j {
+		for i < j && nums[j] >= pivot { //如果是求前k大,这里nums[j]>=pivot改成 nums[j]<=pivot
+			j--
+		}
+		for i < j && nums[i] <= pivot { //如果是求前k大,这里nums[i]<=pivot改成 nums[i]>=pivot即可
+			i++
+		}
+		nums[i], nums[j] = nums[j], nums[i] // 交换
+	}
+	nums[left], nums[i] = nums[i], nums[left] // 与基准交换
+	if k == i {
+		return
+	}
+
+	if i < k {
+		quickSort(nums, i+1, right, k)
+	}
+
+	quickSort(nums, left, i-1, k)
+}
