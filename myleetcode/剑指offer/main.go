@@ -560,7 +560,7 @@ func majorityElement(nums []int) int {
 }
 
 // 剑指 Offer 32 - I. 从上到下打印二叉树 (广度优先搜索)
-func levelOrder(root *TreeNode) []int {
+func levelOrder1(root *TreeNode) []int {
 	if root == nil {
 		return nil
 	}
@@ -579,5 +579,32 @@ func levelOrder(root *TreeNode) []int {
 		}
 	}
 
+	return res
+}
+
+func levelOrder(root *TreeNode) [][]int {
+	if root == nil {
+		return nil
+	}
+
+	q := []*TreeNode{root}
+	var res [][]int
+	for len(q) > 0 {
+		var t = make([]*TreeNode, len(q))
+		copy(t, q)
+
+		q = nil
+		var o []int
+		for _, node := range t {
+			o = append(o, node.Val)
+			if node.Left != nil {
+				q = append(q, node.Left)
+			}
+			if node.Right != nil {
+				q = append(q, node.Right)
+			}
+		}
+		res = append(res, o)
+	}
 	return res
 }
