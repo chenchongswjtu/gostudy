@@ -752,3 +752,18 @@ func pathSumHelper(root *TreeNode, target int, allPath *[][]int, path []int) {
 		pathSumHelper(root.Right, target-root.Val, allPath, t)
 	}
 }
+
+// 剑指 Offer 55 - I. 二叉树的深度
+func maxDepth(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+	return max(maxDepth(root.Left), maxDepth(root.Right)) + 1
+}
