@@ -631,3 +631,47 @@ func findNthDigit(n int) int {
 	nums := strconv.Itoa(num)
 	return int(nums[(n-1)%digits] - '0')
 }
+
+func levelOrder3(root *TreeNode) [][]int {
+	if root == nil {
+		return nil
+	}
+
+	q := []*TreeNode{root}
+	var res [][]int
+	for len(q) > 0 {
+		var t = make([]*TreeNode, len(q))
+		copy(t, q)
+
+		q = nil
+		var o []int
+		for _, node := range t {
+			o = append(o, node.Val)
+			if node.Left != nil {
+				q = append(q, node.Left)
+			}
+			if node.Right != nil {
+				q = append(q, node.Right)
+			}
+		}
+		res = append(res, o)
+	}
+
+	for i := 0; i < len(res); i++ {
+		if i%2 == 1 {
+			res[i] = reverse(res[i])
+		}
+	}
+	return res
+}
+
+func reverse(nums []int) []int {
+	i, j := 0, len(nums)-1
+	for i < j {
+		nums[i], nums[j] = nums[j], nums[i]
+		i++
+		j--
+	}
+
+	return nums
+}
