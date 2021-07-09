@@ -515,3 +515,28 @@ func maxSubArray(nums []int) int {
 	}
 	return m
 }
+
+// 剑指 Offer 31. 栈的压入、弹出序列
+func validateStackSequences(pushed []int, popped []int) bool {
+	var stack []int
+	i, j := 0, 0
+	for i < len(pushed) || j < len(popped) {
+		if len(stack) > 0 {
+			if j < len(popped) && stack[len(stack)-1] == popped[j] {
+				j++
+				stack = stack[:len(stack)-1]
+				continue
+			}
+		}
+
+		if i < len(pushed) && j < len(popped) && pushed[i] != popped[j] {
+			stack = append(stack, pushed[i])
+			i++
+		} else {
+			i++
+			j++
+		}
+	}
+
+	return len(stack) == 0
+}

@@ -23,23 +23,24 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 
 func (s *server) HelloStream(stream pb.Greeter_HelloStreamServer) error {
 	go func() {
-		for {
-			recv, err := stream.Recv()
-			if err == io.EOF {
-				return
-			}
-			if err != nil {
-				return
-			}
-			log.Println(recv.GetName())
-			time.Sleep(100 * time.Millisecond)
+		recv, err := stream.Recv()
+		if err == io.EOF {
+			log.Println("EOF")
+
+			return
 		}
+		if err != nil {
+			return
+		}
+		log.Println("22222", recv.GetName())
+		time.Sleep(100 * time.Millisecond)
 	}()
 
 	err := stream.Send(&pb.HelloReply{Message: "a"})
 	if err != nil {
 		return err
 	}
+	log.Println("hello stream end")
 	return nil
 }
 

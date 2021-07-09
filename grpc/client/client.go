@@ -46,7 +46,7 @@ func main() {
 		log.Fatalf("3333 %s", err)
 	}
 
-	log.Println(recv.GetMessage())
+	log.Println("client", recv.GetMessage())
 
 	stream.CloseSend()
 }
