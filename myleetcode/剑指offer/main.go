@@ -540,3 +540,21 @@ func validateStackSequences(pushed []int, popped []int) bool {
 
 	return len(stack) == 0
 }
+
+// 剑指 Offer 39. 数组中出现次数超过一半的数字
+func majorityElement(nums []int) int {
+	count := 0
+	var candidate int
+	for _, num := range nums {
+		if count == 0 {
+			candidate = num
+		}
+
+		if num == candidate {
+			count++
+		} else {
+			count--
+		}
+	}
+	return candidate
+}
