@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 )
 
 func main() {
-	fmt.Println(cuttingRope(10))
+	fmt.Println(findNthDigit(10))
 }
 
 // 剑指 Offer 04. 二维数组中的查找
@@ -607,4 +608,26 @@ func levelOrder(root *TreeNode) [][]int {
 		res = append(res, o)
 	}
 	return res
+}
+
+// 剑指 Offer 44. 数字序列中某一位的数字
+func findNthDigit(n int) int {
+	if n <= 9 {
+		return n
+	}
+
+	digits := 1 // 位数
+	begin := 1  // 这个位数最小的数
+	count := 9  // 这个位数所以的数的总的位数
+
+	for n > count {
+		n -= count
+		digits++
+		begin *= 10
+		count = digits * begin * 9
+	}
+
+	num := begin + (n-1)/digits
+	nums := strconv.Itoa(num)
+	return int(nums[(n-1)%digits] - '0')
 }
