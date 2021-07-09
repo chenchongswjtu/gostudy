@@ -719,3 +719,36 @@ func firstUniqChar(s string) byte {
 
 	return ' '
 }
+
+// 剑指 Offer 34. 二叉树中和为某一值的路径
+func pathSum(root *TreeNode, target int) [][]int {
+	if root == nil {
+		return nil
+	}
+	var allPath [][]int
+	pathSumHelper(root, target, &allPath, []int{})
+	return allPath
+}
+
+func pathSumHelper(root *TreeNode, target int, allPath *[][]int, path []int) {
+	if root.Left == nil && root.Right == nil {
+		if root.Val == target {
+			path = append(path, root.Val)
+			*allPath = append(*allPath, path)
+		}
+		return
+	}
+
+	t := make([]int, len(path))
+	copy(t, path)
+
+	if root.Left != nil {
+		path = append(path, root.Val)
+		pathSumHelper(root.Left, target-root.Val, allPath, path)
+	}
+
+	if root.Right != nil {
+		t = append(t, root.Val)
+		pathSumHelper(root.Right, target-root.Val, allPath, t)
+	}
+}
