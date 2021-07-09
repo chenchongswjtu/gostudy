@@ -675,3 +675,31 @@ func reverse(nums []int) []int {
 
 	return nums
 }
+
+// 剑指 Offer 33. 二叉搜索树的后序遍历序列
+func verifyPostorder(postorder []int) bool {
+	return verifyPostorderHelper(postorder, 0, len(postorder)-1)
+}
+
+func verifyPostorderHelper(postorder []int, l int, r int) bool {
+	if l >= r {
+		return true
+	}
+
+	m := l
+	root := postorder[r]
+
+	for postorder[m] < root {
+		m++
+	}
+	t := m
+
+	for t < r {
+		if postorder[t] < root {
+			return false
+		}
+		t++
+	}
+
+	return verifyPostorderHelper(postorder, l, m-1) && verifyPostorderHelper(postorder, m, r-1)
+}
