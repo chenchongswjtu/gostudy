@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 )
 
@@ -802,4 +803,19 @@ func singleNumbers(nums []int) []int {
 		ans = append(ans, k)
 	}
 	return ans
+}
+
+// 剑指 Offer 45. 把数组排成最小的数
+func minNumber(nums []int) string {
+	sort.Slice(nums, func(i, j int) bool {
+		si := strconv.Itoa(nums[i])
+		sj := strconv.Itoa(nums[j])
+		return si+sj < sj+si
+	})
+
+	var res string
+	for _, num := range nums {
+		res += strconv.Itoa(num)
+	}
+	return res
 }
