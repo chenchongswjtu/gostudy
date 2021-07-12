@@ -841,3 +841,31 @@ func findContinuousSequence(target int) [][]int {
 	}
 	return res
 }
+
+// 剑指 Offer 46. 把数字翻译成字符串
+func translateNum(num int) int {
+	var count int
+	translateNumHelper(strconv.Itoa(num), 0, &count)
+	return count
+}
+
+func translateNumHelper(numStr string, start int, count *int) {
+	if start >= len(numStr) {
+		*count++
+		return
+	}
+
+	if numStr[start] == '0' {
+		translateNumHelper(numStr, start+1, count)
+		return
+	}
+
+	for i := start; i < len(numStr); i++ {
+		s := numStr[start : i+1]
+		n, _ := strconv.Atoi(s)
+		if n > 25 {
+			break
+		}
+		translateNumHelper(numStr, i+1, count)
+	}
+}
