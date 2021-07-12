@@ -1012,3 +1012,21 @@ func missingNumber(nums []int) int {
 	}
 	return i
 }
+
+// 剑指 Offer 54. 二叉搜索树的第k大节点
+func kthLargest(root *TreeNode, k int) int {
+	var res []int
+	var inOrder func(root *TreeNode)
+
+	inOrder = func(root *TreeNode) {
+		if root == nil {
+			return
+		}
+		inOrder(root.Left)
+		res = append(res, root.Val)
+		inOrder(root.Right)
+	}
+
+	inOrder(root)
+	return res[len(res)-k]
+}
