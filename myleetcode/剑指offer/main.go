@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	fmt.Println(reverseWords("a good   example"))
+	fmt.Println(search([]int{5, 7, 7, 8, 8, 10}, 8))
 }
 
 // 剑指 Offer 04. 二维数组中的查找
@@ -963,4 +963,32 @@ func maxValue(grid [][]int) int {
 		}
 	}
 	return dp[m-1][n-1]
+}
+
+func search(nums []int, target int) int {
+	l, r := 0, len(nums)-1
+	for l <= r {
+		m := l + (r-l)/2
+		if nums[m] < target {
+			l = m + 1
+		} else {
+			//等与target时候也-1，收缩右边界来锁定左侧边界
+			r = m - 1
+		}
+	}
+	left := l
+
+	l, r = 0, len(nums)-1
+	for l <= r {
+		m := l + (r-l)/2
+		if nums[m] > target {
+			r = m - 1
+		} else {
+			//等与target时候也+1，收缩左边界来锁定右侧边界
+			l = m + 1
+		}
+	}
+	right := r
+
+	return right - left + 1
 }
