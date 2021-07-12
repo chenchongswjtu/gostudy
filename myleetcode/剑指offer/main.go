@@ -819,3 +819,25 @@ func minNumber(nums []int) string {
 	}
 	return res
 }
+
+// 剑指 Offer 57 - II. 和为s的连续正数序列
+// ***
+func findContinuousSequence(target int) [][]int {
+	var res [][]int
+	for l, r := 1, 2; l < r; {
+		sum := (l + r) * (r - l + 1) / 2
+		if sum == target {
+			var one []int
+			for i := l; i <= r; i++ {
+				one = append(one, i)
+			}
+			res = append(res, one)
+			l++
+		} else if sum < target {
+			r++
+		} else {
+			l++
+		}
+	}
+	return res
+}
