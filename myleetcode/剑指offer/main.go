@@ -869,3 +869,37 @@ func translateNumHelper(numStr string, start int, count *int) {
 		translateNumHelper(numStr, i+1, count)
 	}
 }
+
+// 剑指 Offer 52. 两个链表的第一个公共节点
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+	if headA == nil || headB == nil {
+		return nil
+	}
+	ma := make(map[*ListNode]*ListNode)
+	mb := make(map[*ListNode]*ListNode)
+
+	cura := headA
+	for cura != nil {
+		ma[cura] = cura.Next
+		cura = cura.Next
+	}
+
+	curb := headB
+	for curb != nil {
+		mb[curb] = curb.Next
+		curb = curb.Next
+	}
+
+	cura = headA
+	for cura != nil {
+		next, ok := mb[cura]
+		if ok {
+			if ma[cura] == next {
+				return cura
+			}
+		}
+		cura = cura.Next
+	}
+
+	return nil
+}
