@@ -785,3 +785,21 @@ func twoSum(nums []int, target int) []int {
 	}
 	return ans
 }
+
+// 剑指 Offer 56 - I. 数组中数字出现的次数
+func singleNumbers(nums []int) []int {
+	set := make(map[int]struct{})
+	for _, num := range nums {
+		if _, ok := set[num]; ok {
+			delete(set, num)
+			continue
+		}
+		set[num] = struct{}{}
+	}
+
+	var ans []int
+	for k := range set {
+		ans = append(ans, k)
+	}
+	return ans
+}
