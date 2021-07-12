@@ -997,3 +997,18 @@ func search(nums []int, target int) int {
 func reverseLeftWords(s string, n int) string {
 	return s[n:] + s[:n]
 }
+
+// 剑指 Offer 53 - II. 0～n-1中缺失的数字
+func missingNumber(nums []int) int {
+	i, j := 0, len(nums)-1
+
+	for i <= j {
+		m := i + (j-i)/2
+		if nums[m] == m {
+			i = m + 1
+		} else {
+			j = m - 1
+		}
+	}
+	return i
+}
