@@ -767,3 +767,21 @@ func maxDepth(root *TreeNode) int {
 	}
 	return max(maxDepth(root.Left), maxDepth(root.Right)) + 1
 }
+
+// 剑指 Offer 57. 和为s的两个数字
+func twoSum(nums []int, target int) []int {
+	var ans []int
+	i, j := 0, len(nums)-1
+	for i < j {
+		if nums[i]+nums[j] == target {
+			return []int{nums[i], nums[j]}
+		}
+
+		if nums[i]+nums[j] < target {
+			i++
+		} else {
+			j--
+		}
+	}
+	return ans
+}
