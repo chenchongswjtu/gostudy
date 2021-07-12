@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 func main() {
-	fmt.Println(findNthDigit(10))
+	fmt.Println(reverseWords("a good   example"))
 }
 
 // 剑指 Offer 04. 二维数组中的查找
@@ -902,4 +903,24 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 	}
 
 	return nil
+}
+
+// 剑指 Offer 58 - I. 翻转单词顺序
+func reverseWords(s string) string {
+	s = strings.Trim(s, " ")
+	ss := strings.Split(s, " ")
+
+	var ss1 []string
+	for i := 0; i < len(ss); i++ {
+		if ss[i] != "" {
+			ss1 = append(ss1, ss[i])
+		}
+	}
+
+	for i, j := 0, len(ss1)-1; i < j; {
+		ss1[i], ss1[j] = ss1[j], ss1[i]
+		i++
+		j--
+	}
+	return strings.Join(ss1, " ")
 }
