@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	fmt.Println(search([]int{5, 7, 7, 8, 8, 10}, 8))
+	fmt.Println(lengthOfLongestSubstring("abcabcbb"))
 }
 
 // 剑指 Offer 04. 二维数组中的查找
@@ -1029,4 +1029,38 @@ func kthLargest(root *TreeNode, k int) int {
 
 	inOrder(root)
 	return res[len(res)-k]
+}
+
+// 剑指 Offer 48. 最长不含重复字符的子字符串
+func lengthOfLongestSubstring(s string) int {
+	if len(s) == 0 {
+		return 0
+	}
+
+	l, r := 0, 0
+	maxLen := 0
+	set := make(map[byte]struct{})
+
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	for l < len(s) {
+		for r < len(s) {
+			if _, ok := set[s[r]]; ok {
+				break
+			}
+			set[s[r]] = struct{}{}
+			r++
+		}
+		maxLen = max(maxLen, r-l)
+
+		// 删除前面重复的
+		delete(set, s[l])
+		l++
+	}
+	return maxLen
 }
