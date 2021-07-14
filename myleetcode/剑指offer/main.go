@@ -1154,3 +1154,22 @@ func dicesProbability(n int) []float64 {
 
 	return dp
 }
+
+// 平衡二叉树
+func isBalanced(root *TreeNode) bool {
+	if root == nil {
+		return true
+	}
+
+	l := maxDepth(root.Left)
+	r := maxDepth(root.Right)
+	if (l-r > 1) || (l-r < -1) {
+		return false
+	}
+
+	return isBalanced(root.Left) && isBalanced(root.Right)
+}
+
+func isStraight(nums []int) bool {
+
+}
