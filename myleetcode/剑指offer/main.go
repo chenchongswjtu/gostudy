@@ -1170,6 +1170,37 @@ func isBalanced(root *TreeNode) bool {
 	return isBalanced(root.Left) && isBalanced(root.Right)
 }
 
+// 剑指 Offer 61. 扑克牌中的顺子
 func isStraight(nums []int) bool {
+	sort.Ints(nums)
 
+	count := 0
+	first := true
+	for i, num := range nums {
+		if num == 0 {
+			count++
+			continue
+		}
+
+		if num != 0 && first {
+			first = false
+			continue
+		}
+
+		diff := nums[i] - nums[i-1]
+		if diff == 0 {
+			return false
+		}
+		if diff == 1 {
+			continue
+		}
+
+		if count <= 0 {
+			return false
+		}
+
+		count = count - (diff - 1)
+	}
+
+	return count >= 0
 }
