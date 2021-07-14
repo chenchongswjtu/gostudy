@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	fmt.Println(lengthOfLongestSubstring("abcabcbb"))
+	fmt.Println(constructArr([]int{1, 2, 3, 4, 5}))
 }
 
 // 剑指 Offer 04. 二维数组中的查找
@@ -1091,4 +1091,32 @@ func min(a, b int) int {
 		return a
 	}
 	return b
+}
+
+// 剑指 Offer 66. 构建乘积数组
+func constructArr(a []int) []int {
+	left := make([]int, len(a))
+	right := make([]int, len(a))
+
+	for i := range a {
+		if i == 0 {
+			left[i] = 1
+		} else {
+			left[i] = a[i-1] * left[i-1]
+		}
+	}
+
+	for i := len(a) - 1; i >= 0; i-- {
+		if i == len(a)-1 {
+			right[i] = 1
+		} else {
+			right[i] = a[i+1] * right[i+1]
+		}
+	}
+
+	ans := make([]int, len(a))
+	for i := range a {
+		ans[i] = left[i] * right[i]
+	}
+	return ans
 }
