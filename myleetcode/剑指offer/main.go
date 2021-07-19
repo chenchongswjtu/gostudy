@@ -1235,3 +1235,16 @@ func maxProfit(prices []int) int {
 
 	return res
 }
+
+// 剑指 Offer 62. 圆圈中最后剩下的数字
+func lastRemaining(n int, m int) int {
+	return f(n, m)
+}
+
+func f(n int, m int) int {
+	if n == 1 {
+		return 0
+	}
+	x := f(n-1, m)
+	return (x + m) % n
+}
