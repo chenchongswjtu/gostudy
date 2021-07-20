@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"sort"
 	"strconv"
 	"strings"
@@ -1308,4 +1309,68 @@ func maxSlidingWindow(nums []int, k int) []int {
 		ans = append(ans, nums[q[0]])
 	}
 	return ans
+}
+
+// 最小栈
+type MinStack struct {
+	stack    []int
+	minStack []int
+}
+
+func Constructor() MinStack {
+	return MinStack{
+		stack:    []int{},
+		minStack: []int{math.MaxInt64},
+	}
+}
+
+func (s *MinStack) Push(x int) {
+	s.stack = append(s.stack, x)
+	top := s.minStack[len(s.minStack)-1]
+	s.minStack = append(s.minStack, min(x, top))
+}
+
+func (s *MinStack) Pop() {
+	s.stack = s.stack[:len(s.stack)-1]
+	s.minStack = s.minStack[:len(s.minStack)-1]
+}
+
+func (s *MinStack) Top() int {
+	return s.stack[len(s.stack)-1]
+}
+
+func (s *MinStack) Min() int {
+	return s.minStack[len(s.minStack)-1]
+}
+
+// 顺时针打印矩阵
+func spiralOrder(matrix [][]int) []int {
+	if len(matrix) == 0 || len(matrix[0]) == 0 {
+		return []int{}
+	}
+	rows, columns := len(matrix), len(matrix[0])
+	visited := make([][]bool, rows)
+	for i := 0; i < rows; i++ {
+		visited[i] = make([]bool, columns)
+	}
+
+	var (
+		total          = rows * columns
+		order          = make([]int, total)
+		row, column    = 0, 0
+		directions     = [][]int{{0, 1}, {1, 0}, {0, -1}, {-1, 0}}
+		directionIndex = 0
+	)
+
+	for i := 0; i < total; i++ {
+		order[i] = matrix[row][column]
+		visited[row][column] = true
+		nextRow, nextColumn := row+directions[directionIndex][0], column+directions[directionIndex][1]
+		if nextRow < 0 || nextRow >= rows || nextColumn < 0 || nextColumn >= columns || visited[nextRow][nextColumn] {
+			directionIndex = (directionIndex + 1) % 4
+		}
+		row += directions[directionIndex][0]
+		column += directions[directionIndex][1]
+	}
+	return order
 }
