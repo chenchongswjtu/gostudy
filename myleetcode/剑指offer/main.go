@@ -1277,3 +1277,35 @@ func copyRandomList(head *Node) *Node {
 
 	return m[head]
 }
+
+// 剑指 Offer 59 - I. 滑动窗口的最大值
+// 单调队列
+func maxSlidingWindow(nums []int, k int) []int {
+	if len(nums) == 0 {
+		return nil
+	}
+	var q []int
+	push := func(i int) {
+		for len(q) > 0 && nums[i] >= nums[q[len(q)-1]] { // 单调递减
+			q = q[:len(q)-1]
+		}
+		q = append(q, i)
+	}
+
+	for i := 0; i < k; i++ {
+		push(i)
+	}
+
+	n := len(nums)
+	var ans []int
+	ans = append(ans, nums[q[0]])
+
+	for i := k; i < n; i++ {
+		push(i)
+		for q[0] <= i-k { // 最大的大于K
+			q = q[1:]
+		}
+		ans = append(ans, nums[q[0]])
+	}
+	return ans
+}
