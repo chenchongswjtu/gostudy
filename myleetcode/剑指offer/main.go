@@ -1668,3 +1668,27 @@ func (h *minHeap) Pop() (v interface{}) {
 func (h *minHeap) Peek() int {
 	return (*h)[0]
 }
+
+// 面试题43. 1～n 整数中 1 出现的次数
+func countDigitOne(n int) int {
+	digit := 1 // 位数
+	res := 0
+	high := n / 10              // 这个位数的高位
+	cur := n % 10               // 这个位数的值
+	low := 0                    // 这个位数的地位
+	for high != 0 || cur != 0 { // 根据当前位数为0,1，>1
+		if cur == 0 {
+			res += high * digit
+		} else if cur == 1 {
+			res += high*digit + low + 1
+		} else {
+			res += (high + 1) * digit
+		}
+
+		low += cur * digit
+		cur = high % 10
+		high /= 10
+		digit *= 10
+	}
+	return res
+}
