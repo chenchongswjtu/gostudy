@@ -1515,3 +1515,39 @@ func isNumber(s string) bool {
 	}
 	return state == STATE_INTEGER || state == STATE_POINT || state == STATE_FRACTION || state == STATE_EXP_NUMBER || state == STATE_END
 }
+
+// 数组中的逆序对 (归并排序)
+func reversePairs(nums []int) int {
+	return mergeSort(nums, 0, len(nums)-1)
+}
+
+func mergeSort(nums []int, start int, end int) int {
+	if start >= end {
+		return 0
+	}
+	mid := start + (end-start)/2
+	count := mergeSort(nums, start, mid) + mergeSort(nums, mid+1, end)
+	var tmp []int
+	i, j := start, mid+1
+	for i <= mid && j <= end {
+		if nums[i] <= nums[j] {
+			tmp = append(tmp, nums[i]) // nums[i] > nums[mid+1:j-1] 就有j-（mid+1）个逆序对
+			count += j - (mid + 1)
+			i++
+		} else {
+			tmp = append(tmp, nums[j])
+			j++
+		}
+	}
+	for ; i <= mid; i++ {
+		tmp = append(tmp, nums[i])
+		count += end - (mid + 1) + 1
+	}
+	for ; j <= end; j++ {
+		tmp = append(tmp, nums[j])
+	}
+	for i := start; i <= end; i++ {
+		nums[i] = tmp[i-start]
+	}
+	return count
+}
