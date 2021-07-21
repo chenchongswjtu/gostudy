@@ -1358,7 +1358,7 @@ func spiralOrder(matrix [][]int) []int {
 		total          = rows * columns
 		order          = make([]int, total)
 		row, column    = 0, 0
-		directions     = [][]int{{0, 1}, {1, 0}, {0, -1}, {-1, 0}}
+		directions     = [][]int{{0, 1}, {1, 0}, {0, -1}, {-1, 0}} // 顺时针方向
 		directionIndex = 0
 	)
 
@@ -1373,4 +1373,44 @@ func spiralOrder(matrix [][]int) []int {
 		column += directions[directionIndex][1]
 	}
 	return order
+}
+
+// 剑指 Offer 59 - II. 队列的最大值
+type MaxQueue struct {
+	q   []int
+	max []int
+}
+
+func Constructor1() MaxQueue {
+	return MaxQueue{
+		q:   make([]int, 0),
+		max: make([]int, 0),
+	}
+}
+
+func (this *MaxQueue) Max_value() int {
+	if len(this.max) == 0 {
+		return -1
+	}
+	return this.max[0]
+}
+
+func (this *MaxQueue) Push_back(value int) {
+	this.q = append(this.q, value)
+	for len(this.max) != 0 && value > this.max[len(this.max)-1] { // 递减
+		this.max = this.max[:len(this.max)-1]
+	}
+	this.max = append(this.max, value)
+}
+
+func (this *MaxQueue) Pop_front() int {
+	n := -1
+	if len(this.q) != 0 {
+		n := this.q[0]
+		this.q = this.q[1:]
+		if this.max[0] == n {
+			this.max = this.max[1:]
+		}
+	}
+	return n
 }
