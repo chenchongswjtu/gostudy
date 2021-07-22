@@ -1675,8 +1675,8 @@ func countDigitOne(n int) int {
 	res := 0
 	high := n / 10              // 这个位数的高位
 	cur := n % 10               // 这个位数的值
-	low := 0                    // 这个位数的地位
-	for high != 0 || cur != 0 { // 根据当前位数为0,1，>1
+	low := 0                    // 这个位数的低位
+	for high != 0 || cur != 0 { // 根据当前位数值为0,1,>1 进行分类计算
 		if cur == 0 {
 			res += high * digit
 		} else if cur == 1 {
