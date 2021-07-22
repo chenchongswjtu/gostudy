@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 )
 
 func main() {
-	fmt.Println(findSecondMinimumValue(Ints2TreeNode([]int{2, 2, 2})))
+	fmt.Println(Constructor().serialize(Ints2TreeNode([]int{2, 2, 2})))
+
+	fmt.Println(Constructor().deserialize("2,2,null,null,2,null,null,"))
 }
 
 // 验证二叉搜索树(递归)
@@ -1753,4 +1756,43 @@ func maxPathSum(root *TreeNode) int {
 	}
 	maxGain(root)
 	return maxSum
+}
+
+// 297. 二叉树的序列化与反序列化(困难)
+type Codec struct{}
+
+func Constructor() (_ Codec) {
+	return
+}
+
+func (Codec) serialize(root *TreeNode) string {
+	sb := &strings.Builder{}
+	var dfs func(*TreeNode)
+	dfs = func(node *TreeNode) {
+		if node == nil {
+			sb.WriteString("null,")
+			return
+		}
+		sb.WriteString(strconv.Itoa(node.Val))
+		sb.WriteByte(',')
+		dfs(node.Left)
+		dfs(node.Right)
+	}
+	dfs(root)
+	return sb.String()
+}
+
+func (Codec) deserialize(data string) *TreeNode {
+	sp := strings.Split(data, ",")
+	var build func() *TreeNode
+	build = func() *TreeNode {
+		if sp[0] == "null" {
+			sp = sp[1:]
+			return nil
+		}
+		val, _ := strconv.Atoi(sp[0])
+		sp = sp[1:]
+		return &TreeNode{val, build(), build()}
+	}
+	return build()
 }
