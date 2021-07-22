@@ -1796,3 +1796,37 @@ func (Codec) deserialize(data string) *TreeNode {
 	}
 	return build()
 }
+
+// 331. 验证二叉树的前序序列化
+func isValidSerialization(preorder string) bool {
+	n := len(preorder)
+	stack := []int{1}
+	for i := 0; i < n; {
+		if len(stack) == 0 {
+			return false
+		}
+		if preorder[i] == ',' {
+			i++
+		} else if preorder[i] == '#' {
+			// 为nil减少栈顶的槽位
+			stack[len(stack)-1]--
+			if stack[len(stack)-1] == 0 {
+				stack = stack[:len(stack)-1]
+			}
+			i++
+		} else {
+			// 读数字
+			for i < n && preorder[i] != ',' {
+				i++
+			}
+			// 为数字减少栈顶的槽位
+			stack[len(stack)-1]--
+			if stack[len(stack)-1] == 0 {
+				stack = stack[:len(stack)-1]
+			}
+			// 在调加一个为2的槽位
+			stack = append(stack, 2)
+		}
+	}
+	return len(stack) == 0
+}
