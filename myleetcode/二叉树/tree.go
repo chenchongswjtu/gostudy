@@ -3,14 +3,19 @@ package main
 import (
 	"fmt"
 	"math"
+	"sort"
 	"strconv"
 	"strings"
 )
 
 func main() {
-	fmt.Println(Constructor().serialize(Ints2TreeNode([]int{2, 2, 2})))
+	k := Constructor3(1, []int{-2})
+	fmt.Println(k.Add(-3))
+	fmt.Println(k.Add(0))
+	fmt.Println(k.Add(2))
+	fmt.Println(k.Add(-1))
+	fmt.Println(k.Add(4))
 
-	fmt.Println(Constructor().deserialize("2,2,null,null,2,null,null"))
 }
 
 // 验证二叉搜索树(递归)
@@ -1834,4 +1839,40 @@ func isValidSerialization(preorder string) bool {
 		}
 	}
 	return len(stack) == 0
+}
+
+// 703. 数据流中的第 K 大元素
+type KthLargest struct {
+	nums []int
+	k    int
+}
+
+func Constructor3(k int, nums []int) KthLargest {
+	kth := KthLargest{nums: make([]int, k), k: k}
+	for i := 0; i < k; i++ {
+		kth.nums[i] = math.MinInt32
+	}
+	sort.Ints(nums)
+	j := 0
+	for i := len(nums) - 1; i >= 0; i-- {
+		n := nums[i]
+		kth.nums[j] = n
+		j++
+		if j == k {
+			break
+		}
+	}
+	return kth
+}
+
+func (this *KthLargest) Add(val int) int {
+	for i := 0; i < len(this.nums); i++ {
+		if val > this.nums[i] {
+			this.nums = append(this.nums[:i], append([]int{val}, this.nums[i:]...)...)
+			this.nums = this.nums[:this.k]
+			break
+		}
+	}
+
+	return this.nums[this.k-1]
 }
