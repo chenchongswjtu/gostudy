@@ -136,4 +136,13 @@ func main() {
 
 	//t1的时间是否与t2相等
 	t1.Equal(t2)
+
+	now := time.Now()
+	// backdate 30 days
+	notBefore := now.Add(-30 * 24 * time.Hour)
+	// set expiry to around 100 years
+	notAfter := time.Date(now.Year()+100, now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second(), 0, time.Local)
+
+	fmt.Println(notBefore.UTC())
+	fmt.Println(notAfter.UTC())
 }
