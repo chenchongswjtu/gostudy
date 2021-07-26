@@ -10,7 +10,7 @@ import (
 func main() {
 	fmt.Println(Constructor().serialize(Ints2TreeNode([]int{2, 2, 2})))
 
-	fmt.Println(Constructor().deserialize("2,2,null,null,2,null,null,"))
+	fmt.Println(Constructor().deserialize("2,2,null,null,2,null,null"))
 }
 
 // 验证二叉搜索树(递归)
@@ -1783,6 +1783,9 @@ func (Codec) serialize(root *TreeNode) string {
 }
 
 func (Codec) deserialize(data string) *TreeNode {
+	if data[len(data)-1] == ',' {
+		data = data[:len(data)-1]
+	}
 	sp := strings.Split(data, ",")
 	var build func() *TreeNode
 	build = func() *TreeNode {
@@ -1794,7 +1797,8 @@ func (Codec) deserialize(data string) *TreeNode {
 		sp = sp[1:]
 		return &TreeNode{val, build(), build()}
 	}
-	return build()
+	n := build()
+	return n
 }
 
 // 331. 验证二叉树的前序序列化
