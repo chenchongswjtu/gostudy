@@ -1779,7 +1779,8 @@ func (Codec) serialize(root *TreeNode) string {
 		dfs(node.Right)
 	}
 	dfs(root)
-	return sb.String()
+	s := sb.String()
+	return s[:len(s)-1]
 }
 
 func (Codec) deserialize(data string) *TreeNode {
