@@ -1745,3 +1745,28 @@ func bstFromPreorder(preorder []int) *TreeNode {
 	node.Right = bstFromPreorder(preorder[i:])
 	return node
 }
+
+// 1022. 从根到叶的二进制数之和
+func sumRootToLeaf(root *TreeNode) int {
+	var sum int
+	var dfs func(node *TreeNode, prev int)
+	// prev为这个节点前面数的值
+	dfs = func(node *TreeNode, prev int) {
+		// 根节点计算数据到sum
+		if node.Left == nil && node.Right == nil {
+			sum += prev*2 + node.Val
+			return
+		}
+
+		if node.Left != nil {
+			dfs(node.Left, prev*2+node.Val)
+		}
+
+		if node.Right != nil {
+			dfs(node.Right, prev*2+node.Val)
+		}
+	}
+
+	dfs(root, 0)
+	return sum
+}
