@@ -2016,3 +2016,38 @@ func isCompleteTree(root *TreeNode) bool {
 	}
 	return true
 }
+
+// 971. 翻转二叉树以匹配先序遍历
+func flipMatchVoyage(root *TreeNode, voyage []int) []int {
+	var res []int
+	// 使用res记录需要反转的节点的值
+
+	var dfs func(root *TreeNode, voyage *[]int) bool
+
+	dfs = func(root *TreeNode, voyage *[]int) bool {
+		if root == nil {
+			return true
+		}
+		// 根节点的值和voyage第0个元素不符，无法通过反转节点使使先序遍历符合voyage
+		if root.Val != (*voyage)[0] {
+			res = []int{-1}
+			return false
+		}
+		// 当且仅当根节点的左右节点都不为空，且右儿子的值等于voyage的第1个元素，需要反转根节点的左右儿子
+		if root.Left != nil && root.Right != nil && root.Right.Val == (*voyage)[1] {
+			res = append(res, root.Val)
+			root.Left, root.Right = root.Right, root.Left
+		}
+		// 消耗掉voyage第0个元素
+		*voyage = (*voyage)[1:]
+		// 如果对左儿子递归的结果为false，就进行剪枝操作
+		ok := dfs(root.Left, voyage)
+		if !ok {
+			return false
+		}
+		return dfs(root.Right, voyage)
+	}
+
+	dfs(root, &voyage)
+	return res
+}
