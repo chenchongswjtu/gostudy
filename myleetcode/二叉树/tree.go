@@ -1920,3 +1920,29 @@ func distanceK(root, target *TreeNode, k int) (ans []int) {
 	findAns(target, nil, 0)
 	return
 }
+
+// 865. 具有所有最深节点的最小子树
+// 思路：从每个树开始，获得当前节点的左右子树的最大深度
+// 深度相同，说明最深的节点在这个节点两边，那这个节点就是结果
+// 如果深度不相同，则去深度大的子树继续判断，最终就能得到结果
+func subtreeWithAllDeepest(root *TreeNode) *TreeNode {
+	if root == nil {
+		return root
+	}
+
+	// 获取当前节点的左右子树的最大深度
+	leftMaxDepth := getHeight(root.Left)
+	rightMaxDepth := getHeight(root.Right)
+
+	// 如果两边最大深度相同，则这个节点就是结果
+	if leftMaxDepth == rightMaxDepth {
+		return root
+	}
+
+	// 不相等，那就去深度大的子树那边继续找
+	if leftMaxDepth > rightMaxDepth {
+		return subtreeWithAllDeepest(root.Left)
+	}
+
+	return subtreeWithAllDeepest(root.Right)
+}
