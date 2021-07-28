@@ -1946,3 +1946,27 @@ func subtreeWithAllDeepest(root *TreeNode) *TreeNode {
 
 	return subtreeWithAllDeepest(root.Right)
 }
+
+// 897. 递增顺序搜索树
+func increasingBST(root *TreeNode) *TreeNode {
+	var nums []int
+	var inOrder func(node *TreeNode)
+	inOrder = func(node *TreeNode) {
+		if node != nil {
+			inOrder(node.Left)
+			nums = append(nums, node.Val)
+			inOrder(node.Right)
+		}
+	}
+
+	inOrder(root)
+
+	dummy := &TreeNode{}
+	cur := dummy
+	for _, num := range nums {
+		cur.Right = &TreeNode{Val: num}
+		cur = cur.Right
+	}
+
+	return dummy.Right
+}
