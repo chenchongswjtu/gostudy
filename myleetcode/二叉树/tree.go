@@ -1984,3 +1984,35 @@ func flipEquiv(root1 *TreeNode, root2 *TreeNode) bool {
 	return (flipEquiv(root1.Left, root2.Left) && flipEquiv(root1.Right, root2.Right)) ||
 		(flipEquiv(root1.Left, root2.Right) && flipEquiv(root1.Right, root2.Left))
 }
+
+//958. 二叉树的完全性检验
+func isCompleteTree(root *TreeNode) bool {
+	if root == nil {
+		return true
+	}
+	var q = []*TreeNode{root}
+	var isFin bool
+	for len(q) > 0 {
+		t := q[0]
+		q = q[1:]
+
+		if t.Left != nil {
+			if isFin { // 如果已经isFin为true再遇到不为nil的节点直接返回false
+				return false
+			}
+			q = append(q, t.Left)
+		} else { // 遇到第一个nil的设置isFin为true
+			isFin = true
+		}
+
+		if t.Right != nil {
+			if isFin {
+				return false
+			}
+			q = append(q, t.Right)
+		} else {
+			isFin = true
+		}
+	}
+	return true
+}
