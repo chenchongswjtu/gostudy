@@ -1726,3 +1726,22 @@ func isCousins(root *TreeNode, x, y int) bool {
 
 	return xDepth == yDepth && xParent != yParent
 }
+
+// 1008. 前序遍历构造二叉搜索树
+func bstFromPreorder(preorder []int) *TreeNode {
+	if len(preorder) == 0 {
+		return nil
+	}
+
+	node := &TreeNode{Val: preorder[0]}
+	i := 1
+	for i = 1; i < len(preorder); i++ {
+		if preorder[i] >= preorder[0] {
+			break
+		}
+	}
+
+	node.Left = bstFromPreorder(preorder[1:i])
+	node.Right = bstFromPreorder(preorder[i:])
+	return node
+}
