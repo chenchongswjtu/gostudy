@@ -1692,3 +1692,37 @@ func countDigitOne(n int) int {
 	}
 	return res
 }
+
+// 993. 二叉树的堂兄弟节点
+func isCousins(root *TreeNode, x, y int) bool {
+	var xParent, yParent *TreeNode
+	var xDepth, yDepth int
+	var xFound, yFound bool
+
+	var dfs func(node *TreeNode, parent *TreeNode, depth int)
+	dfs = func(node *TreeNode, parent *TreeNode, depth int) {
+		if node == nil {
+			return
+		}
+
+		if node.Val == x {
+			xDepth, xParent, xFound = depth, parent, true
+		} else if node.Val == y {
+			yDepth, yParent, yFound = depth, parent, true
+		}
+
+		if xFound && yFound {
+			return
+		}
+
+		dfs(node.Left, node, depth+1)
+		if xFound && yFound {
+			return
+		}
+		dfs(node.Right, node, depth+1)
+	}
+
+	dfs(root, nil, 0)
+
+	return xDepth == yDepth && xParent != yParent
+}
