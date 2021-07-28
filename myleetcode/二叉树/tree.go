@@ -1216,6 +1216,7 @@ func isSubtree(s *TreeNode, t *TreeNode) bool {
 	return isSame(s, t) || isSubtree(s.Left, t) || isSubtree(s.Right, t)
 }
 
+// 包含a,b根节点验证是否相同
 func isSame(a, b *TreeNode) bool {
 	if a == nil && b == nil {
 		return true
@@ -1875,4 +1876,47 @@ func (this *KthLargest) Add(val int) int {
 	}
 
 	return this.nums[this.k-1]
+}
+
+// 863. 二叉树中所有距离为 K 的结点
+func distanceK(root, target *TreeNode, k int) (ans []int) {
+	// 从root出发dfs，记录每个节点的父节点
+	parents := map[int]*TreeNode{}
+	var findParents func(node *TreeNode)
+	findParents = func(node *TreeNode) {
+		if node.Left != nil {
+			parents[node.Left.Val] = node
+			findParents(node.Left)
+		}
+		if node.Right != nil {
+			parents[node.Right.Val] = node
+			findParents(node.Right)
+		}
+	}
+
+	findParents(root)
+
+	// 从target出发dfs，寻找所有深度为k的节点
+	// from 为来源节点
+	var findAns func(node *TreeNode, from *TreeNode, depth int)
+	findAns = func(node *TreeNode, from *TreeNode, depth int) {
+		if node == nil {
+			return
+		}
+		if depth == k {
+			ans = append(ans, node.Val)
+		}
+		if node.Left != from {
+			findAns(node.Left, node, depth+1)
+		}
+		if node.Right != from {
+			findAns(node.Right, node, depth+1)
+		}
+		if parents[node.Val] != from {
+			findAns(parents[node.Val], node, depth+1)
+		}
+	}
+
+	findAns(target, nil, 0)
+	return
 }
