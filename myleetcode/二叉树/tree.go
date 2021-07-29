@@ -2239,3 +2239,34 @@ func bstToGst(root *TreeNode) *TreeNode {
 
 	return root
 }
+
+// 1161. 最大层内元素和
+func maxLevelSum(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	var q = []*TreeNode{root}
+	var maxValue = math.MinInt64
+	var maxLevel = 1
+	var level = 0
+	for len(q) > 0 {
+		t := q
+		q = nil
+		sum := 0
+		level++
+		for _, node := range t {
+			sum += node.Val
+			if node.Left != nil {
+				q = append(q, node.Left)
+			}
+			if node.Right != nil {
+				q = append(q, node.Right)
+			}
+		}
+		if sum > maxValue {
+			maxValue = sum
+			maxLevel = level
+		}
+	}
+	return maxLevel
+}
