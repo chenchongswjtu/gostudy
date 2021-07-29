@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println(maxAncestorDiff(Ints2TreeNode([]int{8, 3, 10, 1, 6, NULL, 14, NULL, NULL, 4, 7, 13})))
+	fmt.Println(recoverFromPreorder("1-2--3--4-5--6--7"))
 }
 
 // 验证二叉搜索树(递归)
@@ -2154,4 +2154,33 @@ func maxAncestorDiff(root *TreeNode) int {
 
 	dfs(root, root.Val, root.Val)
 	return maxDiff
+}
+
+// 1028. 从先序遍历还原二叉树
+func recoverFromPreorder(traversal string) *TreeNode {
+	var path []*TreeNode
+	var pos int
+	for pos < len(traversal) {
+		level := 0
+		for traversal[pos] == '-' {
+			level++
+			pos++
+		}
+		value := 0
+		// 获得值
+		for ; pos < len(traversal) && traversal[pos] >= '0' && traversal[pos] <= '9'; pos++ {
+			value = value*10 + int(traversal[pos]-'0')
+		}
+		node := &TreeNode{Val: value}
+		if level == len(path) {
+			if len(path) > 0 {
+				path[len(path)-1].Left = node
+			}
+		} else {
+			path = path[:level]
+			path[len(path)-1].Right = node
+		}
+		path = append(path, node)
+	}
+	return path[0]
 }
