@@ -15,9 +15,7 @@ func main() {
 
 	// 1秒之内执行的次数
 	ntimes := 5
-
-	n := rate.Every(time.Second / time.Duration(ntimes))
-	limiter := rate.NewLimiter(n, 1)
+	limiter := rate.NewLimiter(rate.Limit(ntimes), 1)
 
 	ctx := context.Background()
 

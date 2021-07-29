@@ -1,5 +1,5 @@
 // http 限速 NewLimiter
-package http
+package main
 
 import (
 	"log"
