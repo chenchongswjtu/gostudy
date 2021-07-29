@@ -2201,3 +2201,41 @@ func insertIntoMaxTree(root *TreeNode, val int) *TreeNode {
 	root.Right = insertIntoMaxTree(root.Right, val)
 	return root
 }
+
+// 面试题 04.02. 最小高度树
+//func sortedArrayToBST(nums []int) *TreeNode {
+//	if len(nums) == 0 {
+//		return nil
+//	}
+//
+//	l, r := 0, len(nums)-1
+//	m := (l + r) / 2
+//	root := &TreeNode{Val: nums[m]}
+//	root.Left = sortedArrayToBST(nums[:m])
+//	root.Right = sortedArrayToBST(nums[m+1:])
+//	return root
+//}
+
+// 1038. 把二叉搜索树转换为累加树
+func bstToGst(root *TreeNode) *TreeNode {
+	var nodes []*TreeNode
+	var inOrder func(node *TreeNode)
+	inOrder = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		inOrder(node.Left)
+		nodes = append(nodes, node)
+		inOrder(node.Right)
+	}
+
+	inOrder(root)
+
+	sum := 0
+	for i := len(nodes) - 1; i >= 0; i-- {
+		sum += nodes[i].Val
+		nodes[i].Val = sum
+	}
+
+	return root
+}
