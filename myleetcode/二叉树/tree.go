@@ -9,13 +9,7 @@ import (
 )
 
 func main() {
-	k := Constructor3(1, []int{-2})
-	fmt.Println(k.Add(-3))
-	fmt.Println(k.Add(0))
-	fmt.Println(k.Add(2))
-	fmt.Println(k.Add(-1))
-	fmt.Println(k.Add(4))
-
+	fmt.Println(maxAncestorDiff(Ints2TreeNode([]int{8, 3, 10, 1, 6, NULL, 14, NULL, NULL, 4, 7, 13})))
 }
 
 // 验证二叉搜索树(递归)
@@ -2128,4 +2122,36 @@ func sumRootToLeaf(root *TreeNode) int {
 
 	dfs(root, 0)
 	return sum
+}
+
+// 1026. 节点与其祖先之间的最大差值
+func maxAncestorDiff(root *TreeNode) int {
+	var maxDiff int
+	var dfs func(node *TreeNode, min, max int)
+
+	dfs = func(node *TreeNode, min, max int) {
+		if node == nil {
+			return
+		}
+		val := node.Val
+		if val < min {
+			min = val
+		}
+		if val > max {
+			max = val
+		}
+		if max-min > maxDiff {
+			maxDiff = max - min
+		}
+		if node.Left != nil {
+			dfs(node.Left, min, max)
+		}
+		if node.Right != nil {
+			dfs(node.Right, min, max)
+		}
+		return
+	}
+
+	dfs(root, root.Val, root.Val)
+	return maxDiff
 }
