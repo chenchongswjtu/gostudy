@@ -2182,5 +2182,22 @@ func recoverFromPreorder(traversal string) *TreeNode {
 		}
 		path = append(path, node)
 	}
-	return path[0]
+
+	if len(path) > 0 {
+		return path[0]
+	}
+	return nil
+}
+
+// 998. 最大二叉树 II
+// 如果val > root.Val, 直接使之成为根，反之，插入到右子树中
+func insertIntoMaxTree(root *TreeNode, val int) *TreeNode {
+	if root == nil {
+		return &TreeNode{Val: val}
+	}
+	if val > root.Val {
+		return &TreeNode{Val: val, Left: root, Right: nil}
+	}
+	root.Right = insertIntoMaxTree(root.Right, val)
+	return root
 }
