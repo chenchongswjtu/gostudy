@@ -1866,16 +1866,16 @@ func Constructor3(k int, nums []int) KthLargest {
 	return kth
 }
 
-func (this *KthLargest) Add(val int) int {
-	for i := 0; i < len(this.nums); i++ {
-		if val > this.nums[i] {
-			this.nums = append(this.nums[:i], append([]int{val}, this.nums[i:]...)...)
-			this.nums = this.nums[:this.k]
+func (kth *KthLargest) Add(val int) int {
+	for i := 0; i < len(kth.nums); i++ {
+		if val > kth.nums[i] {
+			kth.nums = append(kth.nums[:i], append([]int{val}, kth.nums[i:]...)...)
+			kth.nums = kth.nums[:kth.k]
 			break
 		}
 	}
 
-	return this.nums[this.k-1]
+	return kth.nums[kth.k-1]
 }
 
 // 863. 二叉树中所有距离为 K 的结点
