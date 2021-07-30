@@ -2292,3 +2292,36 @@ func sufficientSubset(root *TreeNode, limit int) *TreeNode {
 	root.Right = r
 	return root
 }
+
+// 1104. 二叉树寻路
+// 2^(i-1)+2^i-1-label
+// i 为行数
+// 偶数行将label转化为反方向
+func getReverse(label, row int) int {
+	return 1<<(row-1) + 1<<row - 1 - label
+}
+
+func pathInZigZagTree(label int) (path []int) {
+	row, rowStart := 1, 1
+	for rowStart*2 <= label {
+		row++
+		rowStart *= 2
+	}
+	// 根据最后行是偶数将其转化为正常的label（全部是从左到右）
+	if row%2 == 0 {
+		label = getReverse(label, row)
+	}
+	for row > 0 {
+		if row%2 == 0 {
+			path = append(path, getReverse(label, row))
+		} else {
+			path = append(path, label)
+		}
+		row--
+		label >>= 1
+	}
+	for i, n := 0, len(path); i < n/2; i++ {
+		path[i], path[n-1-i] = path[n-1-i], path[i]
+	}
+	return
+}
