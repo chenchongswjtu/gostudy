@@ -12,7 +12,7 @@ var limiter = rate.NewLimiter(1, 3)
 
 func limit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if limiter.Allow() == false {
+		if !limiter.Allow() {
 			http.Error(w, http.StatusText(http.StatusTooManyRequests), http.StatusTooManyRequests)
 			return
 		}
@@ -21,15 +21,18 @@ func limit(next http.Handler) http.Handler {
 	})
 }
 
-func okHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("OK"))
+func okHandler(w http.ResponseWriter, _ *http.Request) {
+	_, _ = w.Write([]byte("OK"))
 }
 
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", okHandler)
 
-	// Wrap the servemux with the limit middleware.
+	// Wrap the serve mux with the limit middleware.
 	log.Println("Listening on :4000...")
-	http.ListenAndServe(":4000", limit(mux))
+	err := http.ListenAndServe(":4000", limit(mux))
+	if err != nil {
+		return
+	}
 }
