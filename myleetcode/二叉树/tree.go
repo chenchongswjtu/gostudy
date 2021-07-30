@@ -8,8 +8,10 @@ import (
 	"strings"
 )
 
+var null = NULL
+
 func main() {
-	fmt.Println(lcaDeepestLeaves(Ints2TreeNode([]int{3, 5, 1, 6, 2, 0, 8, NULL, NULL, 7, 4})))
+	fmt.Println(balanceBST(Ints2TreeNode([]int{1, null, 2, null, 3, null, 4, null, null})))
 }
 
 // 验证二叉搜索树(递归)
@@ -2421,4 +2423,35 @@ func deepestLeavesSum(root *TreeNode) int {
 
 	dfs(root, 1)
 	return sum
+}
+
+// 1382. 将二叉搜索树变平衡
+func balanceBST(root *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+	var nums []int
+	var inOrder func(node *TreeNode)
+	inOrder = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		inOrder(node.Left)
+		nums = append(nums, node.Val)
+		inOrder(node.Right)
+	}
+
+	var build func(nums []int) *TreeNode
+	build = func(nums []int) *TreeNode {
+		l, r := 0, len(nums)-1
+		if l > r {
+			return nil
+		}
+		m := (l + r) / 2
+		return &TreeNode{Val: nums[m], Left: build(nums[:m]), Right: build(nums[m+1:])}
+	}
+
+	inOrder(root)
+
+	return build(nums)
 }
