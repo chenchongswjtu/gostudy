@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println(recoverFromPreorder("1-2--3--4-5--6--7"))
+	fmt.Println(lcaDeepestLeaves(Ints2TreeNode([]int{3, 5, 1, 6, 2, 0, 8, NULL, NULL, 7, 4})))
 }
 
 // 验证二叉搜索树(递归)
@@ -2324,4 +2324,52 @@ func pathInZigZagTree(label int) (path []int) {
 		path[i], path[n-1-i] = path[n-1-i], path[i]
 	}
 	return
+}
+
+// 1123. 最深叶节点的最近公共祖先
+func lcaDeepestLeaves(root *TreeNode) *TreeNode {
+	var maxDepth int
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	var getDepth func(node *TreeNode) int
+	getDepth = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		return max(getDepth(node.Left), getDepth(node.Right)) + 1
+	}
+
+	var contain func(node *TreeNode, depth int) bool
+	contain = func(node *TreeNode, depth int) bool {
+		if node == nil {
+			return false
+		}
+		// 叶子节点
+		if node.Left == nil && node.Right == nil {
+			// 检查是否是最深的叶子节点
+			return depth == maxDepth
+		}
+		return contain(node.Left, depth+1) || contain(node.Right, depth+1)
+	}
+
+	if root == nil {
+		return nil
+	}
+
+	maxDepth = getDepth(root)
+
+	if contain(root.Left, 2) && contain(root.Right, 2) {
+		return root
+	} else if contain(root.Left, 2) {
+		return lcaDeepestLeaves(root.Left)
+	} else if contain(root.Right, 2) {
+		return lcaDeepestLeaves(root.Right)
+	} else {
+		return root
+	}
 }
