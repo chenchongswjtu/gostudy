@@ -481,11 +481,7 @@ func hasPathSum(root *TreeNode, targetSum int) bool {
 	}
 
 	if root.Left == nil && root.Right == nil {
-		if targetSum == root.Val {
-			return true
-		}
-
-		return false
+		return targetSum == root.Val
 	}
 
 	return hasPathSum(root.Left, targetSum-root.Val) || hasPathSum(root.Right, targetSum-root.Val)
@@ -523,8 +519,7 @@ func pathSumHelper(root *TreeNode, targetSum int, path []int, allPath *[][]int) 
 
 // 114.二叉树展开为链表
 func flatten(root *TreeNode) {
-	pre := make([]*TreeNode, 0)
-	pre = preOrder(root)
+	pre := preOrder(root)
 	if len(pre) > 0 {
 		root = pre[0]
 		cur := root
@@ -2087,7 +2082,7 @@ func bstFromPreorder(preorder []int) *TreeNode {
 	}
 
 	node := &TreeNode{Val: preorder[0]}
-	i := 1
+	var i int
 	for i = 1; i < len(preorder); i++ {
 		if preorder[i] >= preorder[0] {
 			break
@@ -2149,7 +2144,6 @@ func maxAncestorDiff(root *TreeNode) int {
 		if node.Right != nil {
 			dfs(node.Right, min, max)
 		}
-		return
 	}
 
 	dfs(root, root.Val, root.Val)
@@ -2269,4 +2263,32 @@ func maxLevelSum(root *TreeNode) int {
 		}
 	}
 	return maxLevel
+}
+
+// 1080. 根到叶路径上的不足节点
+func sufficientSubset(root *TreeNode, limit int) *TreeNode {
+	var l, r *TreeNode
+
+	if root == nil {
+		return nil
+	}
+
+	if root.Left == nil && root.Right == nil {
+		if root.Val < limit {
+			return nil
+		}
+		return root
+	}
+
+	l = sufficientSubset(root.Left, limit-root.Val)
+	r = sufficientSubset(root.Right, limit-root.Val)
+	// 左右子树删除之后都为nil，这时root也需要判断是否要删，又由于之前已经-root.val，
+	// 所以root一定要删，返回nil
+	if l == nil && r == nil {
+		return nil
+	}
+
+	root.Left = l
+	root.Right = r
+	return root
 }
