@@ -2507,3 +2507,57 @@ func reverseString(s string) string {
 	}
 	return string(runes)
 }
+
+// 1361. 验证二叉树
+// 先找跟节点（入度为0）
+// 再bfs遍历，看是否遍历完
+func validateBinaryTreeNodes(n int, leftChild []int, rightChild []int) bool {
+	var in = make([]int, n) // 入度
+	for i := 0; i < n; i++ {
+		if leftChild[i] != -1 {
+			in[leftChild[i]]++
+		}
+		if rightChild[i] != -1 {
+			in[rightChild[i]]++
+		}
+	}
+
+	root := -1
+	for i := 0; i < n; i++ {
+		if in[i] == 0 { // 入度为0的为跟节点
+			root = i
+			break
+		}
+	}
+
+	if root == -1 { // 没有入度为0的节点
+		return false
+	}
+
+	var seen = make(map[int]struct{})
+	var q = []int{root}
+	seen[root] = struct{}{}
+
+	// bfs
+	for len(q) > 0 {
+		e := q[0]
+		q = q[1:]
+		if leftChild[e] != -1 {
+			if _, ok := seen[leftChild[e]]; ok { // 已经遍历到过
+				return false
+			}
+			seen[leftChild[e]] = struct{}{}
+			q = append(q, leftChild[e])
+		}
+
+		if rightChild[e] != -1 {
+			if _, ok := seen[rightChild[e]]; ok { // 已经遍历到过
+				return false
+			}
+			seen[rightChild[e]] = struct{}{}
+			q = append(q, rightChild[e])
+		}
+	}
+
+	return len(seen) == n
+}
