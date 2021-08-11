@@ -2535,19 +2535,19 @@ func validateBinaryTreeNodes(n int, leftChild []int, rightChild []int) bool {
 	}
 
 	var seen = make(map[int]struct{})
-	var q = []int{root}
+	var queue = []int{root}
 	seen[root] = struct{}{}
 
 	// bfs
-	for len(q) > 0 {
-		e := q[0]
-		q = q[1:]
+	for len(queue) > 0 {
+		e := queue[0]
+		queue = queue[1:]
 		if leftChild[e] != -1 {
 			if _, ok := seen[leftChild[e]]; ok { // 已经遍历到过
 				return false
 			}
 			seen[leftChild[e]] = struct{}{}
-			q = append(q, leftChild[e])
+			queue = append(queue, leftChild[e])
 		}
 
 		if rightChild[e] != -1 {
@@ -2555,7 +2555,7 @@ func validateBinaryTreeNodes(n int, leftChild []int, rightChild []int) bool {
 				return false
 			}
 			seen[rightChild[e]] = struct{}{}
-			q = append(q, rightChild[e])
+			queue = append(queue, rightChild[e])
 		}
 	}
 
