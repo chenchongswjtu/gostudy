@@ -2455,3 +2455,23 @@ func balanceBST(root *TreeNode) *TreeNode {
 
 	return build(nums)
 }
+
+// 894. 所有可能的满二叉树
+// 代码里d[n]为节点数是n的二叉树数组，i则该二叉树代表左侧分配的节点数，n - i - 1则为右侧分配的节点数，
+// 再遍历组合左右节点数对应的二叉树数组即可得到n个节点时的二叉树数组。
+func allPossibleFBT(N int) []*TreeNode {
+	if N%2 == 0 {
+		return []*TreeNode{}
+	}
+	d := [20][]*TreeNode{1: {&TreeNode{}}}
+	for n := 3; n <= N; n += 2 {
+		for i := 1; i < n; i += 2 {
+			for _, left := range d[i] {
+				for _, right := range d[n-i-1] {
+					d[n] = append(d[n], &TreeNode{Left: left, Right: right})
+				}
+			}
+		}
+	}
+	return d[N]
+}
