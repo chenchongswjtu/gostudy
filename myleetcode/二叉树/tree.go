@@ -2475,3 +2475,35 @@ func allPossibleFBT(N int) []*TreeNode {
 	}
 	return d[N]
 }
+
+// 988. 从叶结点开始的最小字符串
+func smallestFromLeaf(root *TreeNode) string {
+	ans := "~"
+	var dfs func(node *TreeNode, s string)
+	dfs = func(node *TreeNode, s string) {
+		if node == nil {
+			return
+		}
+		s += string(rune('a' + node.Val))
+		if node.Left == nil && node.Right == nil {
+			s = reverseString(s)
+			if strings.Compare(s, ans) < 0 {
+				ans = s
+			}
+		}
+		dfs(node.Left, s)
+		dfs(node.Right, s)
+	}
+
+	dfs(root, "")
+	return ans
+}
+
+func reverseString(s string) string {
+	runes := []rune(s)
+
+	for from, to := 0, len(runes)-1; from < to; from, to = from+1, to-1 {
+		runes[from], runes[to] = runes[to], runes[from]
+	}
+	return string(runes)
+}
