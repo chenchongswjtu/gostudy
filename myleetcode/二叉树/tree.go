@@ -2609,3 +2609,40 @@ func maxProduct(root *TreeNode) int {
 	dfs2(root)
 	return half * (sum - half) % 1000000007
 }
+
+// 1372. 二叉树中的最长交错路径
+func longestZigZag(root *TreeNode) int {
+	var maxLen int
+	const left, right = 0, 1
+
+	// dir 下一步的方向
+	var dfs func(node *TreeNode, dir int, l int)
+	dfs = func(node *TreeNode, dir int, l int) {
+		maxLen = max(maxLen, l)
+
+		if dir == left {
+			if node.Left != nil {
+				dfs(node.Left, right, l+1)
+			}
+			if node.Right != nil { // 不按照下一步的方向，重置l为1
+				dfs(node.Right, left, 1)
+			}
+		} else {
+			if node.Right != nil {
+				dfs(node.Right, left, l+1)
+			}
+			if node.Left != nil {
+				dfs(node.Left, right, 1)
+			}
+		}
+	}
+
+	if root == nil {
+		return 0
+	}
+
+	dfs(root, left, 0)
+	dfs(root, right, 0)
+
+	return maxLen
+}
