@@ -2575,3 +2575,37 @@ func removeLeafNodes(root *TreeNode, target int) *TreeNode {
 	}
 	return root
 }
+
+// 1339. 分裂二叉树的最大乘积
+func maxProduct(root *TreeNode) int {
+	var sum int
+	var half int
+
+	var dfs1 func(node *TreeNode)
+	dfs1 = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+
+		sum += node.Val
+		dfs1(node.Left)
+		dfs1(node.Right)
+	}
+
+	var dfs2 func(node *TreeNode) int
+	dfs2 = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+
+		cur := dfs2(node.Left) + dfs2(node.Right) + node.Val
+		if math.Abs(float64(cur*2-sum)) < math.Abs(float64(half*2-sum)) { // 计算最接近sum一半的值
+			half = cur
+		}
+		return cur
+	}
+
+	dfs1(root)
+	dfs2(root)
+	return half * (sum - half) % 1000000007
+}
