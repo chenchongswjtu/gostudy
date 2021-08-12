@@ -2056,9 +2056,9 @@ func isCousins(root *TreeNode, x, y int) bool {
 		}
 
 		if node.Val == x {
-			xDepth, xParent, xFound = depth, parent, true
+			xParent, xDepth, xFound = parent, depth, true
 		} else if node.Val == y {
-			yDepth, yParent, yFound = depth, parent, true
+			yParent, yDepth, yFound = parent, depth, true
 		}
 
 		if xFound && yFound {
@@ -2338,12 +2338,12 @@ func lcaDeepestLeaves(root *TreeNode) *TreeNode {
 		return b
 	}
 
-	var getDepth func(node *TreeNode) int
-	getDepth = func(node *TreeNode) int {
+	var height func(node *TreeNode) int
+	height = func(node *TreeNode) int {
 		if node == nil {
 			return 0
 		}
-		return max(getDepth(node.Left), getDepth(node.Right)) + 1
+		return max(height(node.Left), height(node.Right)) + 1
 	}
 
 	var contain func(node *TreeNode, depth int) bool
@@ -2363,15 +2363,16 @@ func lcaDeepestLeaves(root *TreeNode) *TreeNode {
 		return nil
 	}
 
-	maxDepth = getDepth(root)
+	maxDepth = height(root)
 
+	// 左右子树都包含最深叶子节点
 	if contain(root.Left, 2) && contain(root.Right, 2) {
 		return root
-	} else if contain(root.Left, 2) {
+	} else if contain(root.Left, 2) { // 只有左子树包含，递归寻找最近的祖先
 		return lcaDeepestLeaves(root.Left)
 	} else if contain(root.Right, 2) {
 		return lcaDeepestLeaves(root.Right)
-	} else {
+	} else { // 左右子树都不包含，直接返回根节点
 		return root
 	}
 }
@@ -2390,6 +2391,7 @@ func deepestLeavesSum(root *TreeNode) int {
 		return b
 	}
 
+	// 获得树的层数
 	var getDepth func(node *TreeNode) int
 	getDepth = func(node *TreeNode) int {
 		if node == nil {
@@ -2421,6 +2423,7 @@ func deepestLeavesSum(root *TreeNode) int {
 		}
 	}
 
+	// 根节点为第一层
 	dfs(root, 1)
 	return sum
 }
@@ -2432,6 +2435,7 @@ func balanceBST(root *TreeNode) *TreeNode {
 	}
 	var nums []int
 	var inOrder func(node *TreeNode)
+	// 中序遍历将二叉搜索树按照从小到大的顺序遍历
 	inOrder = func(node *TreeNode) {
 		if node == nil {
 			return
@@ -2441,6 +2445,7 @@ func balanceBST(root *TreeNode) *TreeNode {
 		inOrder(node.Right)
 	}
 
+	// 使用二分法来创建平衡树
 	var build func(nums []int) *TreeNode
 	build = func(nums []int) *TreeNode {
 		l, r := 0, len(nums)-1
@@ -2478,7 +2483,7 @@ func allPossibleFBT(N int) []*TreeNode {
 
 // 988. 从叶结点开始的最小字符串
 func smallestFromLeaf(root *TreeNode) string {
-	ans := "~"
+	ans := "~" // 比字符串都大
 	var dfs func(node *TreeNode, s string)
 	dfs = func(node *TreeNode, s string) {
 		if node == nil {
@@ -2486,8 +2491,8 @@ func smallestFromLeaf(root *TreeNode) string {
 		}
 		s += string(rune('a' + node.Val))
 		if node.Left == nil && node.Right == nil {
-			s = reverseString(s)
-			if strings.Compare(s, ans) < 0 {
+			s = reverseString(s)             // 翻转字符串
+			if strings.Compare(s, ans) < 0 { // 比较大小
 				ans = s
 			}
 		}
@@ -2509,10 +2514,10 @@ func reverseString(s string) string {
 }
 
 // 1361. 验证二叉树
-// 先找跟节点（入度为0）
+// 先找根节点（入度为0）
 // 再bfs遍历，看是否遍历完
 func validateBinaryTreeNodes(n int, leftChild []int, rightChild []int) bool {
-	var in = make([]int, n) // 入度
+	var in = make([]int, n) // 入度数组
 	for i := 0; i < n; i++ {
 		if leftChild[i] != -1 {
 			in[leftChild[i]]++
@@ -2524,7 +2529,7 @@ func validateBinaryTreeNodes(n int, leftChild []int, rightChild []int) bool {
 
 	root := -1
 	for i := 0; i < n; i++ {
-		if in[i] == 0 { // 入度为0的为跟节点
+		if in[i] == 0 { // 入度为0的为根节点
 			root = i
 			break
 		}
@@ -2534,11 +2539,11 @@ func validateBinaryTreeNodes(n int, leftChild []int, rightChild []int) bool {
 		return false
 	}
 
-	var seen = make(map[int]struct{})
+	var seen = make(map[int]struct{}) // 已经遍历到
 	var queue = []int{root}
 	seen[root] = struct{}{}
 
-	// bfs
+	// bfs 宽度优先遍历
 	for len(queue) > 0 {
 		e := queue[0]
 		queue = queue[1:]
@@ -2559,6 +2564,7 @@ func validateBinaryTreeNodes(n int, leftChild []int, rightChild []int) bool {
 		}
 	}
 
+	// 是否遍历完
 	return len(seen) == n
 }
 
@@ -2570,6 +2576,7 @@ func removeLeafNodes(root *TreeNode, target int) *TreeNode {
 
 	root.Left = removeLeafNodes(root.Left, target)
 	root.Right = removeLeafNodes(root.Right, target)
+	// 删除左右子树之后，左右子树为nil，继续看根节点与是否可以删除
 	if root.Left == nil && root.Right == nil && root.Val == target {
 		return nil
 	}
@@ -2581,6 +2588,7 @@ func maxProduct(root *TreeNode) int {
 	var sum int
 	var half int
 
+	// 计算这个树上网总值
 	var dfs1 func(node *TreeNode)
 	dfs1 = func(node *TreeNode) {
 		if node == nil {
@@ -2592,6 +2600,7 @@ func maxProduct(root *TreeNode) int {
 		dfs1(node.Right)
 	}
 
+	// 计算这个子树的总数
 	var dfs2 func(node *TreeNode) int
 	dfs2 = func(node *TreeNode) int {
 		if node == nil {
@@ -2616,20 +2625,20 @@ func longestZigZag(root *TreeNode) int {
 	const left, right = 0, 1
 
 	// dir 下一步的方向
-	var dfs func(node *TreeNode, dir int, l int)
-	dfs = func(node *TreeNode, dir int, l int) {
-		maxLen = max(maxLen, l)
+	var dfs func(node *TreeNode, dir int, length int)
+	dfs = func(node *TreeNode, dir int, length int) {
+		maxLen = max(maxLen, length)
 
 		if dir == left {
 			if node.Left != nil {
-				dfs(node.Left, right, l+1)
+				dfs(node.Left, right, length+1)
 			}
 			if node.Right != nil { // 不按照下一步的方向，重置l为1
 				dfs(node.Right, left, 1)
 			}
 		} else {
 			if node.Right != nil {
-				dfs(node.Right, left, l+1)
+				dfs(node.Right, left, length+1)
 			}
 			if node.Left != nil {
 				dfs(node.Left, right, 1)
