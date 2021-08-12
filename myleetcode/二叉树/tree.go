@@ -2646,3 +2646,35 @@ func longestZigZag(root *TreeNode) int {
 
 	return maxLen
 }
+
+type ListNode struct {
+	Val  int
+	Next *ListNode
+}
+
+// 1367. 二叉树中的列表
+func isSubPath(head *ListNode, root *TreeNode) bool {
+	if root == nil {
+		return false
+	}
+
+	// 以head和root为起点进行遍历
+	var dfs func(*ListNode, *TreeNode) bool
+	dfs = func(head *ListNode, root *TreeNode) bool {
+		// 链表已经全部匹配完，匹配成功
+		if head == nil {
+			return true
+		}
+		// 二叉树访问到了空节点，匹配失败
+		if root == nil {
+			return false
+		}
+		// 当前匹配的二叉树上节点的值与链表节点的值不相等，匹配失败
+		if head.Val != root.Val {
+			return false
+		}
+		return dfs(head.Next, root.Left) || dfs(head.Next, root.Right)
+	}
+
+	return dfs(head, root) || isSubPath(head, root.Left) || isSubPath(head, root.Right)
+}
