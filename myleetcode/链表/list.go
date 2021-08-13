@@ -268,7 +268,7 @@ func rotateRight(head *ListNode, k int) *ListNode {
 	return res
 }
 
-// 82. 删除排序链表中的重复元素 II
+// 83. 删除排序链表中的重复元素
 // 1->2->3->3->4->4->5
 // 1->2->3->4->5
 func deleteDuplicates(head *ListNode) *ListNode {
@@ -295,6 +295,27 @@ func deleteDuplicates(head *ListNode) *ListNode {
 			return head
 		}
 	}
+}
+
+// 83. 删除排序链表中的重复元素
+// 1->2->3->3->4->4->5
+// 1->2->3->4->5
+// 简单
+func deleteDuplicates4(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+
+	cur := head
+	for cur.Next != nil {
+		if cur.Val == cur.Next.Val {
+			cur.Next = cur.Next.Next
+		} else {
+			cur = cur.Next
+		}
+	}
+
+	return head
 }
 
 // 82. 删除排序链表中的重复元素 II
