@@ -267,3 +267,96 @@ func rotateRight(head *ListNode, k int) *ListNode {
 
 	return res
 }
+
+// 82. 删除排序链表中的重复元素 II
+// 1->2->3->3->4->4->5
+// 1->2->3->4->5
+func deleteDuplicates(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+
+	p1 := head
+	p2 := head.Next
+
+	for {
+		for p1.Val == p2.Val {
+			p2 = p2.Next
+			if p2 == nil {
+				p1.Next = nil
+				return head
+			} else {
+				p1.Next = p2
+			}
+		}
+		p1 = p1.Next
+		p2 = p2.Next
+		if p2 == nil {
+			return head
+		}
+	}
+}
+
+// 82. 删除排序链表中的重复元素 II
+// 1->2->3->3->4->4->5
+// 1->2->5
+func deleteDuplicates2(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+
+	dummy := &ListNode{}
+	dummy.Next = head
+	p0 := dummy     // 相同的前一个
+	p1 := head      // 相同的第一个
+	p2 := head.Next // 相同的最后一个
+
+	isSame := false
+	for {
+		for p1.Val == p2.Val {
+			isSame = true
+			p2 = p2.Next
+			if p2 == nil {
+				p0.Next = nil
+				return dummy.Next
+			}
+		}
+		if isSame {
+			p0.Next = p2
+			isSame = false
+
+			p1 = p2
+			p2 = p2.Next
+			if p2 == nil {
+				return dummy.Next
+			}
+		} else {
+			p0 = p0.Next
+			p1 = p1.Next
+			p2 = p2.Next
+			if p2 == nil {
+				return dummy.Next
+			}
+		}
+	}
+}
+
+func deleteDuplicates3(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+
+	dummy := &ListNode{}
+	cur := dummy
+	for cur.Next != nil && cur.Next.Next != nil {
+		if cur.Next.Val == cur.Next.Next.Val {
+			x := cur.Next.Val
+			for cur.Next != nil && cur.Next.Val == x {
+				cur.Next = cur.Next.Next
+			}
+		} else {
+			cur = cur.Next
+		}
+	}
+	return dummy.Next
+}
