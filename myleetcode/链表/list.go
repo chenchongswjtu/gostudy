@@ -347,6 +347,7 @@ func deleteDuplicates3(head *ListNode) *ListNode {
 	}
 
 	dummy := &ListNode{}
+	dummy.Next = head
 	cur := dummy
 	for cur.Next != nil && cur.Next.Next != nil {
 		if cur.Next.Val == cur.Next.Next.Val {
