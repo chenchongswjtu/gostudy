@@ -9,21 +9,23 @@ func main() {
 }
 
 // 快速排序
-func quickSort(nums []int, low, high int) {
-	if low < high {
-		mid := getMid(nums, low, high)
-		quickSort(nums, low, mid-1)
-		quickSort(nums, mid+1, high)
+func quickSort(nums []int, low int, high int) {
+	if low >= high {
+		return
 	}
+	mid := partition(nums, low, high)
+	quickSort(nums, low, mid-1)
+	quickSort(nums, mid+1, high)
 }
 
-func getMid(nums []int, low int, high int) int {
+func partition(nums []int, low int, high int) int {
 	t := nums[low]
 	for low < high {
 		for low < high && nums[high] >= t {
 			high--
 		}
 		nums[low] = nums[high]
+
 		for low < high && nums[low] <= t {
 			low++
 		}
