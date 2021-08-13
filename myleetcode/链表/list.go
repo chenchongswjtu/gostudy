@@ -235,3 +235,35 @@ func deleteNode(head *ListNode, val int) *ListNode {
 
 	return dummy.Next
 }
+
+// 61. 旋转链表
+// 先转为环，再断开
+func rotateRight(head *ListNode, k int) *ListNode {
+	if k == 0 || head == nil || head.Next == nil {
+		return head
+	}
+
+	// 链表长度
+	n := 1
+	cur := head
+	for cur.Next != nil {
+		cur = cur.Next
+		n++
+	}
+
+	pos := n - k%n
+	if pos == n {
+		return head
+	}
+
+	cur.Next = head // 合成环
+	for pos > 0 {
+		cur = cur.Next
+		pos--
+	}
+
+	res := cur.Next
+	cur.Next = nil
+
+	return res
+}
