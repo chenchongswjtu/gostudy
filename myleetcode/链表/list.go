@@ -404,3 +404,46 @@ func partition(head *ListNode, x int) *ListNode {
 	small.Next = largeHead.Next
 	return smallHead.Next
 }
+
+// 92. 反转链表 II
+func reverseBetween1(head *ListNode, left int, right int) *ListNode {
+	if left == right {
+		return head
+	}
+
+	dummy := &ListNode{}
+	dummy.Next = head
+
+	cur := dummy
+	for i := 1; i < left; i++ {
+		cur = cur.Next
+	}
+	beforeA := cur
+	a := cur.Next
+
+	cur = dummy
+	for i := 0; i < right; i++ {
+		cur = cur.Next
+	}
+	b := cur.Next // right后一个
+
+	nb := reverseAB1(a, b)
+
+	beforeA.Next = nb
+	a.Next = b
+	return dummy.Next
+}
+
+// [a,b)
+func reverseAB1(a, b *ListNode) *ListNode {
+	var pre *ListNode
+	var cur = a
+	for cur != b {
+		next := cur.Next
+		cur.Next = pre
+		pre = cur
+		cur = next
+	}
+
+	return pre
+}
