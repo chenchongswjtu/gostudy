@@ -382,3 +382,25 @@ func deleteDuplicates3(head *ListNode) *ListNode {
 	}
 	return dummy.Next
 }
+
+// 86. 分隔链表
+func partition(head *ListNode, x int) *ListNode {
+	small := &ListNode{}
+	smallHead := small
+	large := &ListNode{}
+	largeHead := large
+	cur := head
+	for cur != nil {
+		if cur.Val < x {
+			small.Next = cur
+			small = small.Next
+		} else {
+			large.Next = cur
+			large = large.Next
+		}
+		cur = cur.Next
+	}
+	large.Next = nil
+	small.Next = largeHead.Next
+	return smallHead.Next
+}
