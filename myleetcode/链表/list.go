@@ -469,3 +469,38 @@ func reorderList(head *ListNode) {
 	}
 	nodes[i].Next = nil
 }
+
+// 328. 奇偶链表
+func oddEvenList(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	var nodes []*ListNode
+	for node := head; node != nil; node = node.Next {
+		nodes = append(nodes, node)
+	}
+
+	i, j := 0, 1
+	heada := nodes[i]
+	headb := nodes[j]
+	nodea := heada
+	nodeb := headb
+
+	i = i + 2
+	j = j + 2
+	for i < len(nodes) {
+		nodea.Next = nodes[i]
+		nodea = nodea.Next
+		i = i + 2
+	}
+
+	for j < len(nodes) {
+		nodeb.Next = nodes[j]
+		nodeb = nodeb.Next
+		j = j + 2
+	}
+
+	nodea.Next = headb
+	nodeb.Next = nil
+	return heada
+}
