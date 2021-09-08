@@ -51,7 +51,7 @@ func readKey(db *leveldb.DB, key string) {
 	fmt.Printf("before change [%s]=[%s]\n", key, string(originValue))
 
 	oldValue := decodeValue.Value
-
+	// 修改值
 	decodeValue.Value = []byte(value)
 	evv, err := encodeVersionedValue(decodeValue)
 	if err != nil {
