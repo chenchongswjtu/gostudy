@@ -19,3 +19,21 @@ Please refer to our official github site for more installation instructions:
 
 protoc --go_out=. hello.proto
 protoc --go-grpc_out=. hello.proto
+
+grpcurl grpc客户端
+
+查看服务列表
+grpcurl -plaintext 127.0.0.1:50051 list
+
+查看某个服务的方法列表
+grpcurl -plaintext 127.0.0.1:50051 list proto.Greeter
+
+查看方法定义
+grpcurl -plaintext 127.0.0.1:50051 describe proto.Greeter.SayHello
+
+查看请求参数
+grpcurl -plaintext 127.0.0.1:50051 describe proto.HelloRequest
+
+请求服务
+grpcurl -d '{"name": "zhangsan"}' -plaintext 127.0.0.1:50051 proto.Greeter.SayHello
+

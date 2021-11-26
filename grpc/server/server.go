@@ -7,6 +7,8 @@ import (
 	"net"
 	"time"
 
+	"github.com/grpc/grpc-go/reflection"
+
 	"google.golang.org/grpc"
 
 	"grpc/pb"
@@ -53,6 +55,8 @@ func main() {
 
 	// 2.初始化grpc服务
 	srv := grpc.NewServer()
+	// 注册 grpcurl 所需的 reflection 服务
+	reflection.Register(server)
 	// 3.将实现的服务器接口的结构体注册到grpc服务中
 	pb.RegisterGreeterServer(srv, &server{})
 	// 4.启动grpc服务
