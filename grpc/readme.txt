@@ -17,8 +17,24 @@ Please refer to our official github site for more installation instructions:
 
 需要protoc proto-gen-go proto-gen-go-grpc bin工具
 
-protoc --go_out=. hello.proto
-protoc --go-grpc_out=. hello.proto
+protoc --go_out=. --govalidators_out=. hello.proto
+protoc --go-grpc_out=. --govalidators_out=. hello.proto
+
+
+protoc --proto_path=. --proto_path=/home/chenchong/gopath/pkg/mod/github.com/mwitkow/go-proto-validators@v0.3.2/validator.proto --govalidators_out=. --go_out=. helloworld.proto
+
+
+protoc  \
+    --proto_path=./include \
+    --proto_path=${GOPATH}/pkg/mod \
+    --proto_path=${GOPATH}/pkg/mod/github.com/mwitkow/go-proto-validators@v0.3.2 \
+    --proto_path=. \
+    --govalidators_out=. \
+    --go-grpc_out=. \
+    --go_out=. \
+    *.proto
+
+
 
 grpcurl grpc客户端
 
