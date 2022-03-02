@@ -11,7 +11,35 @@ import (
 var null = NULL
 
 func main() {
-	fmt.Println(balanceBST(Ints2TreeNode([]int{1, null, 2, null, 3, null, 4, null, null})))
+	fmt.Println(isCompleteTree(Ints2TreeNode([]int{1, 2, null, 4, 5})))
+}
+
+func findBSTMax(root *TreeNode) int {
+	if root == nil {
+		return math.MaxInt64
+	}
+
+	var max int
+	cur := root
+	for cur.Right != nil {
+		max = cur.Right.Val
+		cur = cur.Right
+	}
+	return max
+}
+
+func findBSTMin(root *TreeNode) int {
+	if root == nil {
+		return math.MinInt64
+	}
+
+	var min int
+	cur := root
+	for cur.Left != nil {
+		min = cur.Left.Val
+		cur = cur.Left
+	}
+	return min
 }
 
 // 验证二叉搜索树(递归)
@@ -2686,4 +2714,27 @@ func isSubPath(head *ListNode, root *TreeNode) bool {
 	}
 
 	return dfs(head, root) || isSubPath(head, root.Left) || isSubPath(head, root.Right)
+}
+
+func levelOrderer(root *TreeNode) []int {
+	if root == nil {
+		return nil
+	}
+
+	var ret []int
+	var q = []*TreeNode{root}
+	for len(q) > 0 {
+		t := q[0]
+		q = q[1:]
+		ret = append(ret, t.Val)
+		if t.Left != nil {
+			q = append(q, t.Left)
+		}
+
+		if t.Right != nil {
+			q = append(q, t.Right)
+		}
+	}
+
+	return ret
 }
