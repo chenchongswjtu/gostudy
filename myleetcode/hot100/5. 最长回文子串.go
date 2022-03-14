@@ -71,3 +71,33 @@ func longestPalindrome(s string) string {
 
 	return s[left : right+1]
 }
+
+// 动态规划
+func longestPalindrome1(s string) string {
+	length := len(s)
+	if len(s) <= 1 {
+		return s
+	}
+
+	dp := make([][]bool, length)
+	maxLen := 1
+	left, right := 0, 0
+	for i := 0; i < length; i++ {
+		dp[i] = make([]bool, length)
+		dp[i][i] = true
+	}
+
+	for size := 1; size < length; size++ {
+		for i := 0; i < length-size; i++ {
+			j := i + size
+			if s[i] == s[j] && (i+1 > j-1 || dp[i+1][j-1]) {
+				dp[i][j] = true
+				if j-i+1 > maxLen {
+					maxLen = j - i + 1
+					left, right = i, j
+				}
+			}
+		}
+	}
+	return s[left : right+1]
+}
