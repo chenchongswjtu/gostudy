@@ -31,10 +31,12 @@ package main
 //
 //0 <= s.length <= 5 * 104
 //s 由英文字母、数字、符号和空格组成
+
+// 滑动窗口
 func lengthOfLongestSubstring(s string) int {
 	maxLen := 0
-	left := 0
-	set := map[uint8]struct{}{}
+	set := make(map[uint8]struct{})
+	left := 0 // 不重复的最左边的索引
 	for i := 0; i < len(s); i++ {
 		_, ok := set[s[i]]
 		for ok {

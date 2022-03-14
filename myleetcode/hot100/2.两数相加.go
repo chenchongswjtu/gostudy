@@ -52,39 +52,32 @@ func ConvertSliceToListNode(slice []int) *ListNode {
 	return head.Next
 }
 
-// jin 为进位
 func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
-	jin := 0
-	head := ListNode{-1, nil}
+	jin := 0 // 进位
+	head := ListNode{Val: -1, Next: nil}
 	p := &head
 	for {
-		if l1 == nil && l2 == nil && jin == 0 { // 结束条件
+		if l1 == nil && l2 == nil && jin == 0 {
 			break
 		}
-
-		// 为nil赋值为0，之后统一处理
 		if l1 == nil {
-			l1 = &ListNode{0, nil}
+			l1 = &ListNode{Val: 0, Next: nil}
 		}
-
 		if l2 == nil {
-			l2 = &ListNode{0, nil}
+			l2 = &ListNode{Val: 0, Next: nil}
 		}
-
 		val := l1.Val + l2.Val + jin
 		if val >= 10 {
-			jin = 1
 			val -= 10
+			jin = 1
 		} else {
 			jin = 0
 		}
-
-		node := &ListNode{val, nil}
+		node := &ListNode{Val: val, Next: nil}
 		p.Next = node
 		p = p.Next
 		l1 = l1.Next
 		l2 = l2.Next
 	}
-
 	return head.Next
 }

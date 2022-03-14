@@ -1,7 +1,8 @@
 package main
 
-//4. 寻找两个正序数组的中位数
-//给定两个大小分别为 m 和 n 的正序（从小到大）数组 nums1 和 nums2。请你找出并返回这两个正序数组的 中位数 。
+//给定两个大小分别为 m 和 n 的正序（从小到大）数组 nums1 和 nums2。请你找出并返回这两个正序数组的 中位数 。
+//
+//算法的时间复杂度应该为 O(log (m+n)) 。
 //
 //
 //
@@ -15,18 +16,8 @@ package main
 //输入：nums1 = [1,2], nums2 = [3,4]
 //输出：2.50000
 //解释：合并数组 = [1,2,3,4] ，中位数 (2 + 3) / 2 = 2.5
-//示例 3：
 //
-//输入：nums1 = [0,0], nums2 = [0,0]
-//输出：0.00000
-//示例 4：
 //
-//输入：nums1 = [], nums2 = [1]
-//输出：1.00000
-//示例 5：
-//
-//输入：nums1 = [2], nums2 = []
-//输出：2.00000
 //
 //
 //提示：
@@ -38,45 +29,44 @@ package main
 //1 <= m + n <= 2000
 //-106 <= nums1[i], nums2[i] <= 106
 //
-//
-//进阶：你能设计一个时间复杂度为 O(log (m+n)) 的算法解决此问题吗？
-// 二分法
+//来源：力扣（LeetCode）
+//链接：https://leetcode-cn.com/problems/median-of-two-sorted-arrays
+//著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
 func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
 	n1, n2 := len(nums1), len(nums2)
-	if (n1+n2)%2 == 0 { // 偶数
+	if (n1+n2)%2 == 0 {
 		l := find(nums1, 0, nums2, 0, (n1+n2)/2)
 		r := find(nums1, 0, nums2, 0, (n1+n2)/2+1)
-		return float64(l+r) * 0.5
+		return float64(l+r) / 2.0
 	}
-	// 奇数
+
 	return float64(find(nums1, 0, nums2, 0, (n1+n2)/2+1))
 }
 
+// 从nums1数组的第i个开始，从nums2数组的第j个开始，查找第k小的的数（k从1开始）
 func find(nums1 []int, i int, nums2 []int, j int, k int) int {
-	if len(nums1)-i > len(nums2)-j {
+	if len(nums1)-i > len(nums2)-j { // 将短的放到前面
 		return find(nums2, j, nums1, i, k)
 	}
 
-	if len(nums1) == i {
+	if len(nums1) == i { // i到短的数组的最后的，只需要在nums2中找
 		return nums2[j+k-1]
 	}
 
-	if k == 1 {
+	if k == 1 { // 在两个数组中选最小的
 		return min(nums1[i], nums2[j])
 	}
-
-	si := min(len(nums1), i+k/2)
-	sj := j + k - k/2 // 必须使用k-k/2，不能使用k/2，会有一个数的差距
-
+	si := min(len(nums1), i+k/2) // 找i+k/2的索引，因为nums短，可能不够，取最大的值
+	sj := j + k - k/2
 	if nums1[si-1] < nums2[sj-1] {
-		return find(nums1, si, nums2, j, k-(si-i))
+		return find(nums1, si, nums2, j, k-(si-i)) // 将i到si-1的舍去
 	} else {
-		return find(nums1, i, nums2, sj, k-(sj-j))
+		return find(nums1, i, nums2, sj, k-(sj-j)) // 将j到sj-1舍去
 	}
-
 }
 
-func min(a, b int) int {
+func min(a int, b int) int {
 	if a < b {
 		return a
 	}

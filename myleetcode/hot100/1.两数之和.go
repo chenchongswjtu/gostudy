@@ -32,10 +32,10 @@ package main
 //只会存在一个有效答案
 
 func twoSum(nums []int, target int) []int {
-	m := make(map[int]int)
+	m := map[int]int{}
 	for i, num := range nums {
-		if j, ok := m[target-num]; ok {
-			return []int{j, i}
+		if _, ok := m[target-num]; ok {
+			return []int{m[target-num], i}
 		} else {
 			m[num] = i
 		}
