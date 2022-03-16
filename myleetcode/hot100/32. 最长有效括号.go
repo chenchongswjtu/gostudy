@@ -54,7 +54,7 @@ func longestValidParentheses(s string) int {
 			if len(stack) == 0 { // 第一个为）
 				stack = append(stack, i)
 			} else {
-				ret = maxInt(ret, i-stack[len(stack)-1])
+				ret = maxInt(ret, i-stack[len(stack)-1]) // stack最后一个可能为(
 			}
 		}
 	}
