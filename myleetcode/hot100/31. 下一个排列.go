@@ -59,12 +59,7 @@ func nextPermutation(nums []int) []int {
 }
 
 func reverseSlice(nums []int) {
-	size := len(nums)
-	i := 0
-	j := size - 1
-	for i < j {
+	for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {
 		nums[i], nums[j] = nums[j], nums[i]
-		i++
-		j--
 	}
 }
