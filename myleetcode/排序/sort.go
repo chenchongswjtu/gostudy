@@ -19,18 +19,23 @@ func quickSort(nums []int, low int, high int) {
 }
 
 func partition(nums []int, low int, high int) int {
-	t := nums[low]
-	for low < high {
-		for low < high && nums[high] >= t {
-			high--
+	p := nums[low]
+	i, j := low+1, high
+	for i <= j { // i==j 也要排序，有两个数
+		for i < high && nums[i] <= p {
+			i++
 		}
-		nums[low] = nums[high]
 
-		for low < high && nums[low] <= t {
-			low++
+		for j > low && nums[j] >= p {
+			j--
 		}
-		nums[high] = nums[low]
+
+		if i >= j { // 循环结束
+			break
+		}
+
+		nums[i], nums[j] = nums[j], nums[i]
 	}
-	nums[low] = t
-	return low
+	nums[j], nums[low] = nums[low], nums[j] // 将low与j想交换
+	return j
 }
