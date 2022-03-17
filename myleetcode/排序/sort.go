@@ -30,7 +30,7 @@ func partition(nums []int, low int, high int) int {
 			j--
 		}
 
-		if i >= j { // 循环结束
+		if i >= j { // 循环结束,nums[i]>p,nums[j]<p,所以nums[low]应该与nums[j]交换
 			break
 		}
 
