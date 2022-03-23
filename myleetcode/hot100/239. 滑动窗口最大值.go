@@ -65,3 +65,30 @@ func maxSlidingWindow(nums []int, k int) []int {
 	}
 	return result
 }
+
+// 单调队列（递减，最大的在第一个）
+func maxSlidingWindow1(nums []int, k int) []int {
+	if len(nums) == 0 || len(nums) < k {
+		return make([]int, 0)
+	}
+
+	descQueue := make([]int, 0) // index of nums
+	ret := make([]int, 0, len(nums)-k+1)
+
+	for i := 0; i < len(nums); i++ {
+		for len(descQueue) > 0 && nums[descQueue[len(descQueue)-1]] < nums[i] {
+			descQueue = descQueue[:len(descQueue)-1] // 从末尾删除所有小于nums[i]的index
+		}
+
+		descQueue = append(descQueue, i)
+		if descQueue[0] < i-k+1 {
+			descQueue = descQueue[1:] // 删除第一个index，index在k的范围外，为最大的数
+		}
+
+		if i >= k-1 { // 从i为k-1开始
+			ret = append(ret, nums[descQueue[0]])
+		}
+
+	}
+	return ret
+}
