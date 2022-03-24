@@ -5,9 +5,7 @@ import (
 	"io"
 	"log"
 	"net"
-	"time"
-
-	"github.com/grpc/grpc-go/reflection"
+	"sync/atomic"
 
 	"google.golang.org/grpc"
 
@@ -18,32 +16,39 @@ type server struct {
 	pb.UnimplementedGreeterServer // 必须内嵌这个结构体
 }
 
+var helloCount int32
+
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
+	newValue := atomic.AddInt32(&helloCount, 1)
+	log.Printf("count is %d", newValue)
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
 }
 
+var helloStreamCount int32
+
 func (s *server) HelloStream(stream pb.Greeter_HelloStreamServer) error {
-	go func() {
-		recv, err := stream.Recv()
+	var r *pb.HelloRequest
+	var err error
+	for {
+		r, err = stream.Recv()
 		if err == io.EOF {
 			log.Println("EOF")
-
-			return
+			return nil
 		}
 		if err != nil {
-			return
+			log.Println(err)
+			return err
 		}
-		log.Println("22222", recv.GetName())
-		time.Sleep(100 * time.Millisecond)
-	}()
+		log.Printf("Received: %v", r.GetName())
 
-	err := stream.Send(&pb.HelloReply{Message: "a"})
-	if err != nil {
-		return err
+		err = stream.Send(&pb.HelloReply{Message: "Hello " + r.GetName()})
+		if err != nil {
+			return err
+		}
+		newValue := atomic.AddInt32(&helloStreamCount, 1)
+		log.Printf("count is %d", newValue)
 	}
-	log.Println("hello stream end")
-	return nil
 }
 
 func main() {
@@ -56,7 +61,7 @@ func main() {
 	// 2.初始化grpc服务
 	srv := grpc.NewServer()
 	// 注册 grpcurl 所需的 reflection 服务
-	reflection.Register(server)
+	//reflection.Register(server)
 	// 3.将实现的服务器接口的结构体注册到grpc服务中
 	pb.RegisterGreeterServer(srv, &server{})
 	// 4.启动grpc服务

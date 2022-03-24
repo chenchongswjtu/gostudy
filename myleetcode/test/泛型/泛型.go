@@ -2,6 +2,7 @@ package main
 
 import "fmt"
 
+// 泛型
 func printSlice[T any](s []T) {
 	for _, v := range s {
 		fmt.Printf("%v \n", v)
