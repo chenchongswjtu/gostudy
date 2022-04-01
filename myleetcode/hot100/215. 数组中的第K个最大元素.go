@@ -1,6 +1,10 @@
 package main
 
-import "container/heap"
+import (
+	"container/heap"
+	"math/rand"
+	"time"
+)
 
 // 使用小根堆
 // 还可以使用二分排序查找第n-k个数
@@ -43,4 +47,55 @@ func (h *minHeap) Pop() interface{} {
 	x := old[n-1]
 	*h = old[:n-1]
 	return x
+}
+
+// 快速排序
+func findKthLargest1(nums []int, k int) int {
+	shuffle(nums)
+	k1 := len(nums) - k
+	l := 0
+	r := len(nums) - 1
+	for l <= r {
+		p := partition(nums, l, r)
+		if k1 < p {
+			r = p - 1
+		} else if k1 > p {
+			l = p + 1
+		} else {
+			return nums[p]
+		}
+	}
+	return -1
+}
+
+func partition(nums []int, l int, r int) int {
+	v := nums[l]
+	i := l + 1
+	j := r
+	for i <= j {
+		for i < r && nums[i] <= v {
+			i++
+		}
+		for j > l && nums[j] >= v {
+			j--
+		}
+		if i >= j {
+			break
+		}
+		nums[i], nums[j] = nums[j], nums[i]
+	}
+	nums[l], nums[j] = nums[j], nums[l]
+	return j
+}
+
+// 洗牌算法
+// 打乱顺序
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+func shuffle(nums []int) {
+	for i := 0; i < len(nums); i++ {
+		t := i + rand.Intn(len(nums)-i)
+		nums[i], nums[t] = nums[t], nums[i]
+	}
 }
