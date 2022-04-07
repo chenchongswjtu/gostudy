@@ -20,3 +20,28 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 
 	return nil
 }
+
+// 双指针
+func getIntersectionNode1(headA, headB *ListNode) *ListNode {
+	if headA == nil || headB == nil {
+		return nil
+	}
+
+	pa := headA
+	pb := headB
+	for pa != pb {
+		if pa == nil { // headA走完了，接着走headB
+			pa = headB
+		} else {
+			pa = pa.Next
+		}
+
+		if pb == nil { // headB走完了，接着走headA
+			pb = headA
+		} else {
+			pb = pb.Next
+		}
+	}
+
+	return pa // 最后都走完还没有相同的就是nil退出，返回nil
+}
