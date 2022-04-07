@@ -15,10 +15,10 @@ func maxCoins(nums []int) int {
 	}
 
 	// i,k,j
-	// i 0..n-1
-	// j 2..n+1
+	// i n-1..0
+	// j i+2..n+1
 	// k i+1,j
-	for i := n - 1; i >= 0; i-- { // i不断减小
+	for i := n - 1; i >= 0; i-- { // i不断减小,i从大到小，从小范围到大范围
 		for j := i + 2; j < n+2; j++ { // j不断扩大
 			for k := i + 1; k < j; k++ { // k在i,j之间
 				sum := vals[i] * vals[k] * vals[j]
