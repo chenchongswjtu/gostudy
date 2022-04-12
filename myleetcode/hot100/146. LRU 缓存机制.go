@@ -42,6 +42,7 @@ package main
 //最多调用 2 * 105 次 get 和 put
 
 // 哈希表+双向链表（哈希表尽可定位key是否存在，双向链表每个节点保存完整数据信息）
+// 双向链表
 type DListNode struct {
 	key   int
 	value int
@@ -53,8 +54,8 @@ type LRUCache struct {
 	size     int
 	capacity int
 	cache    map[int]*DListNode
-	head     *DListNode
-	tail     *DListNode
+	head     *DListNode // 虚拟头节点
+	tail     *DListNode // 虚拟尾节点
 }
 
 func Constructor(capacity int) LRUCache {
