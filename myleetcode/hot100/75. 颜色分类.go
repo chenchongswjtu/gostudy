@@ -40,12 +40,12 @@ package main
 // 双指针（同时将0和1调整至slice开头）（这个好理解）
 func sortColors(nums []int) []int {
 	n := len(nums)
-	p0, p1 := 0, 0
+	p0, p1 := 0, 0 // 0，1的下一个位置的索引
 
 	for i := 0; i < n; i++ {
 		if nums[i] == 0 {
-			nums[p0], nums[i] = nums[i], nums[p0]
-			if p0 < p1 { // 说明p0最开始的值是1，之前将p0的1交换到i，需要将i交换到p1
+			nums[p0], nums[i] = nums[i], nums[p0] // 将0交换到p0
+			if p0 < p1 {                          // p0小于p1，说明p0到p1的值为1，之前交换的p0的值是1，将p0的1交换到i，需要将i交换到p1
 				nums[i], nums[p1] = nums[p1], nums[i]
 			}
 			p0++
