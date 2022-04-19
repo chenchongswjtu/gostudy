@@ -3,10 +3,50 @@ package main
 import (
 	"fmt"
 	"sort"
+	"strconv"
 )
 
 func main() {
-	fmt.Println(isValid1("()[]{}"))
+	//fmt.Println(isValid1("()[]{}"))
+	fmt.Println(threeSum1([]int{-1, 0, 1, 2, -1, -4}))
+}
+
+func threeSum1(nums []int) [][]int {
+	n := len(nums)
+	ret := make([][]int, 0)
+	if n < 3 {
+		return ret
+	}
+
+	set := make(map[string]struct{})
+	sort.Ints(nums)
+	for i := 0; i < n-2; i++ {
+		if nums[i] > 0 {
+			break
+		}
+
+		l, r := i+1, n-1
+		for {
+			if l >= r {
+				break
+			}
+
+			if nums[i]+nums[l]+nums[r] == 0 {
+				k := strconv.Itoa(nums[i]) + "#" + strconv.Itoa(nums[l]) + "#" + strconv.Itoa(nums[r])
+				if _, ok := set[k]; !ok {
+					ret = append(ret, []int{nums[i], nums[l], nums[r]})
+					set[k] = struct{}{}
+				}
+				l++ // 相等要进行指针的移动
+				r--
+			} else if nums[i]+nums[l]+nums[r] < 0 {
+				l++
+			} else {
+				r--
+			}
+		}
+	}
+	return ret
 }
 
 func threeSum(nums []int) [][]int {

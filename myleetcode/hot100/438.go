@@ -1,11 +1,5 @@
 package main
 
-import "fmt"
-
-func main() {
-	fmt.Println(findAnagrams("cbaebabacd", "abc"))
-}
-
 // 滑动窗口
 func findAnagrams(s string, p string) []int {
 	if len(s) < len(p) {
