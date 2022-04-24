@@ -51,9 +51,9 @@ func combinationSum(candidates []int, target int) [][]int {
 			if candidates[i] > target {
 				continue
 			}
-			cur = append(cur, candidates[i])
-			dfs(target-candidates[i], i) // 可以重复，所以还是i
-			cur = cur[:len(cur)-1]
+			cur = append(cur, candidates[i]) // 选择这个数
+			dfs(target-candidates[i], i)     // 可以重复，所以还是i
+			cur = cur[:len(cur)-1]           // 回溯，撤销
 		}
 	}
 	dfs(target, 0)

@@ -101,3 +101,33 @@ func longestPalindrome1(s string) string {
 	}
 	return s[left : right+1]
 }
+
+func longestPalindrome2(s string) string {
+	ret := ""
+	for i := 0; i < len(s); i++ {
+		s1 := palindrome(s, i, i)   //奇数个
+		s2 := palindrome(s, i, i+1) //偶数个
+
+		if len(s1) > len(ret) {
+			ret = s1
+		}
+
+		if len(s2) > len(ret) {
+			ret = s2
+		}
+	}
+
+	return ret
+}
+
+func palindrome(s string, l int, r int) string {
+	for l >= 0 && r < len(s) {
+		if s[l] != s[r] {
+			break
+		}
+		l--
+		r++
+	}
+
+	return s[l+1 : r]
+}
