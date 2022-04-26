@@ -32,15 +32,11 @@ func generateParenthesisHelper(n int, l int, r int, one string, all *[]string) {
 		return
 	}
 
-	if l < r {
-		return
-	}
-
 	if l < n {
 		generateParenthesisHelper(n, l+1, r, one+"(", all)
 	}
 
-	if r < n {
+	if r < l { // r<l时，才可以增加）
 		generateParenthesisHelper(n, l, r+1, one+")", all)
 	}
 }
