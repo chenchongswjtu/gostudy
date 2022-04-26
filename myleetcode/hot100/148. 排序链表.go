@@ -35,12 +35,12 @@ func sortList(head *ListNode) *ListNode {
 		return head
 	}
 
-	left, right := middleNode(head)
+	left, right := splitTwoNode(head)
 	return mergeTwoLists(sortList(left), sortList(right))
 }
 
 // 找到链表中点并断开（快慢指针）
-func middleNode(head *ListNode) (*ListNode, *ListNode) {
+func splitTwoNode(head *ListNode) (*ListNode, *ListNode) {
 	if head == nil {
 		return head, head
 	}
