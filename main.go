@@ -8,7 +8,9 @@ import (
 
 func main() {
 	//fmt.Println(isValid1("()[]{}"))
-	fmt.Println(threeSum1([]int{-1, 0, 1, 2, -1, -4}))
+	//fmt.Println(threeSum1([]int{-1, 0, 1, 2, -1, -4}))
+
+	fmt.Println(sortColors([]int{2, 0, 2, 1, 1, 0}))
 }
 
 func threeSum1(nums []int) [][]int {
@@ -217,4 +219,62 @@ func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 	}
 
 	return head.Next
+}
+
+func sortColors(nums []int) []int {
+	n := len(nums)
+	p0, p1 := 0, 0
+	for i := 0; i < n; i++ {
+		if nums[i] == 0 {
+			nums[i], nums[p0] = nums[p0], nums[i]
+			if p0 < p1 {
+				nums[p1], nums[i] = nums[i], nums[p1]
+			}
+			p1++
+			p0++
+		} else if nums[i] == 1 {
+			nums[p1], nums[i] = nums[i], nums[p1]
+			p1++
+		}
+	}
+
+	return nums
+}
+
+// 快速排序
+func sortArray(nums []int) []int {
+	sort1(nums, 0, len(nums)-1)
+	return nums
+}
+
+func sort1(nums []int, l, r int) {
+	if l >= r {
+		return
+	}
+
+	m := partition(nums, l, r)
+	sort1(nums, l, m-1)
+	sort1(nums, m+1, r)
+}
+
+func partition(nums []int, l int, r int) int {
+	v := nums[l]
+	i := l + 1
+	j := r
+	for i <= j { // i == j 有两个数，还是需要排序的
+		for i < r && nums[i] <= v { // i < r ,保证i++之后还是在范围内
+			i++
+		}
+
+		for j > l && nums[j] >= v { // i < l ,保证j++之后还是在范围内
+			j--
+		}
+
+		if i >= j { // i == j 不用继续执行，不用交换
+			break
+		}
+		nums[i], nums[j] = nums[j], nums[i]
+	}
+	nums[l], nums[j] = nums[j], nums[l] // j 指向的数是小于v，交换，最后返回j的值
+	return j
 }
