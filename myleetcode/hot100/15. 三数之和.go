@@ -67,3 +67,40 @@ func threeSum(nums []int) [][]int {
 	}
 	return ret
 }
+
+// 三数之和
+func threeSum2(nums []int) [][]int {
+	sort.Ints(nums)
+	ret, start, end, index, length, sum := make([][]int, 0), 0, 0, 0, len(nums), 0
+
+	for index = 0; index < length-1; index++ {
+		start, end = 0, length-1
+		if index >= 1 && nums[index] == nums[index-1] { // 相同，说明已经包含过，将start设置为index-1
+			start = index - 1
+		}
+
+		for start < index && index < end {
+			if start > 0 && nums[start] == nums[start-1] {
+				start++
+				continue
+			}
+
+			if end < length-1 && nums[end] == nums[end+1] {
+				end--
+				continue
+			}
+
+			sum = nums[start] + nums[index] + nums[end]
+			if sum == 0 {
+				ret = append(ret, []int{nums[start], nums[index], nums[end]})
+				start++
+				end--
+			} else if sum > 0 {
+				end--
+			} else {
+				start++
+			}
+		}
+	}
+	return ret
+}
