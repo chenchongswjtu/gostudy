@@ -1,16 +1,16 @@
 package main
 
 import (
-	"fmt"
+	"math"
 	"sort"
 	"strconv"
 )
 
 func main() {
 	//fmt.Println(isValid1("()[]{}"))
-	//fmt.Println(threeSum1([]int{-1, 0, 1, 2, -1, -4}))
-
-	fmt.Println(sortColors([]int{2, 0, 2, 1, 1, 0}))
+	//fmt.Println(threeSum2([]int{-1, 0, 1, 2, -1, -4}))
+	//fmt.Println(sortColors([]int{2, 0, 2, 1, 1, 0}))
+	//fmt.Println(minWindow("dfsasdfa", "asf"))
 }
 
 func threeSum1(nums []int) [][]int {
@@ -277,4 +277,52 @@ func partition(nums []int, l int, r int) int {
 	}
 	nums[l], nums[j] = nums[j], nums[l] // j 指向的数是小于v，交换，最后返回j的值
 	return j
+}
+
+func minWindow(s string, t string) string {
+	window := make(map[byte]int)
+	need := make(map[byte]int)
+
+	for _, c := range t {
+		need[byte(c)]++
+	}
+
+	count := 0
+	length := math.MaxInt64
+	left := 0
+	right := 0
+	start := 0
+
+	for right < len(s) {
+		c := s[right]
+		right++
+		if _, ok := need[c]; ok {
+			window[c]++
+			if window[c] == need[c] {
+				count++
+			}
+		}
+
+		for count == len(need) {
+			if right-left < length {
+				length = right - left
+				start = left
+			}
+
+			d := s[left]
+			left++
+			if _, ok := need[d]; ok {
+				if need[d] == window[d] {
+					count--
+				}
+				window[d]--
+			}
+		}
+	}
+
+	if length == math.MaxInt64 {
+		return ""
+	}
+
+	return s[start : start+length]
 }
