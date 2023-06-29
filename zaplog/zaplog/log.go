@@ -1,11 +1,14 @@
 package zaplog
 
 import (
+	"io"
+	"log"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -116,4 +119,21 @@ func NewLogger() *zap.SugaredLogger {
 
 func MustLogger(name string) *zap.SugaredLogger {
 	return NewLogger().Named(name)
+}
+
+// 按时间切割
+func getWriter(filename string) io.Writer {
+	// 生成rotatelogs的Logger 实际生成的文件名 filename.YYmmddHH
+	// filename是指向最新日志的链接
+	hook, err := rotatelogs.New(
+		filename+".%Y%m%d%H",
+		rotatelogs.WithLinkName(filename),
+		rotatelogs.WithMaxAge(time.Hour*24*30),    // 保存30天
+		rotatelogs.WithRotationTime(time.Hour*24), //切割频率 24小时
+	)
+	if err != nil {
+		log.Println("日志启动异常")
+		panic(err)
+	}
+	return hook
 }
